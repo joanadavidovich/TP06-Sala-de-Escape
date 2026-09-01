@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Iniciar Sesion";
+}
+
+<h2>Iniciar sesión</h2>
+
+<form method="post" asp-action="Login" asp-controller="Home">
+    <div>
+        <label>Nombre</label>
+        <input type="text" name="nombre" />
+    </div>
+    <div>
+        <button type="submit">Entrar</button>
+    </div>
+</form>

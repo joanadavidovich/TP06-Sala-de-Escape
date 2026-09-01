@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Registro";
+}
+
+<h2>Registro</h2>
+
+<form method="post" asp-action="Register" asp-controller="Home">
+    <div>
+        <label>Nombre</label>
+        <input type="text" name="nombre" />
+    </div>
+    <div>
+        <label>Email</label>
+        <input type="email" name="email" />
+    </div>
+    <div>
+        <button type="submit">Registrarme</button>
+    </div>
+</form>
