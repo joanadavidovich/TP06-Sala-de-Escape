@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Data.SqlClient;
 using Dapper;
+using System.Text.Json;
 
 namespace TP06_Sala_de_Escape.Controllers;
 
@@ -21,33 +22,78 @@ public class HomeController : Controller
     {
         return View();
     }
+
+    public IActionResult Sala1()
+    {
+        int? partidaId = HttpContext.Session.GetInt32("PartidaId");
+        if (!partidaId.HasValue)
+        {
+            return RedirectToAction("StartPartida");
+        }
+
+        BD bd = new BD();
+        var piezas = bd.ObtenerPiezasMapa(1, partidaId.Value).ToList();
+
+        // Si no hay piezas, crearlas
+        if (piezas.Count == 0)
+        {
+            bd.CrearPiezasMapaSala1(1, partidaId.Value);
+            piezas = bd.ObtenerPiezasMapa(1, partidaId.Value).ToList();
+        }
+
+        // Convertir a JSON para pasar a la vista
+        var piezasJson = JsonSerializer.Serialize(piezas);
+        ViewBag.PuzzlesJson = piezasJson;
+        ViewBag.PartidaId = partidaId.Value;
+
+        return View(piezas);
+    }
+
+    [HttpPost]
+    public IActionResult CompletarPieza([FromBody] CompletarPiezaRequest request)
+    {
+        int? partidaId = HttpContext.Session.GetInt32("PartidaId");
+        if (!partidaId.HasValue || partidaId.Value != request.PartidaId)
+        {
+            return BadRequest(new { success = false, message = "Partida no válida" });
+        }
+
+        BD bd = new BD();
+        bd.CompletarPiezaMapa(request.PiezaId, request.PartidaId);
+
+        // Verificar si todas las piezas están completadas
+        var (completadas, total) = bd.ObtenerProgresoSala1(request.PartidaId);
+
+        var respuesta = new
+        {
+            success = true,
+            completadas = completadas,
+            total = total,
+            mensaje = completadas == total ? "¡Todas las piezas completadas! Accede al código final." : "Pieza completada correctamente"
+        };
+
+        return Json(respuesta);
+    }
+
     public IActionResult StartPartida()
     {
         BD bd = new BD();
 
         int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
         string? usuarioNombre = HttpContext.Session.GetString("UsuarioNombre");
-        if (string.IsNullOrEmpty(usuarioNombre))
-        {
-            usuarioNombre = "Invitado";
-        }
-
         int partidaId = bd.CrearPartida(usuarioNombre, 1, usuarioId);
-
         HttpContext.Session.SetInt32("PartidaId", partidaId);
         HttpContext.Session.SetInt32("SalaActual", 1);
         HttpContext.Session.SetString("Estado", "in_progress");
 
-        return RedirectToAction("Index");
+        return RedirectToAction("Sala1");
     }
 
-    // Mostrar formulario registro
     public IActionResult Register()
     {
         return View();
     }
 
-    // Recibe POST registro
     [HttpPost]
     public IActionResult Register(string nombre, string email)
     {
@@ -97,6 +143,7 @@ public class HomeController : Controller
 
         return RedirectToAction("Index");
     }
+
     public IActionResult Privacy()
     {
         return View();
@@ -107,4 +154,10 @@ public class HomeController : Controller
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
+}
+
+public class CompletarPiezaRequest
+{
+    public int PiezaId { get; set; }
+    public int PartidaId { get; set; }
 }

@@ -132,5 +132,89 @@ namespace TP06_Sala_de_Escape.Models
                 return connection.Query(sql, new { IdPartida = partidaId });
             }
         }
+
+        // Obtener todas las salas
+        public IEnumerable<Salas> ObtenerTodasLasSalas()
+        {
+            string sql = "SELECT * FROM Salas ORDER BY orden ASC";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                return connection.Query<Salas>(sql);
+            }
+        }
+
+        // Obtener una sala por id
+        public Salas? ObtenerSalaPorId(int id)
+        {
+            string sql = "SELECT * FROM Salas WHERE id = @Id";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                return connection.QueryFirstOrDefault<Salas>(sql, new { Id = id });
+            }
+        }
+
+        // Obtener todas las piezas del mapa para una sala y partida
+        public IEnumerable<PiezasMapaPuzzle> ObtenerPiezasMapa(int salaId, int partidaId)
+        {
+            string sql = "SELECT * FROM PiezasMapaPuzzle WHERE salaId = @SalaId AND partidaId = @PartidaId ORDER BY numeroPieza ASC";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                return connection.Query<PiezasMapaPuzzle>(sql, new { SalaId = salaId, PartidaId = partidaId });
+            }
+        }
+
+        // Crear piezas del mapa para una nueva partida en la sala 1
+        public void CrearPiezasMapaSala1(int salaId, int partidaId)
+        {
+            string sql = @"
+                INSERT INTO PiezasMapaPuzzle (salaId, partidaId, numeroPieza, region, pista, respuestaCorrecta, completada)
+                VALUES 
+                    (@SalaId, @PartidaId, 1, 'Primera Pieza', 'En qué continente está el país más grande del mundo?', 'ASIA', 0),
+                    (@SalaId, @PartidaId, 2, 'Segunda Pieza', '¿Cuál es la capital de Australia?', 'SÍDNEY', 0),
+                    (@SalaId, @PartidaId, 3, 'Tercera Pieza', '¿Cuál es el país más poblado de América del Sur?', 'BRASIL', 0),
+                    (@SalaId, @PartidaId, 4, 'Cuarta Pieza', '¿En qué océano está Nueva Zelanda?', 'PACÍFICO', 0)
+            ";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                connection.Execute(sql, new { SalaId = salaId, PartidaId = partidaId });
+            }
+        }
+
+        // Marcar una pieza del mapa como completada
+        public void CompletarPiezaMapa(int piezaId, int partidaId)
+        {
+            string sql = @"
+                UPDATE PiezasMapaPuzzle 
+                SET completada = 1, fechaCompletacion = @FechaCompletacion
+                WHERE id = @PiezaId AND partidaId = @PartidaId
+            ";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                connection.Execute(sql, new { PiezaId = piezaId, PartidaId = partidaId, FechaCompletacion = DateTime.Now });
+            }
+        }
+
+        // Obtener el progreso de una partida en la sala 1
+        public (int completadas, int total) ObtenerProgresoSala1(int partidaId)
+        {
+            string sql = @"
+                SELECT 
+                    COUNT(*) as total,
+                    SUM(CASE WHEN completada = 1 THEN 1 ELSE 0 END) as completadas
+                FROM PiezasMapaPuzzle
+                WHERE partidaId = @PartidaId
+            ";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var resultado = connection.QueryFirstOrDefault<dynamic>(sql, new { PartidaId = partidaId });
+                return (resultado?.completadas ?? 0, resultado?.total ?? 0);
+            }
+        }
     }
 }

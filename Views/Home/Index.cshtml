@@ -1,14 +1,121 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Destino Desconocido";
+    ViewData["LayoutStyle"] = "geography";
 }
-<h1>DESTINO DESCONOCIDO</h1>
-<h2>Historia</h2>
-<p>El vuelo 742 sufrió una falla durante el viaje y realizó un aterrizaje de emergencia.</p>
-<p>El sistema perdió la ruta, la ubicación y el destino. Las puertas del avión quedaron bloqueadas.</p>
-<p>Para escapar deberán reconstruir la información perdida y descubrir en qué aeropuerto aterrizaron.</p>
-<h5>Hay 5 salas.</h5>
-<p>En cada una tienen que resolver 3 o 4 consignas diferentes. Las respuestas les permiten descubrir un código de 4 caracteres.</p>
-<p>Si es correcto, pasan a la siguiente sala.</p>
-<p>Si es incorrecto, tienen que seguir investigando.
 
-<a href="/Home/Register">Registrarse</a> o <a href="/Home/Login">Iniciar sesión</a> para comenzar a jugar.</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Destino Desconocido - Sala de Escape</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    
+</head>
+<body>
+    <div class="wave-bg"></div>
+    <div class="wave-bg wave2"></div>
+    <div class="wave-bg wave3"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>⚓ DESTINO DESCONOCIDO ⚓</h1>
+            <p class="subtitle">Una sala de escape geográfica</p>
+        </div>
+
+        <div class="story-section">
+            <h2>📍 La Historia</h2>
+            <p>El vuelo 742 sufrió una falla catastrófica en sus sistemas de navegación durante el viaje transoceánico. El piloto realizó un aterrizaje de emergencia en un aeropuerto desconocido.</p>
+            <p><strong>Sistema perdido. Sistema de ruta desactivado. Sistema de ubicación inactivo.</strong></p>
+            <p>Las puertas del avión quedaron bloqueadas por razones de seguridad. Los pasajeros no saben en qué país, ni en qué continente se encuentran. Solo tienen el mapa antiguo del capitán y algunos acertijos geográficos para descubrir la verdad.</p>
+            <p><strong>¿Podrán reconstruir el mapa y descubrir en qué aeropuerto aterrizaron antes de que se agote el tiempo?</strong></p>
+        </div>
+
+        <div class="info-section">
+            <h4>🎯 ¿Cómo jugar?</h4>
+            <ul>
+                <li><strong>5 salas</strong> con desafíos cada vez más complejos</li>
+                <li><strong>3-4 consignas</strong> por sala</li>
+                <li><strong>Código de 4 caracteres</strong> clave para avanzar</li>
+                <li>Si es incorrecto, vuelves a investigar</li>
+                <li>¡Desbloquea cada sala y cumple la misión!</li>
+            </ul>
+        </div>
+
+        <div class="rooms-grid">
+            <div class="room-card">
+                <div class="compass">🧭</div>
+                <div class="room-card-content">
+                    <div class="room-number">1</div>
+                    <h3>El Mapa Roto</h3>
+                    <p class="room-badge">NIVEL PRINCIPIANTE</p>
+                    <p>Reconstituye el antiguo mapa del mundo resolviendo acertijos geográficos. Las piezas del puzzle te revelarán la ubicación.</p>
+                    <div class="action-buttons">
+                        <a href="/Home/StartPartida" class="btn-start">Jugar Sala 1</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-card">
+                <div class="compass">🌍</div>
+                <div class="room-card-content">
+                    <div class="room-number">2</div>
+                    <h3>Capitales Perdidas</h3>
+                    <p class="room-badge">NIVEL INTERMEDIO</p>
+                    <p>Identifica capitales mundiales a través de pistas históricas y culturales. El mapa antiguo tiene notas secretas.</p>
+                    <div class="action-buttons">
+                        <a href="#" class="btn-start">Próximamente</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-card">
+                <div class="compass">🗻</div>
+                <div class="room-card-content">
+                    <div class="room-number">3</div>
+                    <h3>Accidentes Geográficos</h3>
+                    <p class="room-badge">NIVEL INTERMEDIO</p>
+                    <p>Montañas, ríos y océanos guardan secretos. Resuelve enigmas sobre la geografía natural del planeta.</p>
+                    <div class="action-buttons">
+                        <a href="#" class="btn-start">Próximamente</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-card">
+                <div class="compass">✈️</div>
+                <div class="room-card-content">
+                    <div class="room-number">4</div>
+                    <h3>Rutas Aéreas Secretas</h3>
+                    <p class="room-badge">NIVEL AVANZADO</p>
+                    <p>El piloto dejó notas sobre rutas comerciales internacionales. Descifra el patrón de vuelo para continuar.</p>
+                    <div class="action-buttons">
+                        <a href="#" class="btn-start">Próximamente</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-card">
+                <div class="compass">🎖️</div>
+                <div class="room-card-content">
+                    <div class="room-number">5</div>
+                    <h3>El Destino Final</h3>
+                    <p class="room-badge">NIVEL EXPERTO</p>
+                    <p>Integra todo lo aprendido. Un último acertijo geográfico te revelará dónde aterrizó el vuelo 742 y te permitirá escapar.</p>
+                    <div class="action-buttons">
+                        <a href="#" class="btn-start">Próximamente</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-footer">
+            <p>Para comenzar tu aventura en la sala de escape geográfica, debes registrarte o iniciar sesión.</p>
+            <div>
+                <a href="/Home/Register" class="btn-auth">📝 Registrarse</a>
+                <a href="/Home/Login" class="btn-auth">🔓 Iniciar Sesión</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

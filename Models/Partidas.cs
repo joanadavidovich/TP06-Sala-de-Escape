@@ -9,8 +9,10 @@ namespace TP06_Sala_de_Escape.Models
         public int idSala { get; set; }
         public int? UsuarioId { get; set; }
         public int? SalaActual { get; set; }
+        public string? sessionId { get; set; }
         public string? estado { get; set; }
         public int? nivelActual { get; set; }
+        public int? piezasCompletadas { get; set; } = 0;
         public DateTime? fechaInicio { get; set; }
         public DateTime? fechaFin { get; set; }
     }

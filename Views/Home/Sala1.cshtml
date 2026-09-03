@@ -1,0 +1,592 @@
+@{
+    ViewData["Title"] = "Sala 1 - El Mapa Roto";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sala 1 - El Mapa Roto</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .game-header {
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .game-header h1 {
+            color: #264653;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+
+        .game-header p {
+            color: #666;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4a574 0%, #c58f52 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .game-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .puzzle-section {
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .puzzle-section h2 {
+            color: #264653;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            border-bottom: 2px solid #d4a574;
+            padding-bottom: 10px;
+        }
+
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .puzzle-piece {
+            background: white;
+            border: 2px solid #d4a574;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .puzzle-piece.completed {
+            background: linear-gradient(135deg, #d4a574 0%, #c58f52 100%);
+            color: white;
+            border-color: #c58f52;
+            box-shadow: 0 6px 16px rgba(212, 165, 116, 0.4);
+        }
+
+        .puzzle-piece:hover:not(.completed) {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-color: #c58f52;
+        }
+
+        .piece-number {
+            display: inline-block;
+            background: #e8d7c3;
+            color: #264653;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            width: fit-content;
+        }
+
+        .puzzle-piece.completed .piece-number {
+            background: rgba(255,255,255,0.3);
+            color: white;
+        }
+
+        .piece-region {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #264653;
+            margin-bottom: 12px;
+        }
+
+        .puzzle-piece.completed .piece-region {
+            color: white;
+        }
+
+        .piece-pista {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .puzzle-piece.completed .piece-pista {
+            color: white;
+        }
+
+        .piece-status {
+            color: #d4a574;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .puzzle-piece.completed .piece-status {
+            color: #fff;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-card h3 {
+            color: #264653;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #d4a574;
+            padding-bottom: 8px;
+        }
+
+        .info-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 3px solid #d4a574;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #d4a574;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .hints-list {
+            list-style: none;
+        }
+
+        .hints-list li {
+            padding: 12px;
+            background: #f5f5f5;
+            border-left: 3px solid #d4a574;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4a574 0%, #c58f52 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(212, 165, 116, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 165, 116, 0.6);
+        }
+
+        .btn-secondary {
+            background: #264653;
+            color: white;
+            box-shadow: 0 5px 15px rgba(38, 70, 83, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: #1a2f38;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(38, 70, 83, 0.6);
+        }
+
+        .timer {
+            background: linear-gradient(135deg, #d4a574 0%, #c58f52 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .timer-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .timer-value {
+            font-size: 2rem;
+        }
+
+        .answer-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h3 {
+            color: #264653;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid #d4a574;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .close-modal {
+            cursor: pointer;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .close-modal:hover {
+            color: #000;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @@media (max-width: 1024px) {
+            .game-content {
+                grid-template-columns: 1fr;
+            }
+
+            .puzzle-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .map-preview {
+            width: 100%;
+            height: 280px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>🗺️ Sala 1: El Mapa Roto</h1>
+            <p>Reconstruid el antiguo mapa del mundo resolviendo acertijos geográficos. Cada pieza completada os revelaría más sobre vuestra ubicación actual.</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+        </div>
+
+        <div class="game-content">
+            <div class="puzzle-section">
+                <h2>Piezas del Mapa</h2>
+                <div class="puzzle-grid" id="puzzleGrid">
+                    <!-- Las piezas se cargarán desde el controlador -->
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-card timer">
+                    <div class="timer-label">Tiempo Disponible</div>
+                    <div class="timer-value" id="timer">45:00</div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3>📊 Progreso</h3>
+                    <div class="info-stats">
+                        <div class="stat-box">
+                            <div class="stat-value" id="completedCount">0</div>
+                            <div class="stat-label">Completadas</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="totalCount">4</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3>💡 Pistas Importantes</h3>
+                    <ul class="hints-list">
+                        <li>El mundo está dividido en continentes y océanos</li>
+                        <li>Cada pieza contiene una pregunta de geografía</li>
+                        <li>Responde correctamente para completar la pieza</li>
+                        <li>Cuando todas las piezas estén completas, accede al código final</li>
+                    </ul>
+                </div>
+
+                <div class="button-group">
+                    <a href="/" class="btn btn-secondary">← Volver al inicio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para responder -->
+    <div id="answerModal" class="answer-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle">Pregunta</h3>
+            <p id="modalQuestion"></p>
+            <input type="text" id="answerInput" class="modal-input" placeholder="Escribe tu respuesta..." />
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="submitAnswer()">Enviar Respuesta</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPuzzleId = null;
+        let puzzles = @Html.Raw(ViewBag.PuzzlesJson ?? "[]");
+        let partidaId = @Html.Raw(ViewBag.PartidaId ?? "0");
+
+        function initializePuzzles() {
+            const grid = document.getElementById('puzzleGrid');
+            grid.innerHTML = '';
+
+            puzzles.forEach(puzzle => {
+                const piece = document.createElement('div');
+                piece.className = 'puzzle-piece' + (puzzle.completada ? ' completed' : '');
+                piece.innerHTML = `
+                    <div class="piece-number">Pieza ${puzzle.numeroPieza}</div>
+                    <div class="piece-region">${puzzle.region}</div>
+                    <div class="piece-pista">${puzzle.pista}</div>
+                    <div class="piece-status">${puzzle.completada ? '✓ Completada' : 'Pendiente'}</div>
+                `;
+                
+                if (!puzzle.completada) {
+                    piece.onClick = function() {
+                        openAnswerModal(puzzle);
+                    };
+                    piece.style.cursor = 'pointer';
+                }
+                
+                grid.appendChild(piece);
+            });
+
+            updateProgress();
+        }
+
+        function openAnswerModal(puzzle) {
+            currentPuzzleId = puzzle.id;
+            document.getElementById('modalTitle').textContent = puzzle.region;
+            document.getElementById('modalQuestion').textContent = puzzle.pista;
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerModal').style.display = 'block';
+            document.getElementById('answerInput').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('answerModal').style.display = 'none';
+            currentPuzzleId = null;
+        }
+
+        function submitAnswer() {
+            const answer = document.getElementById('answerInput').value.trim().toUpperCase();
+            
+            if (!answer) {
+                alert('Por favor ingresa una respuesta');
+                return;
+            }
+
+            // Verificar la respuesta
+            const puzzle = puzzles.find(p => p.id === currentPuzzleId);
+            if (answer === puzzle.respuestaCorrecta) {
+                alert('¡Correcto! Has completado esta pieza.');
+                puzzle.completada = true;
+                
+                // Aquí iría la llamada AJAX para guardar el progreso
+                fetch('/Home/CompletarPieza', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        piezaId: currentPuzzleId,
+                        partidaId: partidaId
+                    })
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          closeModal();
+                          initializePuzzles();
+                          checkIfCompleted();
+                      }
+                  });
+            } else {
+                alert('Respuesta incorrecta. Intenta de nuevo.');
+            }
+        }
+
+        function updateProgress() {
+            const completed = puzzles.filter(p => p.completada).length;
+            const total = puzzles.length;
+            const percentage = (completed / total) * 100;
+            
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressFill').textContent = Math.round(percentage) + '%';
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalCount').textContent = total;
+        }
+
+        function checkIfCompleted() {
+            const allCompleted = puzzles.every(p => p.completada);
+            if (allCompleted) {
+                alert('¡Felicidades! Has completado todas las piezas. Ahora debes ingresar el código de acceso a la siguiente sala.');
+                // Aquí irías a una pantalla para ingresar el código
+            }
+        }
+
+        function startTimer() {
+            let seconds = 45 * 60; // 45 minutos
+            setInterval(() => {
+                if (seconds > 0) {
+                    seconds--;
+                    const minutes = Math.floor(seconds / 60);
+                    const secs = seconds % 60;
+                    document.getElementById('timer').textContent = 
+                        String(minutes).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+                }
+            }, 1000);
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePuzzles();
+            startTimer();
+        });
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('answerModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
