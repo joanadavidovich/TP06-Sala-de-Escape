@@ -26,27 +26,60 @@ public class HomeController : Controller
     public IActionResult Sala1()
     {
         int? partidaId = HttpContext.Session.GetInt32("PartidaId");
+        int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+        
         if (!partidaId.HasValue)
         {
             return RedirectToAction("StartPartida");
         }
 
-        BD bd = new BD();
-        var piezas = bd.ObtenerPiezasMapa(1, partidaId.Value).ToList();
-
-        // Si no hay piezas, crearlas
-        if (piezas.Count == 0)
+        // Datos de Sala 1: Las 3 consignas
+        var consigna1 = new
         {
-            bd.CrearPiezasMapaSala1(1, partidaId.Value);
-            piezas = bd.ObtenerPiezasMapa(1, partidaId.Value).ToList();
-        }
+            titulo = "Consigna 1: Las 9 Imágenes",
+            descripcion = "Ordena las imágenes de OESTE a ESTE para descubrir la palabra mágica",
+            imagenes = new[]
+            {
+                new { id = 1, letra = "M", imagen = "golden-gate.jpg", ubicacion = "San Francisco, USA", orden = 0 },
+                new { id = 2, letra = "A", imagen = "cristo.jpg", ubicacion = "Rio de Janeiro, Brasil", orden = 1 },
+                new { id = 3, letra = "P", imagen = "piramides.jpg", ubicacion = "Giza, Egipto", orden = 2 },
+                new { id = 4, letra = "A", imagen = "taj-mahal.jpg", ubicacion = "Agra, India", orden = 3 },
+                new { id = 5, letra = "M", imagen = "coliseo.jpg", ubicacion = "Roma, Italia", orden = 4 },
+                new { id = 6, letra = "U", imagen = "muralla.jpg", ubicacion = "China", orden = 5 },
+                new { id = 7, letra = "N", imagen = "opera.jpg", ubicacion = "Sydney, Australia", orden = 6 },
+                new { id = 8, letra = "D", imagen = "eiffel.jpg", ubicacion = "Paris, Francia", orden = 7 },
+                new { id = 9, letra = "I", imagen = "machu.jpg", ubicacion = "Perú", orden = 8 }
+            }
+        };
 
-        // Convertir a JSON para pasar a la vista
-        var piezasJson = JsonSerializer.Serialize(piezas);
-        ViewBag.PuzzlesJson = piezasJson;
+        var consigna2 = new
+        {
+            titulo = "Consigna 2: El Mapa Roto",
+            descripcion = "Reconstruye el mapamundi colocando las piezas correctamente"
+        };
+
+        var consigna3 = new
+        {
+            titulo = "Consigna 3: Ubica los Continentes",
+            descripcion = "Coloca cada monumento en su continente correcto",
+            monumentos = new[]
+            {
+                new { id = 1, nombre = "Torre Eiffel", continente = "EUROPA", imagen = "eiffel.jpg", letra = "E" },
+                new { id = 2, nombre = "Estatua de la Libertad", continente = "AMÉRICA", imagen = "liberty.jpg", letra = "U" },
+                new { id = 3, nombre = "Pirámides de Giza", continente = "ÁFRICA", imagen = "piramides.jpg", letra = "R" },
+                new { id = 4, nombre = "Taj Mahal", continente = "ASIA", imagen = "taj-mahal.jpg", letra = "O" },
+                new { id = 5, nombre = "Cristo Redentor", continente = "AMÉRICA", imagen = "cristo.jpg", letra = "P" },
+                new { id = 6, nombre = "Ópera de Sydney", continente = "OCEANÍA", imagen = "opera.jpg", letra = "A" }
+            }
+        };
+
+        ViewBag.Consigna1 = JsonSerializer.Serialize(consigna1);
+        ViewBag.Consigna2 = JsonSerializer.Serialize(consigna2);
+        ViewBag.Consigna3 = JsonSerializer.Serialize(consigna3);
         ViewBag.PartidaId = partidaId.Value;
+        ViewBag.UsuarioId = usuarioId;
 
-        return View(piezas);
+        return View();
     }
 
     [HttpPost]
@@ -77,16 +110,29 @@ public class HomeController : Controller
 
     public IActionResult StartPartida()
     {
-        BD bd = new BD();
-
-        int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-        string? usuarioNombre = HttpContext.Session.GetString("UsuarioNombre");
-        int partidaId = bd.CrearPartida(usuarioNombre, 1, usuarioId);
-        HttpContext.Session.SetInt32("PartidaId", partidaId);
-        HttpContext.Session.SetInt32("SalaActual", 1);
-        HttpContext.Session.SetString("Estado", "in_progress");
-
-        return RedirectToAction("Sala1");
+        try
+        {
+            BD bd = new BD();
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            string? usuarioNombre = HttpContext.Session.GetString("UsuarioNombre");
+            int partidaId = bd.CrearPartida(usuarioNombre, 1, usuarioId);
+            HttpContext.Session.SetInt32("PartidaId", partidaId);
+            HttpContext.Session.SetInt32("SalaActual", 1);
+            HttpContext.Session.SetString("Estado", "in_progress");
+            return RedirectToAction("Sala1");
+        }
+        catch (Exception ex)
+        {
+            // Si hay error en la BD, crear una partida en session sin guardar
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            int tempPartidaId = new Random().Next(1000, 9999);
+            HttpContext.Session.SetInt32("PartidaId", tempPartidaId);
+            HttpContext.Session.SetInt32("SalaActual", 1);
+            HttpContext.Session.SetString("Estado", "in_progress");
+            
+            _logger.LogError($"Error al crear partida: {ex.Message}. Usando modo offline.");
+            return RedirectToAction("Sala1");
+        }
     }
 
     public IActionResult Register()

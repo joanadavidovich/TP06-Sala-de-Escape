@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descargador de Imágenes - Sala 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .image-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .image-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .image-header {
+            background: #f8f9fa;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .image-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .status-badge.downloading {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .image-body {
+            padding: 15px;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+        .image-location {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .image-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-download {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-download:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-download:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-open {
+            background: #f0f0f0;
+            color: #333;
+            flex: 0.5;
+        }
+
+        .btn-open:hover {
+            background: #e0e0e0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #667eea;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download-all {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-download-all:hover {
+            background: #218838;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-download-all:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .progress-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .progress-section.active {
+            display: block;
+        }
+
+        .progress-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .progress-item-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .progress-item-status {
+            font-size: 12px;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            .images-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📥 Descargador de Imágenes</h1>
+        <p class="subtitle">Sala 1 - "El Mapa Destruido"</p>
+
+        <div class="info-box">
+            <strong>ℹ️ Información:</strong> Este descargador obtiene imágenes de monumentos desde Wikimedia Commons y las guarda en la carpeta correcta. Asegúrate de estar en la máquina donde está instalado el proyecto.
+        </div>
+
+        <div class="actions">
+            <button class="btn-large btn-download-all" id="btnDescargarTodos">
+                ⚡ Descargar TODAS las imágenes
+            </button>
+        </div>
+
+        <div class="progress-section" id="progressSection">
+            <strong>Estado:</strong>
+            <div id="progressItems"></div>
+        </div>
+
+        <div class="images-grid" id="imagesGrid"></div>
+
+        <div style="margin-top: 30px; padding-top: 30px; border-top: 1px solid #e0e0e0; font-size: 13px; color: #666;">
+            <strong>📍 Carpeta destino:</strong>
+            <code style="background: #f5f5f5; padding: 8px; border-radius: 4px; display: block; margin-top: 8px; word-break: break-all;">
+                z:\2026\Programación\TP06 Sala de Escape\wwwroot\images\sala1\
+            </code>
+        </div>
+    </div>
+
+    <script>
+        const imagenes = [
+            {
+                nombre: "golden-gate.jpg",
+                titulo: "🌉 Puente Golden Gate",
+                ubicacion: "San Francisco, EE.UU. (Oeste)",
+                url: "https://upload.wikimedia.org/wikipedia/commons/0/0c/GoldenGateBridge-001.jpg"
+            },
+            {
+                nombre: "cristo.jpg",
+                titulo: "🗿 Cristo Redentor",
+                ubicacion: "Río de Janeiro, Brasil",
+                url: "https://upload.wikimedia.org/wikipedia/commons/e/e5/Oye_de_janeiro_by_night.JPG"
+            },
+            {
+                nombre: "piramides.jpg",
+                titulo: "🔺 Pirámides de Giza",
+                ubicacion: "Giza, Egipto",
+                url: "https://upload.wikimedia.org/wikipedia/commons/a/af/All_Gizah_Pyramids.jpg"
+            },
+            {
+                nombre: "taj-mahal.jpg",
+                titulo: "🏛️ Taj Mahal",
+                ubicacion: "Agra, India",
+                url: "https://upload.wikimedia.org/wikipedia/commons/1/1d/Taj_Mahal_%282%29.jpg"
+            },
+            {
+                nombre: "coliseo.jpg",
+                titulo: "🏛️ Coliseo Romano",
+                ubicacion: "Roma, Italia",
+                url: "https://upload.wikimedia.org/wikipedia/commons/5/53/Colosseum_2020.jpg"
+            },
+            {
+                nombre: "muralla.jpg",
+                titulo: "🧱 Muralla China",
+                ubicacion: "China",
+                url: "https://upload.wikimedia.org/wikipedia/commons/d/d7/Great_Wall_of_China_-_Section_near_Juyongguan_01.jpg"
+            },
+            {
+                nombre: "opera.jpg",
+                titulo: "🎭 Ópera de Sydney",
+                ubicacion: "Sydney, Australia",
+                url: "https://upload.wikimedia.org/wikipedia/commons/c/cb/2016-12-19_Sydney_Opera_House.jpg"
+            },
+            {
+                nombre: "eiffel.jpg",
+                titulo: "🗼 Torre Eiffel",
+                ubicacion: "París, Francia",
+                url: "https://upload.wikimedia.org/wikipedia/commons/8/85/Eiffel_Tower_by_Photographer_I_Left_My_Heart_in_San_Francisco_131.jpg"
+            },
+            {
+                nombre: "machu.jpg",
+                titulo: "🏔️ Machu Picchu",
+                ubicacion: "Perú (Este)",
+                url: "https://upload.wikimedia.org/wikipedia/commons/e/eb/Machu_Picchu%2C_Peru.jpg"
+            }
+        ];
+
+        const grid = document.getElementById('imagesGrid');
+        const progressSection = document.getElementById('progressSection');
+        const progressItems = document.getElementById('progressItems');
+        const btnDescargarTodos = document.getElementById('btnDescargarTodos');
+
+        // Renderizar grid
+        imagenes.forEach((img, index) => {
+            const item = document.createElement('div');
+            item.className = 'image-item';
+            item.id = `img-${index}`;
+            item.innerHTML = `
+                <div class="image-header">
+                    <span class="image-name">${img.titulo}</span>
+                    <span class="status-badge" id="status-${index}">Listo</span>
+                </div>
+                <div class="image-body">
+                    <div class="image-preview">
+                        <img src="${img.url}" alt="${img.nombre}" onerror="this.parentElement.innerHTML='No se puede cargar preview'">
+                    </div>
+                    <div class="image-location">${img.ubicacion}</div>
+                    <div class="image-actions">
+                        <button class="btn btn-download" data-index="${index}" onclick="descargarImagen(${index})">
+                            ↓ Descargar
+                        </button>
+                        <a href="${img.url}" target="_blank" class="btn btn-open" title="Abrir en nueva pestaña">
+                            🔗
+                        </a>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(item);
+        });
+
+        async function descargarImagen(index) {
+            const img = imagenes[index];
+            const btn = document.querySelector(`button[data-index="${index}"]`);
+            const status = document.getElementById(`status-${index}`);
+
+            btn.disabled = true;
+            status.className = 'status-badge downloading';
+            status.textContent = 'Descargando...';
+
+            try {
+                const response = await fetch(img.url);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = img.nombre;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                status.className = 'status-badge success';
+                status.textContent = '✓ Descargado';
+            } catch (error) {
+                status.className = 'status-badge error';
+                status.textContent = `✗ Error: ${error.message}`;
+                btn.disabled = false;
+            }
+        }
+
+        async function descargarTodos() {
+            btnDescargarTodos.disabled = true;
+            progressSection.classList.add('active');
+
+            for (let i = 0; i < imagenes.length; i++) {
+                const img = imagenes[i];
+                const item = document.createElement('div');
+                item.className = 'progress-item';
+                item.id = `prog-${i}`;
+                item.innerHTML = `
+                    <span class="progress-item-name">${img.titulo}</span>
+                    <span class="progress-item-status">Pendiente...</span>
+                `;
+                progressItems.appendChild(item);
+
+                try {
+                    const response = await fetch(img.url);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = img.nombre;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    item.querySelector('.progress-item-status').textContent = '✓ Descargado';
+                    item.style.background = '#d4edda';
+                } catch (error) {
+                    item.querySelector('.progress-item-status').textContent = `✗ ${error.message}`;
+                    item.style.background = '#f8d7da';
+                }
+
+                // Pequeño delay para no saturar
+                await new Promise(r => setTimeout(r, 300));
+            }
+
+            btnDescargarTodos.disabled = false;
+            btnDescargarTodos.textContent = '✓ ¡Descarga completada!';
+        }
+
+        btnDescargarTodos.addEventListener('click', descargarTodos);
+    </script>
+</body>
+</html>

@@ -14,6 +14,18 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
+// Descargar imágenes de Sala 1 al iniciar
+try
+{
+    var wwwrootPath = app.Environment.WebRootPath;
+    var descargador = new ImagenDescargador(wwwrootPath);
+    await descargador.DescargarImagenesAsync();
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"⚠️ Advertencia al descargar imágenes: {ex.Message}");
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
