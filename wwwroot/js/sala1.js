@@ -12,7 +12,7 @@ let codigoFinal = "M7E4"; // Código de ejemplo
 // Objetos de consignas con imágenes reales
 let consigna1 = {
     imagenes: [
-        { id: 1, letra: "M", imagen: "/images/sala1/golden-gate.jpg", nombre: "1", orden: 0 },
+        { id: 1, letra: "M", imagen: "/images/sala1/golden-gate.jpeg", nombre: "1", orden: 0 },
         { id: 2, letra: "A", imagen: "/images/sala1/cristo.jpg", nombre: "2", orden: 1 },
         { id: 3, letra: "P", imagen: "/images/sala1/piramides.jpg", nombre: "3", orden: 2 },
         { id: 4, letra: "A", imagen: "/images/sala1/taj-mahal.jpg", nombre: "4", orden: 3 },

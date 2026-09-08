@@ -82,6 +82,38 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult Sala2()
+    {
+        int? partidaId = HttpContext.Session.GetInt32("PartidaId");
+        int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+        
+        if (!partidaId.HasValue)
+        {
+            return RedirectToAction("StartPartida");
+        }
+
+        // Datos de Sala 2: Las Imágenes Borrosas
+        var consigna1 = new
+        {
+            titulo = "Consigna 1: Las Fotografías Recuperadas",
+            descripcion = "El sistema recuperó 5 fotografías tomadas dentro y alrededor del aeropuerto, pero están muy borrosas. Observa todas ellas y relacionalas para descubrir en qué país está el aeropuerto.",
+            fotografias = new[]
+            {
+                new { id = 1, nombre = "Bandera", descripcion = "Una parte de una bandera nacional", tipo = "bandera" },
+                new { id = 2, nombre = "Cartel", descripcion = "Un cartel con información del aeropuerto", tipo = "cartel" },
+                new { id = 3, nombre = "Señal", descripcion = "Una señal de tránsito o información", tipo = "señal" },
+                new { id = 4, nombre = "Edificio", descripcion = "Parte de un edificio emblemático", tipo = "edificio" },
+                new { id = 5, nombre = "Paisaje", descripcion = "Un paisaje caracterísitco de la región", tipo = "paisaje" }
+            }
+        };
+
+        ViewBag.Consigna1 = JsonSerializer.Serialize(consigna1);
+        ViewBag.PartidaId = partidaId.Value;
+        ViewBag.UsuarioId = usuarioId;
+
+        return View();
+    }
+
     [HttpPost]
     public IActionResult CompletarPieza([FromBody] CompletarPiezaRequest request)
     {
