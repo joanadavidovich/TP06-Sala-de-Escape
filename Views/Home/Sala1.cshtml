@@ -5,8 +5,8 @@
 <div class="sala1-container">
     <!-- HEADER -->
     <div class="sala1-header">
-        <h1>🌎 SALA 1 — EL MAPA DESTRUIDO 🌎</h1>
-        <p>Objetivo: Descubrir el continente. Completa las 3 consignas para progresar.</p>
+        <h1>🟦 SALA 1 — EL MAPA DESTRUIDO 🌎</h1>
+        <p>Objetivo: descubrir el continente. Esta sala es exclusivamente sobre reconstruir información geográfica.</p>
         
         <div class="progress-tracker">
             <div class="consigna-progress" data-consigna="1">
@@ -25,11 +25,13 @@
     </div>
 
     <!-- CONSIGNA 1: LAS 9 IMÁGENES -->
-    <div class="consigna-container" id="consigna1" style="display: block;">
+    <div class="consigna-container active" id="consigna1">
         <div class="consigna-titulo">
-            <h2>🧩 CONSIGNA 1</h2>
-            <p>Estas 9 imágenes están completamente desordenadas. Ordénalas correctamente para descubrir la palabra mágica.</p>
-            <p style="color: #e74c3c; font-weight: bold; margin-top: 10px;">⚠️ No hay pistas. Tendrás que usar toda tu intuición. taylor swift</p>
+            <h2>🧩 CONSIGNA 1 — Las 9 imágenes</h2>
+            <p>Aparecen 9 fotografías de diferentes lugares del mundo, todas mezcladas. Cada una tiene una letra.</p>
+            <p>La consigna dice: “Estas imágenes están desordenadas. Encontrá el orden correcto.”</p>
+            <p>Los jugadores tienen que descubrir que las imágenes se pueden ordenar de oeste a este.</p>
+            <p class="consigna-warning">Al ponerlas correctamente, las letras forman: MAPAMUNDI</p>
         </div>
 
         <div class="consigna1-grid">
@@ -57,24 +59,23 @@
     </div>
 
     <!-- CONSIGNA 2: MAPA ROTO -->
-    <div class="consigna-container" id="consigna2" style="display: none;">
+    <div class="consigna-container" id="consigna2">
         <div class="consigna-titulo">
             <h2>🗺️ CONSIGNA 2 — El Mapa Roto</h2>
             <p>Reconstruye el mapamundi colocando las piezas correctamente.</p>
         </div>
 
         <div class="mapa-puzzle-container">
-            <!-- IMAGEN DEL MAPAMUNDI -->
             <div class="mapamundi-display">
                 <div class="mapamundi-placeholder" id="mapamundiPlaceholder1">
                     <div class="mapamundi-icon">🗺️</div>
-                    <div class="mapamundi-label">Mapamundi</div>
-                    <p>Espacio para la imagen del mapa mundial</p>
+                    <div class="mapamundi-label">Mapamundi completo</div>
+                    <div class="mapamundi-image-frame mapamundi-reference" aria-hidden="true">
+                        <img class="mapamundi-img" id="mapamundiImg1" src="/images/sala1/mapamundi.png" alt="Mapamundi" />
+                    </div>
                 </div>
-                <img class="mapamundi-img" id="mapamundiImg1" src="/images/sala1/mapamundi.png" alt="Mapamundi" style="display: none; width: 100%; border-radius: 8px;">
             </div>
 
-            <!-- CANVAS Y PIEZAS (para versión futura) -->
             <div class="mapa-canvas" id="mapaCanvas">
                 <svg viewBox="0 0 960 600" id="mapaSVG">
                     <!-- El mapa se dibujará aquí -->
@@ -88,7 +89,7 @@
     </div>
 
     <!-- CONSIGNA 3: UBICAR CONTINENTES -->
-    <div class="consigna-container" id="consigna3" style="display: none;">
+    <div class="consigna-container" id="consigna3">
         <div class="consigna-titulo">
             <h2>🌏 CONSIGNA 3 — Ubica los Continentes</h2>
             <p>Cada imagen fue colocada en el lugar equivocado. Ubícalas correctamente en su continente.</p>
@@ -134,7 +135,7 @@
     </div>
 
     <!-- CÓDIGO FINAL -->
-    <div id="codigoFinal" style="display: none;" class="codigo-final-container">
+    <div id="codigoFinal" class="codigo-final-container">
         <div class="codigo-modal">
             <h2>🔐 CÓDIGO DE ACCESO</h2>
             <p>Ingresa el código para acceder a la Sala 2:</p>
@@ -149,14 +150,3 @@
         <a href="/" class="btn btn-secondary">← Volver al inicio</a>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        // Datos de las consignas
-        var consigna1Data = @Html.Raw(ViewBag.Consigna1 ?? "{}");
-        var consigna2Data = @Html.Raw(ViewBag.Consigna2 ?? "{}");
-        var consigna3Data = @Html.Raw(ViewBag.Consigna3 ?? "{}");
-        var partidaId = @Html.Raw(ViewBag.PartidaId ?? "0");
-    </script>
-    <script src="~/js/sala1.js" asp-append-version="true"></script>
-}
