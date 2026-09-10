@@ -16,6 +16,9 @@
         const mejorImagenesBtn = document.getElementById('mejorarImagenes');
         const codigoSecuenciaInput = document.getElementById('codigoSecuencia');
 
+        // Inicializar drag and drop para fotos
+        inicializarDragDropFotos();
+
         progressItems.forEach((item) => {
             item.addEventListener('click', function () {
                 const numero = Number(this.getAttribute('data-consigna'));
@@ -23,32 +26,19 @@
             });
         });
 
-        if (codigoSecuenciaInput) {
-            codigoSecuenciaInput.addEventListener('input', function () {
-                const valor = this.value.trim();
-                if (valor.length === 0 && mejorImagenesBtn) {
-                    mejorImagenesBtn.disabled = true;
-                    mejorImagenesBtn.textContent = '🔒 MEJORAR IMÁGENES';
-                }
-            });
-        }
-
         if (verificarConsigna1Btn) {
             verificarConsigna1Btn.addEventListener('click', function () {
                 const codigo = (codigoSecuenciaInput ? codigoSecuenciaInput.value : '').trim();
                 const codigoEsperado = '4-1-5-2-3';
 
                 if (codigo === codigoEsperado) {
-                    alert('🟢 SISTEMA DE CÁMARAS RESTAURADO');
+                    alert('🟢 ¡BIEN! SISTEMA DE CÁMARAS RESTAURADO\n\nAhora puedes MEJORAR LAS IMÁGENES para analizarlas mejor.');
                     if (mejorImagenesBtn) {
                         mejorImagenesBtn.disabled = false;
                         mejorImagenesBtn.textContent = '🔓 MEJORAR IMÁGENES';
                     }
-                    if (codigoSecuenciaInput) {
-                        codigoSecuenciaInput.value = codigoEsperado;
-                    }
                 } else {
-                    alert('❌ Código incorrecto. Debes reconstruir la secuencia correcta antes de desbloquear la mejora de imágenes.');
+                    alert('❌ Código incorrecto.\n\nDebes colocar las fotos en el orden correcto. El código se generará automáticamente.\n\nRecuerda: Arrastra cada foto al número (1-5) en que crees que fue tomada.');
                     if (mejorImagenesBtn) mejorImagenesBtn.disabled = true;
                 }
             });
@@ -58,46 +48,221 @@
             mejorImagenesBtn.addEventListener('click', function () {
                 const fotos = document.querySelectorAll('.foto-secuencia-item img');
                 fotos.forEach((foto) => {
-                    foto.style.filter = 'none';
+                    foto.style.filter = 'brightness(1.3) contrast(1.2)';
                 });
 
-                alert('🔓 MEJORAR IMÁGENES activado. Las fotos quedan visibles y listas para analizar.');
-            });
-        }
-
-        const fotosBorrosas = document.querySelectorAll('.foto-borrosa');
-        fotosBorrosas.forEach((foto) => {
-            foto.classList.remove('visible');
-        });
-
-        if (mostrarPistasBtn) {
-            mostrarPistasBtn.addEventListener('click', () => {
-                fotosBorrosas.forEach((foto) => {
-                    foto.classList.add('visible');
-                });
-                const placeholder = document.querySelectorAll('.foto-placeholder');
-                placeholder.forEach((node) => {
-                    node.style.display = 'none';
-                });
+                alert('🔓 ¡IMÁGENES MEJORADAS!\n\nAhora puedes ver con más claridad. Usa estas pistas para identificar el país.');
             });
         }
 
         const pistas = [
-            'Las fotografías fueron tomadas en Europa.',
-            'Hay un aeropuerto internacional con movimiento constante.',
-            'Los colores y referencias del paisaje coinciden con un país del norte de Europa.',
-            'La señal y la bandera apuntan a un país con gran tradición aeroportuaria.'
+            '✈️ Las fotografías fueron tomadas en Europa.',
+            '🏢 Hay un aeropuerto internacional importante.',
+            '🌍 Los colores y referencias del paisaje coinciden con el norte de Europa.',
+            '🚩 La bandera y señales apuntan a un país con gran tradición aeroportuaria.'
         ];
 
         const pistasList = document.getElementById('pistasList');
         if (pistasList) {
             pistasList.innerHTML = pistas
-                .map((pista) => '<div class="pistas-list-item">• ' + pista + '</div>')
+                .map((pista) => '<div class="pistas-list-item">' + pista + '</div>')
                 .join('');
         }
 
-        const paises = ['ALEMANIA', 'FRANCIA', 'ESPAÑA', 'ITALIA', 'NORUEGA'];
+        const paises = ['ALEMANIA', 'DINAMARCA', 'NORUEGA', 'SUECIA', 'PAÍSES BAJOS'];
         const paisesGrid = document.getElementById('paisesGrid');
+        if (paisesGrid) {
+            paisesGrid.innerHTML = '';
+            paises.forEach((pais) => {
+                const opcion = document.createElement('button');
+                opcion.type = 'button';
+                opcion.className = 'pais-option';
+                opcion.textContent = pais;
+                opcion.addEventListener('click', function () {
+                    document.querySelectorAll('.pais-option').forEach((item) => item.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+                paisesGrid.appendChild(opcion);
+            });
+        }
+
+        const verificarConsigna3Btn = document.getElementById('verificarConsigna3');
+        if (verificarConsigna3Btn) {
+            verificarConsigna3Btn.addEventListener('click', function () {
+                const seleccion = document.querySelector('.pais-option.selected');
+                if (seleccion && seleccion.textContent.trim() === 'ALEMANIA') {
+                    alert('✅ ¡CORRECTO! El aeropuerto está en ALEMANIA (Berlín o Fráncfort).\n\n¡Has completado Sala 2! 🎉');
+                } else if (seleccion) {
+                    alert('❌ Esa no es la respuesta correcta.\n\nRevisa las pistas: bandera, señales y características del aeropuerto.');
+                } else {
+                    alert('❌ Debes seleccionar un país antes de verificar.');
+                }
+            });
+        }
+
+        mostrarConsignaSala2(1);
+    }
+
+    function inicializarDragDropFotos() {
+        const fotosPanel = document.getElementById('fotosAOrdenar');
+        const slots = document.querySelectorAll('.orden-secuencia-slot');
+        const codigoInput = document.getElementById('codigoSecuencia');
+        let draggedElement = null;
+        let selectedItem = null; // fallback for click-to-place
+
+        // Hacer fotos draggables
+        if (fotosPanel) {
+            fotosPanel.addEventListener('dragstart', (e) => {
+                const card = e.target.closest('.foto-secuencia-item');
+                if (!card) return;
+                draggedElement = card;
+                card.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                // set some data for compatibility with some browsers
+                try { e.dataTransfer.setData('text/plain', card.dataset.secuencia || 'foto'); } catch (err) {}
+            });
+
+            fotosPanel.addEventListener('dragend', (e) => {
+                const card = e.target.closest('.foto-secuencia-item');
+                if (!card) return;
+                card.classList.remove('dragging');
+                // clear draggedElement reference
+                if (draggedElement === card) draggedElement = null;
+            });
+        }
+
+        // Also attach per-item listeners to be robust across browsers
+        document.querySelectorAll('.foto-secuencia-item').forEach((item) => {
+            item.addEventListener('dragstart', (e) => {
+                draggedElement = item;
+                item.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                try { e.dataTransfer.setData('text/plain', item.dataset.secuencia || ''); } catch (err) {}
+            });
+            item.addEventListener('dragend', (e) => {
+                item.classList.remove('dragging');
+                if (draggedElement === item) draggedElement = null;
+            });
+            // click selects item as fallback
+            item.addEventListener('click', (ev) => {
+                if (selectedItem === item) {
+                    item.classList.remove('selected');
+                    selectedItem = null;
+                } else {
+                    document.querySelectorAll('.foto-secuencia-item.selected').forEach(s => s.classList.remove('selected'));
+                    item.classList.add('selected');
+                    selectedItem = item;
+                }
+            });
+        });
+
+        // Preparar slots para recibir fotos
+        slots.forEach(slot => {
+            slot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                slot.classList.add('drag-over');
+            });
+
+            slot.addEventListener('dragleave', () => {
+                slot.classList.remove('drag-over');
+            });
+
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                slot.classList.remove('drag-over');
+
+                // Determine source element: prefer in-memory reference, fallback to dataTransfer id
+                let sourceEl = draggedElement;
+                if (!sourceEl) {
+                    let seq = null;
+                    try { seq = e.dataTransfer.getData('text/plain') || e.dataTransfer.getData('text'); } catch (err) { seq = null; }
+                    if (seq) {
+                        seq = String(seq).trim();
+                        const candidate = fotosPanel ? fotosPanel.querySelector(`[data-secuencia="${seq}"]`) : null;
+                        if (candidate) sourceEl = candidate;
+                    }
+                }
+
+                if (!sourceEl) return;
+
+                const contenedor = slot.querySelector('.slot-contenedor');
+                const existing = contenedor.querySelector('.foto-secuencia-item');
+
+                // If source is inside another slot, remember its container
+                const origenContenedor = sourceEl.closest('.slot-contenedor');
+
+                // If the destination already has an item, move it back to fotosPanel (or to origin)
+                if (existing) {
+                    if (fotosPanel) {
+                        fotosPanel.appendChild(existing);
+                    } else if (origenContenedor) {
+                        origenContenedor.appendChild(existing);
+                    } else {
+                        existing.remove();
+                    }
+                }
+
+                // Move the actual node into the slot container
+                // If sourceEl is from fotosPanel or another container, append it directly
+                contenedor.appendChild(sourceEl);
+                contenedor.dataset.fotoId = sourceEl.dataset.secuencia;
+
+                // If the source was inside a previous slot container, and it's now moved, clear that container
+                if (origenContenedor && origenContenedor !== contenedor) {
+                    // If origenContenedor still contains the moved node, clear it
+                    if (origenContenedor.contains(sourceEl)) {
+                        // already moved
+                    } else {
+                        origenContenedor.innerHTML = '';
+                    }
+                }
+
+                // Clean up state
+                if (sourceEl.classList) sourceEl.classList.remove('dragging');
+                if (draggedElement === sourceEl) draggedElement = null;
+                selectedItem = null;
+
+                // Actualizar código automáticamente
+                actualizarCodigo();
+            });
+            // click on slot places selectedItem as a fallback
+            slot.addEventListener('click', (e) => {
+                if (!selectedItem) return;
+                const contenedor = slot.querySelector('.slot-contenedor');
+                const existing = contenedor.querySelector('.foto-secuencia-item');
+                if (existing && fotosPanel) fotosPanel.appendChild(existing);
+                contenedor.innerHTML = selectedItem.innerHTML;
+                contenedor.dataset.fotoId = selectedItem.dataset.secuencia;
+                if (selectedItem.parentElement && selectedItem.parentElement.id === 'fotosAOrdenar') selectedItem.remove();
+                selectedItem.classList.remove('selected');
+                selectedItem = null;
+                actualizarCodigo();
+            });
+        });
+
+        function actualizarCodigo() {
+            const codigo = Array.from(slots)
+                .map(slot => {
+                    const fotoId = slot.querySelector('.slot-contenedor').dataset.fotoId;
+                    return fotoId || '_';
+                })
+                .join('-');
+
+            codigoInput.value = codigo;
+
+            // Verificar si está completo
+            if (!codigo.includes('_')) {
+                const allFilled = Array.from(slots).every(slot => 
+                    slot.querySelector('.slot-contenedor').dataset.fotoId
+                );
+                if (allFilled) {
+                    codigoInput.style.color = '#27ae60';
+                    codigoInput.style.fontWeight = 'bold';
+                }
+            }
+        }
+    }
         if (paisesGrid) {
             paisesGrid.innerHTML = '';
             paises.forEach((pais) => {
@@ -470,8 +635,8 @@
                         // place centered where user clicked
                         const x = ev.clientX - stageRect.left - offsetX;
                         const y = ev.clientY - stageRect.top - offsetY;
-                        el.style.left = Math.max(0, Math.min(stage.clientWidth - startRect.width, x)) + 'px';
-                        el.style.top = Math.max(0, Math.min(stage.clientHeight - startRect.height, y)) + 'px';
+                        el.style.left = x + 'px';
+                        el.style.top = y + 'px';
                         // enlarge thumbnail to full piece size for easier placement
                         const fw = parseInt(el.dataset.fullWidth, 10) || startRect.width;
                         const fh = parseInt(el.dataset.fullHeight, 10) || startRect.height;
@@ -482,11 +647,14 @@
 
                     function onMove(e) {
                         const stageRect2 = stage.getBoundingClientRect();
-                        const currRect = el.getBoundingClientRect();
-                        const x = e.clientX - stageRect2.left - offsetX;
-                        const y = e.clientY - stageRect2.top - offsetY;
-                        el.style.left = Math.max(0, Math.min(stage.clientWidth - currRect.width, x)) + 'px';
-                        el.style.top = Math.max(0, Math.min(stage.clientHeight - currRect.height, y)) + 'px';
+                        
+                        // Calcular nueva posición X (horizontal)
+                        const newX = e.clientX - stageRect2.left - offsetX;
+                        el.style.left = newX + 'px';
+                        
+                        // Calcular nueva posición Y (vertical)
+                        const newY = e.clientY - stageRect2.top - offsetY;
+                        el.style.top = newY + 'px';
                     }
 
                     function onUp(e) {
@@ -552,7 +720,8 @@
 
             // add pieces to stage after board is ready
             // ensure stage has a size (it inherits from CSS); if small, force a height
-            if (stage.clientHeight < 200) stage.style.minHeight = '260px';
+            if (stage.clientHeight < 400) stage.style.minHeight = '700px';
+            if (stage.clientWidth < 400) stage.style.minWidth = '800px';
 
             piezasMezcladas.forEach((index) => {
                 const pieza = crearPieza(index);

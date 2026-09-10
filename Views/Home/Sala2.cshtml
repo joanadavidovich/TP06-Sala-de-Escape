@@ -28,60 +28,76 @@
     <div class="consigna-container active" id="consigna1">
         <div class="consigna-titulo">
             <h2>🧩 CONSIGNA 1 — ORDENAR LAS FOTOS</h2>
-            <p>Las cámaras del aeropuerto están dañadas. Primero hay que reconstruir la secuencia de grabación.</p>
-            <p>Cada imagen tiene un dato de tiempo escondido, pero los números aparecen muy borrosos y algunos no se ven completos.</p>
-            <p class="consigna-warning">🔒 MEJORAR IMÁGENES está bloqueado hasta restaurar la secuencia correcta.</p>
+            <p>Las cámaras del aeropuerto se dañaron. Debes reconstruir el orden en que se grabaron.</p>
+            <p><strong>📌 Instrucciones:</strong> Arrastra cada foto al número correcto (1, 2, 3, 4, 5) según cuándo crees que fue tomada.</p>
+            <p class="consigna-warning">✅ Una vez ordenes las 5 fotos, el código se generará automáticamente y podrás desbloquear las imágenes.</p>
         </div>
 
         <div class="desafio-secuencia">
             <div class="foto-secuencia-panel">
-                <h3>Fotos grabadas</h3>
-                <div class="foto-secuencia-grid">
-                    <div class="foto-secuencia-item" data-secuencia="1">
-                        <div class="foto-timestamp">22:41</div>
-                        <img src="/images/sala2/bandera.jpg" alt="Zona exterior" />
-                        <span>Zona exterior</span>
+                <h3>📷 FOTOS A ORDENAR</h3>
+                <div class="foto-secuencia-grid" id="fotosAOrdenar">
+                    <div class="foto-secuencia-item" draggable="true" data-secuencia="1">
+                        <div class="foto-numero">Foto 1</div>
+                        <img src="/images/sala2/bandera.png" alt="Zona exterior" />
+                        <span>22:41 - Zona exterior</span>
                     </div>
-                    <div class="foto-secuencia-item" data-secuencia="2">
-                        <div class="foto-timestamp">22:53</div>
-                        <img src="/images/sala2/cartel.jpg" alt="Señal" />
-                        <span>Señal</span>
+                    <div class="foto-secuencia-item" draggable="true" data-secuencia="2">
+                        <div class="foto-numero">Foto 2</div>
+                        <img src="/images/sala2/cartel.png" alt="Señal" />
+                        <span>22:53 - Señal</span>
                     </div>
-                    <div class="foto-secuencia-item" data-secuencia="3">
-                        <div class="foto-timestamp">23:07</div>
-                        <img src="/images/sala2/edificio.jpg" alt="Parte del edificio" />
-                        <span>Parte del edificio</span>
+                    <div class="foto-secuencia-item" draggable="true" data-secuencia="3">
+                        <div class="foto-numero">Foto 3</div>
+                        <img src="/images/sala2/edificio.png" alt="Parte del edificio" />
+                        <span>23:07 - Parte del edificio</span>
                     </div>
-                    <div class="foto-secuencia-item" data-secuencia="4">
-                        <div class="foto-timestamp">23:12</div>
-                        <img src="/images/sala2/señal.jpg" alt="Entrada" />
-                        <span>Entrada</span>
+                    <div class="foto-secuencia-item" draggable="true" data-secuencia="4">
+                        <div class="foto-numero">Foto 4</div>
+                        <img src="/images/sala2/señal.png" alt="Entrada" />
+                        <span>23:12 - Entrada</span>
                     </div>
-                    <div class="foto-secuencia-item" data-secuencia="5">
-                        <div class="foto-timestamp">23:19</div>
-                        <img src="/images/sala2/paisaje.jpg" alt="Zona de la terminal" />
-                        <span>Zona de la terminal</span>
+                    <div class="foto-secuencia-item" draggable="true" data-secuencia="5">
+                        <div class="foto-numero">Foto 5</div>
+                        <img src="/images/sala2/paisaje.png" alt="Zona de la terminal" />
+                        <span>23:19 - Zona de la terminal</span>
                     </div>
                 </div>
             </div>
 
             <div class="orden-secuencia-panel">
-                <h3>Secuencia correcta</h3>
+                <h3>✅ SECUENCIA CORRECTA</h3>
+                <p style="color: #666; font-size: 0.9rem;">Arrastra las fotos de la izquierda a los números (1-5)</p>
                 <div class="orden-secuencia-dropzone" id="ordenSecuenciaDropzone">
-                    <div class="orden-secuencia-slot" data-slot="1">1</div>
-                    <div class="orden-secuencia-slot" data-slot="2">2</div>
-                    <div class="orden-secuencia-slot" data-slot="3">3</div>
-                    <div class="orden-secuencia-slot" data-slot="4">4</div>
-                    <div class="orden-secuencia-slot" data-slot="5">5</div>
+                    <div class="orden-secuencia-slot" data-slot="1">
+                        <div class="slot-numero">1</div>
+                        <div class="slot-contenedor"></div>
+                    </div>
+                    <div class="orden-secuencia-slot" data-slot="2">
+                        <div class="slot-numero">2</div>
+                        <div class="slot-contenedor"></div>
+                    </div>
+                    <div class="orden-secuencia-slot" data-slot="3">
+                        <div class="slot-numero">3</div>
+                        <div class="slot-contenedor"></div>
+                    </div>
+                    <div class="orden-secuencia-slot" data-slot="4">
+                        <div class="slot-numero">4</div>
+                        <div class="slot-contenedor"></div>
+                    </div>
+                    <div class="orden-secuencia-slot" data-slot="5">
+                        <div class="slot-numero">5</div>
+                        <div class="slot-contenedor"></div>
+                    </div>
                 </div>
 
                 <div class="codigo-secuencia">
-                    <label for="codigoSecuencia">Código de desbloqueo</label>
-                    <input id="codigoSecuencia" type="text" placeholder="4 - 1 - 5 - 2 - 3" maxlength="15" />
+                    <label for="codigoSecuencia">🔐 Código generado (se llena automáticamente):</label>
+                    <input id="codigoSecuencia" type="text" placeholder="Esperando tu ordenamiento..." readonly />
                 </div>
 
                 <div class="consigna-actions">
-                    <button class="btn btn-primary" id="verificarConsigna1">Comprobar secuencia</button>
+                    <button class="btn btn-primary" id="verificarConsigna1">🔍 VERIFICAR Y DESBLOQUEAR</button>
                     <button class="btn btn-secondary" id="mejorarImagenes" disabled>🔒 MEJORAR IMÁGENES</button>
                 </div>
             </div>

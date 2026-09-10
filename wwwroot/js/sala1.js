@@ -158,18 +158,111 @@ function verificarConsigna1() {
 }
 
 // ===== CONSIGNA 2: MAPA ROTO =====
+let consigna2Config = {
+    filas: 2,
+    columnas: 3,
+    anchoPieza: 80,
+    altoPieza: 80,
+    imagen: "/images/sala1/mapamundi.jpg" // <-- poné tu imagen acá
+};
+
 function inicializarConsigna2() {
-    const canvas = document.getElementById('mapaCanvas');
-    if (canvas) {
-        canvas.innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: white; font-size: 1.2rem;">
-                🗺️ Mapa del mundo reconstruido
-            </div>
-        `;
+    const piezasContainer = document.getElementById('piezasDisponibles');
+    const tableroContainer = document.getElementById('tableroPuzzle');
+    if (!piezasContainer || !tableroContainer) return;
+
+    piezasContainer.innerHTML = '';
+    tableroContainer.innerHTML = '';
+
+    const totalPiezas = consigna2Config.filas * consigna2Config.columnas;
+    let piezas = [];
+    for (let i = 0; i < totalPiezas; i++) {
+        piezas.push({
+            id: i,
+            fila: Math.floor(i / consigna2Config.columnas),
+            columna: i % consigna2Config.columnas
+        });
     }
-    
-    // Esta consigna se considera completa automáticamente
-    respuestasConsignas[2] = true;
+
+    // Slots del tablero, en orden fijo
+    piezas.forEach(p => {
+        const slot = document.createElement('div');
+        slot.className = 'slot-puzzle';
+        slot.dataset.posicion = p.id;
+        slot.addEventListener('dragover', dragOverPuzzle);
+        slot.addEventListener('drop', dropPuzzle);
+        slot.addEventListener('dragleave', dragLeavePuzzle);
+        tableroContainer.appendChild(slot);
+    });
+
+    // Piezas mezcladas en el panel izquierdo
+    const piezasMezcladas = [...piezas].sort(() => Math.random() - 0.5);
+    piezasMezcladas.forEach(p => {
+        const pieza = document.createElement('div');
+        pieza.className = 'pieza-puzzle';
+        pieza.draggable = true;
+        pieza.dataset.posicion = p.id;
+        pieza.style.backgroundImage = `url('${consigna2Config.imagen}')`;
+        pieza.style.backgroundSize =
+            `${consigna2Config.columnas * consigna2Config.anchoPieza}px ${consigna2Config.filas * consigna2Config.altoPieza}px`;
+        pieza.style.backgroundPosition =
+            `-${p.columna * consigna2Config.anchoPieza}px -${p.fila * consigna2Config.altoPieza}px`;
+        pieza.addEventListener('dragstart', dragStartPuzzle);
+        pieza.addEventListener('dragend', dragEndPuzzle);
+        piezasContainer.appendChild(pieza);
+    });
+}
+
+function dragStartPuzzle(e) {
+    draggedElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', this.dataset.posicion);
+}
+
+function dragEndPuzzle() {
+    this.classList.remove('dragging');
+}
+
+function dragOverPuzzle(e) {
+    e.preventDefault();
+    this.classList.add('drag-over');
+}
+
+function dragLeavePuzzle() {
+    this.classList.remove('drag-over');
+}
+
+function dropPuzzle(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+
+    if (this.children.length > 0) return; // slot ya ocupado
+
+    const posicionPieza = e.dataTransfer.getData('text/plain');
+    if (posicionPieza === this.dataset.posicion) {
+        const clone = draggedElement.cloneNode(true);
+        clone.draggable = false;
+        clone.style.cursor = 'default';
+        this.appendChild(clone);
+        this.classList.add('correcta');
+        draggedElement.remove();
+    } else {
+        alert('❌ Esa pieza no va en ese lugar. Seguí intentando.');
+    }
+}
+
+function verificarConsigna2Puzzle() {
+    const slots = document.querySelectorAll('.slot-puzzle');
+    const completas = document.querySelectorAll('.slot-puzzle.correcta').length;
+
+    if (completas === slots.length) {
+        alert('✅ ¡MAPA RESTAURADO! Ahora sabés que el mundo está dividido en continentes.\n\nPasamos a la siguiente consigna.');
+        respuestasConsignas[2] = true;
+        mostrarConsigna(3);
+    } else {
+        alert(`❌ Aún falta armar el mapa. Llevás ${completas} de ${slots.length} piezas.`);
+    }
 }
 
 // ===== CONSIGNA 3: UBICAR CONTINENTES =====
@@ -184,6 +277,7 @@ function inicializarConsigna3() {
         const card = document.createElement('div');
         card.className = 'monumento-card';
         card.draggable = true;
+        card.dataset.monumento = JSON.stringify(monumento);
         card.innerHTML = `
             <img src="${monumento.imagen}" alt="${monumento.nombre}" onerror="this.src='/images/sala1/placeholder.jpg'">
             <div class="monumento-info">
@@ -203,8 +297,8 @@ function dragStartConsigna3(e) {
     draggedElement = this;
     this.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
-    const monument = consigna3.monumentos.find(m => m.nombre === this.querySelector('h5').textContent);
-    e.dataTransfer.setData('monument', JSON.stringify(monument));
+    e.dataTransfer.effectAllowed = 'copy';
+    e.dataTransfer.setData('text/plain', this.dataset.monumento);
 }
 
 function dragEndConsigna3(e) {
@@ -222,7 +316,7 @@ function inicializarDropzonesContinentes() {
 
 function dragOverContinente(e) {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+    e.dataTransfer.dropEffect = 'copy';
     this.classList.add('drag-over');
 }
 
@@ -238,17 +332,28 @@ function dropContinente(e) {
         return; // No permitir múltiples monumentos en una zona
     }
     
-    const monumentoData = JSON.parse(e.dataTransfer.getData('monument'));
-    const continenteZona = this.closest('[data-continente]').getAttribute('data-continente');
-    
-    if (monumentoData.continente === continenteZona) {
-        this.innerHTML = `<img class="monumento-img" src="${monumentoData.imagen}" alt="${monumentoData.nombre}" draggable="false" onerror="this.src='/images/sala1/placeholder.jpg'">`;
-        this.style.background = '#c8e6c9';
-        this.style.borderColor = '#27ae60';
-    } else {
-        alert(`❌ No es correcto. Continúa intentando...`);
+    try {
+        const monumentoData = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const continenteZona = this.closest('[data-continente]').getAttribute('data-continente');
+        
+        if (monumentoData.continente === continenteZona) {
+            this.innerHTML = `<img class="monumento-img" src="${monumentoData.imagen}" alt="${monumentoData.nombre}" draggable="false" onerror="this.src='/images/sala1/placeholder.jpg'">`;
+            this.style.background = '#c8e6c9';
+            this.style.borderColor = '#27ae60';
+            
+            // Remover la tarjeta del panel de monumentos
+            if (draggedElement) {
+                draggedElement.remove();
+            }
+        } else {
+            alert(`❌ No es correcto. Continúa intentando...`);
+        }
+    } catch (err) {
+        console.error('Error al procesar el drop:', err);
     }
 }
+
+console.log('Imagen configurada:', consigna2Config.imagen);
 
 // ===== EVENTO: VERIFICAR CONSIGNA 3 =====
 document.addEventListener('DOMContentLoaded', function() {

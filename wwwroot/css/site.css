@@ -942,6 +942,123 @@ body {
     font-size: 1.2rem;
 }
 
+/* ===== CONSIGNA 3: CONTINENTES ===== */
+.continentes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.mapa-mundo-interactivo {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.continente {
+    background: white;
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.continente h4 {
+    color: #667eea;
+    font-size: 1.1rem;
+    margin: 0 0 15px 0;
+    text-align: center;
+}
+
+.drop-zone {
+    background: #f5f5f5;
+    border: 2px dashed #2a9d8f;
+    border-radius: 8px;
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: drop;
+}
+
+.drop-zone.drag-over {
+    background: #c8e6c9;
+    border-color: #27ae60;
+    transform: scale(1.02);
+}
+
+/* Monumentos para arrastar */
+.monumentos-draggable {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
+    gap: 15px;
+    min-height: 200px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    border: 2px dashed #ccc;
+}
+
+.monumento-card {
+    background: white;
+    border: 3px solid #2a9d8f;
+    border-radius: 8px;
+    cursor: move;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.monumento-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.monumento-card.dragging {
+    opacity: 0.65;
+    transform: scale(1.08);
+}
+
+.monumento-card img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    display: block;
+    flex-shrink: 0;
+}
+
+.monumento-info {
+    background: #2a9d8f;
+    color: white;
+    padding: 8px;
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.monumento-info h5 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: bold;
+    line-height: 1.2;
+}
+
+.monumento-img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+}
+
 .palabra-resultado {
     font-size: 1.8rem;
     font-weight: bold;
@@ -998,6 +1115,18 @@ body {
 
     .imagenes-desordenadas {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .monumentos-draggable {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .continentes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mapa-mundo-interactivo {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -1196,16 +1325,18 @@ body {
 
 /* Stage where pieces are scattered (absolute-positioned pieces) */
 .mapa-puzzle-stage {
-    position: relative;
-    min-height: 260px;
-    border-radius: 12px;
-    background: transparent;
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    z-index: 30;
 }
 
 /* ensure mapa-piece defaults to absolute when JS positions it */
 .mapa-piece {
     position: absolute;
     touch-action: none;
+    pointer-events: auto;
+    z-index: 40;
 }
 
 .mapa-puzzle-container {
@@ -1224,7 +1355,7 @@ body {
 
 .mapa-puzzle-wrapper {
     display: grid;
-    grid-template-columns: 1fr 360px; /* main puzzle area + fixed scatter column */
+    grid-template-columns: 1fr 280px; /* main puzzle area + fixed scatter column */
     gap: 16px;
     align-items: start;
 }
@@ -1232,30 +1363,28 @@ body {
 .mapa-puzzle-area {
     position: relative;
     width: 100%;
-    min-height: 520px; /* make the board larger for easier assembly */
+    min-height: 700px; /* make the board larger for easier assembly */
+    overflow: visible;
 }
 
 .mapa-puzzle-board {
     position: absolute;
     inset: 0;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
     gap: 0; /* no visible gaps between slots */
-    padding: 0;
+    padding: 20px;
     box-sizing: border-box;
-    background: transparent;
-    border: none;
-}
-
-.mapa-puzzle-stage {
-    position: absolute;
-    inset: 0;
+    background: linear-gradient(135deg, #edf7ff 0%, #dfeeff 100%);
+    border: 2px solid #2a9d8f;
+    border-radius: 10px;
+    box-shadow: inset 0 0 18px rgba(42, 157, 143, 0.08);
 }
 
 .mapa-puzzle-scatter {
     border-left: 1px dashed rgba(0,0,0,0.06);
     padding: 12px;
-    min-height: 520px;
+    min-height: 700px;
     overflow-y: auto;
     display: flex;
     flex-wrap: wrap;
@@ -1270,23 +1399,6 @@ body {
     cursor: grab;
     background-repeat: no-repeat;
     background-size: cover;
-}
-
-.mapa-piece {
-    pointer-events: auto; /* allow dragging */
-    z-index: 40;
-}
-
-.mapa-puzzle-board {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(80px, 1fr));
-    gap: 0; /* remove gaps so pieces fit snugly */
-    background: linear-gradient(135deg, #edf7ff 0%, #dfeeff 100%);
-    border: 2px solid #2a9d8f;
-    border-radius: 10px;
-    padding: 6px;
-    min-height: 250px;
-    box-shadow: inset 0 0 18px rgba(42, 157, 143, 0.08);
 }
 
 .mapa-slot {
@@ -1390,6 +1502,181 @@ body {
     margin-bottom: 6px;
 }
 
+/* ===== SALA 2: FOTOS Y SECUENCIA ===== */
+.desafio-secuencia {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.foto-secuencia-panel, .orden-secuencia-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.foto-secuencia-panel h3, .orden-secuencia-panel h3 {
+    color: #667eea;
+    font-size: 1.2rem;
+    margin-top: 0;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.foto-secuencia-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    min-height: 300px;
+}
+
+.foto-secuencia-item {
+    background: #f9f9f9;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: grab;
+    transition: all 0.3s ease;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.foto-secuencia-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.foto-secuencia-item.dragging {
+    opacity: 0.5;
+    background: #e8eef7;
+    border-color: #667eea;
+    transform: scale(0.95);
+}
+
+.foto-numero {
+    background: #667eea;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.foto-secuencia-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.foto-secuencia-item span {
+    font-size: 0.85rem;
+    color: #666;
+    text-align: center;
+}
+
+.orden-secuencia-dropzone {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    min-height: 200px;
+}
+
+.orden-secuencia-slot {
+    background: white;
+    border: 2px dashed #667eea;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    min-height: 180px;
+}
+
+.orden-secuencia-slot.drag-over {
+    background: #e8eef7;
+    border-color: #667eea;
+    border-style: solid;
+    transform: scale(1.02);
+}
+
+.slot-numero {
+    background: #667eea;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.slot-contenedor {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.slot-contenedor img {
+    width: 80%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.codigo-secuencia {
+    margin-bottom: 20px;
+}
+
+.codigo-secuencia label {
+    display: block;
+    color: #667eea;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.codigo-secuencia input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: monospace;
+    letter-spacing: 2px;
+    text-align: center;
+    background: #f9f9f9;
+}
+
+.consigna-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.consigna-actions .btn {
+    flex: 1;
+    padding: 12px;
+}
+
 @media (max-width: 768px) {
     .mapa-puzzle-container {
         grid-template-columns: 1fr;
@@ -1398,4 +1685,132 @@ body {
     .mapa-puzzle-wrapper {
         grid-template-columns: 1fr;
     }
+
+    .desafio-secuencia {
+        grid-template-columns: 1fr;
+    }
+
+    .foto-secuencia-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .orden-secuencia-dropzone {
+        grid-template-columns: repeat(5, 1fr);
+        min-height: 150px;
+    }
+}
+
+/* ===== OPCIONES DE PAÍSES ===== */
+.paises-opciones {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.paises-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.pais-option {
+    background: white;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    padding: 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #667eea;
+}
+
+.pais-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.pais-option.selected {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+/* ===== PISTAS ===== */
+.pistas-list {
+    background: #f5f5f5;
+    border-left: 4px solid #667eea;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.pistas-list-item {
+    color: #333;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.rompecabezas-container {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.piezas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    gap: 8px;
+}
+
+.pieza-puzzle {
+    width: 80px;
+    height: 80px;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    cursor: grab;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.pieza-puzzle.dragging {
+    opacity: 0.4;
+}
+
+.tablero-puzzle {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(2, 80px);
+    gap: 0;
+    border: 3px dashed #999;
+    width: 240px;
+    height: 160px;
+}
+
+.slot-puzzle {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+}
+
+.slot-puzzle.drag-over {
+    background: #e0e0e0;
+}
+
+.slot-puzzle.correcta {
+    border: 2px solid #27ae60;
+}
+
+.slot-puzzle img,
+.slot-puzzle .pieza-puzzle {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 0;
 }

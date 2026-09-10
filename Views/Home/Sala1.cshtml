@@ -28,10 +28,7 @@
     <div class="consigna-container active" id="consigna1">
         <div class="consigna-titulo">
             <h2>🧩 CONSIGNA 1 — Las 9 imágenes</h2>
-            <p>Aparecen 9 fotografías de diferentes lugares del mundo, todas mezcladas. Cada una tiene una letra.</p>
-            <p>La consigna dice: “Estas imágenes están desordenadas. Encontrá el orden correcto.”</p>
-            <p>Los jugadores tienen que descubrir que las imágenes se pueden ordenar de oeste a este.</p>
-            <p class="consigna-warning">Al ponerlas correctamente, las letras forman: MAPAMUNDI</p>
+            <p>Estas imágenes están desordenadas. Encontrá el orden correcto.</p>
         </div>
 
         <div class="consigna1-grid">
@@ -60,33 +57,27 @@
 
     <!-- CONSIGNA 2: MAPA ROTO -->
     <div class="consigna-container" id="consigna2">
-        <div class="consigna-titulo">
-            <h2>🗺️ CONSIGNA 2 — El Mapa Roto</h2>
-            <p>Reconstruye el mapamundi colocando las piezas correctamente.</p>
+    <div class="consigna-titulo">
+        <h2>🗺️ CONSIGNA 2 — El Mapa Roto</h2>
+        <p>Reconstruye el mapamundi arrastrando cada pieza a su lugar correcto en el tablero.</p>
+    </div>
+
+    <div class="rompecabezas-container">
+        <div class="piezas-panel">
+            <h3>🧩 PIEZAS DISPONIBLES</h3>
+            <div class="piezas-grid" id="piezasDisponibles"></div>
         </div>
 
-        <div class="mapa-puzzle-container">
-            <div class="mapamundi-display">
-                <div class="mapamundi-placeholder" id="mapamundiPlaceholder1">
-                    <div class="mapamundi-icon">🗺️</div>
-                    <div class="mapamundi-label">Mapamundi completo</div>
-                    <div class="mapamundi-image-frame mapamundi-reference" aria-hidden="true">
-                        <img class="mapamundi-img" id="mapamundiImg1" src="/images/sala1/mapamundi.png" alt="Mapamundi" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="mapa-canvas" id="mapaCanvas">
-                <svg viewBox="0 0 960 600" id="mapaSVG">
-                    <!-- El mapa se dibujará aquí -->
-                </svg>
-            </div>
-            <div class="mapa-piezas" id="mapaPiezas">
-                <!-- Las piezas se cargarán desde JS -->
-            </div>
-            <button class="btn btn-primary" id="verificarConsigna2">Verificar Mapa</button>
+        <div class="tablero-panel">
+            <h3>🗺️ ARMA EL MAPA AQUÍ</h3>
+            <div class="tablero-puzzle" id="tableroPuzzle"></div>
         </div>
     </div>
+
+    <div class="consigna-actions">
+        <button class="btn btn-primary" id="verificarConsigna2">🔍 Verificar Mapa</button>
+    </div>
+</div>
 
     <!-- CONSIGNA 3: UBICAR CONTINENTES -->
     <div class="consigna-container" id="consigna3">
@@ -150,3 +141,7 @@
         <a href="/" class="btn btn-secondary">← Volver al inicio</a>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/sala1.js" asp-append-version="true"></script>
+}
