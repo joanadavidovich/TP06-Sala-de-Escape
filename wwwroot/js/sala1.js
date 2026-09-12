@@ -82,16 +82,39 @@ function inicializarDropzonesConsigna1() {
 }
 
 let draggedElement = null;
+let draggedOrigen = null; // 'pool' o 'slot'
 
 function dragStartConsigna1(e) {
     draggedElement = this;
+    draggedOrigen = this.closest('.orden-slot') ? 'slot' : 'pool';
     this.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', this.innerHTML);
+    e.dataTransfer.setData('text/plain', ''); // necesario para Firefox
 }
 
 function dragEndConsigna1(e) {
     this.classList.remove('dragging');
+}
+
+function inicializarDropzonesConsigna1() {
+    const slots = document.querySelectorAll('.orden-slot');
+    slots.forEach(slot => {
+        slot.addEventListener('dragover', dragOverConsigna1);
+        slot.addEventListener('drop', dropConsigna1);
+        slot.addEventListener('dragleave', dragLeaveConsigna1);
+    });
+
+    // NUEVO: el panel de fotos desordenadas también recibe drops
+    // (para poder devolver una foto desde un slot al pool)
+    const pool = document.getElementById('imagenesDesordenadas');
+    pool.addEventListener('dragover', e => e.preventDefault());
+    pool.addEventListener('drop', function (e) {
+        e.preventDefault();
+        if (draggedOrigen === 'slot' && draggedElement) {
+            pool.appendChild(draggedElement);
+            actualizarPalabraResultado();
+        }
+    });
 }
 
 function dragOverConsigna1(e) {
@@ -107,17 +130,30 @@ function dragLeaveConsigna1(e) {
 function dropConsigna1(e) {
     e.preventDefault();
     this.classList.remove('drag-over');
-    
-    if (draggedElement && this.children.length === 0) {
-        const clone = draggedElement.cloneNode(true);
-        clone.draggable = false;
-        clone.style.cursor = 'default';
-        this.appendChild(clone);
-        draggedElement.style.opacity = '0.3';
-        actualizarPalabraResultado();
-    }
-}
 
+    if (!draggedElement) return;
+
+    if (this.children.length === 0) {
+        // Slot vacío: mover la foto acá
+        this.appendChild(draggedElement);
+    } else if (this.children[0] !== draggedElement) {
+        const otroItem = this.children[0];
+        const pool = document.getElementById('imagenesDesordenadas');
+
+        if (draggedOrigen === 'slot') {
+            // Intercambiar posiciones entre dos slots ocupados
+            const slotOrigen = draggedElement.parentElement;
+            this.appendChild(draggedElement);
+            slotOrigen.appendChild(otroItem);
+        } else {
+            // Viene del pool: el item que estaba en el slot vuelve al pool
+            pool.appendChild(otroItem);
+            this.appendChild(draggedElement);
+        }
+    }
+
+    actualizarPalabraResultado();
+}
 function actualizarPalabraResultado() {
     const slots = document.querySelectorAll('.orden-slot');
     const palabra = Array.from(slots)
@@ -163,7 +199,7 @@ let consigna2Config = {
     columnas: 3,
     anchoPieza: 80,
     altoPieza: 80,
-    imagen: "/images/sala1/mapamundi.jpg" // <-- poné tu imagen acá
+    imagen: "/images/sala1/mapamundi.png" // <-- poné tu imagen acá
 };
 
 function inicializarConsigna2() {
@@ -257,13 +293,23 @@ function verificarConsigna2Puzzle() {
     const completas = document.querySelectorAll('.slot-puzzle.correcta').length;
 
     if (completas === slots.length) {
-        alert('✅ ¡MAPA RESTAURADO! Ahora sabés que el mundo está dividido en continentes.\n\nPasamos a la siguiente consigna.');
-        respuestasConsignas[2] = true;
-        mostrarConsigna(3);
+        document.querySelector('.rompecabezas-container').style.display = 'none';
+        document.getElementById('verificarConsigna2').style.display = 'none';
+        document.getElementById('mapaCompletoGrande').style.display = 'block';
     } else {
         alert(`❌ Aún falta armar el mapa. Llevás ${completas} de ${slots.length} piezas.`);
     }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const btnSiguiente = document.getElementById('btnSiguienteConsigna2');
+    if (btnSiguiente) {
+        btnSiguiente.addEventListener('click', function () {
+            respuestasConsignas[2] = true; // <-- acá SÍ
+            mostrarConsigna(3);
+        });
+    }
+});
 
 // ===== CONSIGNA 3: UBICAR CONTINENTES =====
 function inicializarConsigna3() {
@@ -458,12 +504,26 @@ function verificarCodigoFinal() {
 function inicializarEventosBotones() {
     const btnVerificar2 = document.getElementById('verificarConsigna2');
     if (btnVerificar2) {
-        btnVerificar2.addEventListener('click', function() {
-            alert('✅ ¡MAPA RESTAURADO! Ahora sabes que el mundo está dividido en continentes.\n\nPasamos a la siguiente consigna.');
-            respuestasConsignas[2] = true;
-            mostrarConsigna(3);
-        });
+        btnVerificar2.addEventListener('click', verificarMapaRoto);
     }
+}
+
+function verificarMapaRoto() {
+    const slots = document.querySelectorAll('.slot-puzzle');
+    const mapaCorrecto = slots.length > 0 && Array.from(slots).every(slot => {
+        const pieza = slot.querySelector('.pieza-puzzle');
+        return pieza && pieza.dataset.posicion === slot.dataset.posicion;
+    });
+
+    if (!mapaCorrecto) {
+        const completas = document.querySelectorAll('.slot-puzzle.correcta').length;
+        alert(`❌ Aún falta armar el mapa. Llevás ${completas} de ${slots.length} piezas.`);
+        return;
+    }
+
+    alert('✅ ¡MAPA RESTAURADO! Ahora sabes que el mundo está dividido en continentes.\n\nPasamos a la siguiente consigna.');
+    respuestasConsignas[2] = true;
+    mostrarConsigna(3);
 }
 
 

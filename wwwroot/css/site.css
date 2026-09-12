@@ -1700,6 +1700,135 @@ body {
     }
 }
 
+/* ===== SALA 2: FOTOS MEJORADAS Y CONNECTIONS ===== */
+.fotos-mejoradas {
+    margin-top: 24px;
+    padding: 20px;
+    border: 2px dashed #667eea;
+    border-radius: 12px;
+    background: #f8f9ff;
+}
+
+.fotos-mejoradas-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(110px, 1fr));
+    gap: 12px;
+}
+
+.foto-mejorada-slot {
+    min-height: 150px;
+    padding: 10px;
+    border: 1px solid #c9cef2;
+    border-radius: 8px;
+    background: white;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+}
+
+.foto-mejorada-slot input {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    font-size: .75rem;
+}
+
+.foto-mejorada-slot img {
+    display: none;
+    width: 100%;
+    height: 90px;
+    margin-top: 8px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.foto-mejorada-slot img.visible {
+    display: block;
+}
+
+.connections-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(100px, 1fr));
+    gap: 12px;
+    margin: 20px 0 12px;
+}
+
+.connection-word {
+    min-height: 60px;
+    border: 1px solid #c9cef2;
+    border-radius: 8px;
+    background: white;
+    color: #222;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.connection-word.selected {
+    background: #dfe4ff;
+    border-color: #667eea;
+}
+
+.connection-word.resolved,
+.connections-grupo {
+    color: white;
+}
+
+.connections-aeropuerto {
+    background: #3282b8;
+    border-color: #3282b8;
+}
+
+.connections-geografia {
+    background: #3a9d5d;
+    border-color: #3a9d5d;
+}
+
+.connections-dinero {
+    background: #c98924;
+    border-color: #c98924;
+}
+
+.connections-colores {
+    background: #d94f70;
+    border-color: #d94f70;
+}
+
+.connections-mensaje {
+    min-height: 24px;
+    font-weight: 600;
+}
+
+.connections-grupos {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.connections-grupo {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 8px;
+}
+
+.pais-respuesta {
+    display: block;
+    width: min(100%, 420px);
+    margin: 8px 0 14px;
+    padding: 12px;
+    border: 2px solid #c9cef2;
+    border-radius: 8px;
+}
+
+.respuesta-correcta {
+    color: #237a3b;
+}
+
+.respuesta-incorrecta {
+    color: #a52a2a;
+}
+
 /* ===== OPCIONES DE PAÍSES ===== */
 .paises-opciones {
     background: white;
@@ -1813,4 +1942,17 @@ body {
     height: 100%;
     border: none;
     border-radius: 0;
+}
+
+.mapa-completo-grande {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.mapa-completo-grande img {
+    max-width: 600px;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    margin: 15px 0;
 }

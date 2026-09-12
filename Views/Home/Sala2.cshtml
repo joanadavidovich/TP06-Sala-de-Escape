@@ -100,6 +100,18 @@
                     <button class="btn btn-primary" id="verificarConsigna1">🔍 VERIFICAR Y DESBLOQUEAR</button>
                     <button class="btn btn-secondary" id="mejorarImagenes" disabled>🔒 MEJORAR IMÁGENES</button>
                 </div>
+
+                <div class="fotos-mejoradas" id="fotosMejoradas" hidden>
+                    <h3>🔎 FOTOS MEJORADAS</h3>
+                    <p>Carga aquí las cinco imágenes mejoradas para consultarlas durante la sala.</p>
+                    <div class="fotos-mejoradas-grid">
+                        <label class="foto-mejorada-slot">Foto 1<input type="file" accept="image/*" data-preview="previewFoto1"><img id="previewFoto1" alt="Vista previa de la foto 1"></label>
+                        <label class="foto-mejorada-slot">Foto 2<input type="file" accept="image/*" data-preview="previewFoto2"><img id="previewFoto2" alt="Vista previa de la foto 2"></label>
+                        <label class="foto-mejorada-slot">Foto 3<input type="file" accept="image/*" data-preview="previewFoto3"><img id="previewFoto3" alt="Vista previa de la foto 3"></label>
+                        <label class="foto-mejorada-slot">Foto 4<input type="file" accept="image/*" data-preview="previewFoto4"><img id="previewFoto4" alt="Vista previa de la foto 4"></label>
+                        <label class="foto-mejorada-slot">Foto 5<input type="file" accept="image/*" data-preview="previewFoto5"><img id="previewFoto5" alt="Vista previa de la foto 5"></label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -137,8 +149,13 @@
         </div>
 
         <div class="analisis-container">
-            <div class="pistas-list" id="pistasList"></div>
-            <button class="btn btn-primary" id="verificarConsigna2">Siguiente Consigna</button>
+            <p>Selecciona cuatro palabras relacionadas y envíalas como grupo.</p>
+            <div class="connections-grid" id="connectionsGrid"></div>
+            <p class="connections-seleccion" id="connectionsSeleccion">0 de 4 seleccionadas</p>
+            <p class="connections-mensaje" id="connectionsMensaje" role="status"></p>
+            <div class="connections-grupos" id="connectionsGrupos"></div>
+            <button class="btn btn-primary" id="verificarConsigna2">Enviar grupo</button>
+            <button class="btn btn-success" id="continuarConnections" hidden>Continuar al país</button>
         </div>
     </div>
 
@@ -150,7 +167,9 @@
         </div>
 
         <div class="paises-opciones">
-            <div class="paises-grid" id="paisesGrid"></div>
+            <label for="paisRespuesta">Escribe el país:</label>
+            <input id="paisRespuesta" class="pais-respuesta" type="text" autocomplete="off" placeholder="Escribe el país" />
+            <p id="paisMensaje" role="status"></p>
             <button class="btn btn-primary" id="verificarConsigna3">Verificar País</button>
         </div>
     </div>

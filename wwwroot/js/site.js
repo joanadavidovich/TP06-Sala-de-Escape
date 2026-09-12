@@ -1,14 +1,12 @@
 ﻿function initSalaEscapePage() {
-        if (document.querySelector('.sala1-container')) {
-            initSala1();
-        }
-
         if (document.querySelector('.sala2-container')) {
             initSala2();
         }
     }
 
     function initSala2() {
+        let consignaSala2Actual = 1;
+        const respuestasSala2 = { 1: false, 2: false, 3: false };
         const progressItems = document.querySelectorAll('.consigna-progress');
         const consignas = document.querySelectorAll('.consigna-container');
         const verificarConsigna1Btn = document.getElementById('verificarConsigna1');
@@ -22,6 +20,10 @@
         progressItems.forEach((item) => {
             item.addEventListener('click', function () {
                 const numero = Number(this.getAttribute('data-consigna'));
+                if (numero > consignaSala2Actual && !respuestasSala2[numero - 1]) {
+                    alert('Debes completar las consignas en orden.');
+                    return;
+                }
                 mostrarConsignaSala2(numero);
             });
         });
@@ -32,12 +34,14 @@
                 const codigoEsperado = '4-1-5-2-3';
 
                 if (codigo === codigoEsperado) {
+                    respuestasSala2[1] = true;
                     alert('🟢 ¡BIEN! SISTEMA DE CÁMARAS RESTAURADO\n\nAhora puedes MEJORAR LAS IMÁGENES para analizarlas mejor.');
                     if (mejorImagenesBtn) {
                         mejorImagenesBtn.disabled = false;
                         mejorImagenesBtn.textContent = '🔓 MEJORAR IMÁGENES';
                     }
                 } else {
+                    respuestasSala2[1] = false;
                     alert('❌ Código incorrecto.\n\nDebes colocar las fotos en el orden correcto. El código se generará automáticamente.\n\nRecuerda: Arrastra cada foto al número (1-5) en que crees que fue tomada.');
                     if (mejorImagenesBtn) mejorImagenesBtn.disabled = true;
                 }
@@ -51,56 +55,148 @@
                     foto.style.filter = 'brightness(1.3) contrast(1.2)';
                 });
 
+                const fotosMejoradas = document.getElementById('fotosMejoradas');
+                if (fotosMejoradas) fotosMejoradas.hidden = false;
+
                 alert('🔓 ¡IMÁGENES MEJORADAS!\n\nAhora puedes ver con más claridad. Usa estas pistas para identificar el país.');
             });
         }
 
-        const pistas = [
-            '✈️ Las fotografías fueron tomadas en Europa.',
-            '🏢 Hay un aeropuerto internacional importante.',
-            '🌍 Los colores y referencias del paisaje coinciden con el norte de Europa.',
-            '🚩 La bandera y señales apuntan a un país con gran tradición aeroportuaria.'
-        ];
-
-        const pistasList = document.getElementById('pistasList');
-        if (pistasList) {
-            pistasList.innerHTML = pistas
-                .map((pista) => '<div class="pistas-list-item">' + pista + '</div>')
-                .join('');
-        }
-
-        const paises = ['ALEMANIA', 'DINAMARCA', 'NORUEGA', 'SUECIA', 'PAÍSES BAJOS'];
-        const paisesGrid = document.getElementById('paisesGrid');
-        if (paisesGrid) {
-            paisesGrid.innerHTML = '';
-            paises.forEach((pais) => {
-                const opcion = document.createElement('button');
-                opcion.type = 'button';
-                opcion.className = 'pais-option';
-                opcion.textContent = pais;
-                opcion.addEventListener('click', function () {
-                    document.querySelectorAll('.pais-option').forEach((item) => item.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-                paisesGrid.appendChild(opcion);
-            });
-        }
+        inicializarFotosMejoradas();
+        inicializarConnections();
 
         const verificarConsigna3Btn = document.getElementById('verificarConsigna3');
         if (verificarConsigna3Btn) {
             verificarConsigna3Btn.addEventListener('click', function () {
-                const seleccion = document.querySelector('.pais-option.selected');
-                if (seleccion && seleccion.textContent.trim() === 'ALEMANIA') {
-                    alert('✅ ¡CORRECTO! El aeropuerto está en ALEMANIA (Berlín o Fráncfort).\n\n¡Has completado Sala 2! 🎉');
-                } else if (seleccion) {
-                    alert('❌ Esa no es la respuesta correcta.\n\nRevisa las pistas: bandera, señales y características del aeropuerto.');
+                const respuesta = document.getElementById('paisRespuesta');
+                const mensaje = document.getElementById('paisMensaje');
+                const pais = respuesta ? respuesta.value.trim().toUpperCase() : '';
+                if (pais === 'LUXEMBURGO') {
+                    mensaje.textContent = '✅ ¡Correcto! El aeropuerto está en Luxemburgo. ¡Has completado Sala 2!';
+                    mensaje.className = 'respuesta-correcta';
+                } else if (pais) {
+                    mensaje.textContent = '❌ Esa no es la respuesta. Revisa las pistas y las fotos mejoradas.';
+                    mensaje.className = 'respuesta-incorrecta';
                 } else {
-                    alert('❌ Debes seleccionar un país antes de verificar.');
+                    mensaje.textContent = 'Escribe un país antes de verificar.';
+                    mensaje.className = 'respuesta-incorrecta';
                 }
             });
         }
 
         mostrarConsignaSala2(1);
+    }
+
+    function inicializarFotosMejoradas() {
+        document.querySelectorAll('.foto-mejorada-slot input[type="file"]').forEach((input) => {
+            input.addEventListener('change', function () {
+                const archivo = this.files && this.files[0];
+                const preview = document.getElementById(this.dataset.preview);
+                if (!archivo || !preview) return;
+                preview.src = URL.createObjectURL(archivo);
+                preview.classList.add('visible');
+            });
+        });
+    }
+
+    function inicializarConnections() {
+        const palabras = [
+            'RÍO', 'PUERTA', 'ROJO', 'EURO', 'FRONTERA', 'PISTA', 'AZUL', 'AMARILLO',
+            'VUELO', 'NORTE', 'MONEDA', 'BANCO', 'CAPITAL', 'ESCALA', 'VERDE', 'PAÍS'
+        ];
+        const grupos = [
+            { categoria: 'Relacionadas con un aeropuerto', color: 'connections-aeropuerto', palabras: ['PUERTA', 'PISTA', 'VUELO', 'ESCALA'] },
+            { categoria: 'Geografía', color: 'connections-geografia', palabras: ['RÍO', 'FRONTERA', 'NORTE', 'CAPITAL'] },
+            { categoria: 'Dinero', color: 'connections-dinero', palabras: ['EURO', 'MONEDA', 'PAÍS', 'BANCO'] },
+            { categoria: 'Colores', color: 'connections-colores', palabras: ['ROJO', 'AZUL', 'VERDE', 'AMARILLO'] }
+        ];
+        const grid = document.getElementById('connectionsGrid');
+        const enviar = document.getElementById('verificarConsigna2');
+        const seleccionTexto = document.getElementById('connectionsSeleccion');
+        const mensaje = document.getElementById('connectionsMensaje');
+        const gruposCompletados = document.getElementById('connectionsGrupos');
+        const continuar = document.getElementById('continuarConnections');
+        const seleccion = new Set();
+        const resueltas = new Set();
+
+        if (!grid || !enviar) return;
+
+        const limpiarSeleccion = () => {
+            seleccion.clear();
+            grid.querySelectorAll('.connection-word.selected').forEach((boton) => {
+                boton.classList.remove('selected');
+            });
+            seleccionTexto.textContent = '0 de 4 seleccionadas';
+        };
+
+        palabras.forEach((palabra) => {
+            const boton = document.createElement('button');
+            boton.type = 'button';
+            boton.className = 'connection-word';
+            boton.textContent = palabra;
+            boton.dataset.palabra = palabra;
+            boton.addEventListener('click', () => {
+                if (resueltas.has(palabra)) return;
+                if (seleccion.has(palabra)) {
+                    seleccion.delete(palabra);
+                    boton.classList.remove('selected');
+                } else if (seleccion.size < 4) {
+                    seleccion.add(palabra);
+                    boton.classList.add('selected');
+                }
+                seleccionTexto.textContent = `${seleccion.size} de 4 seleccionadas`;
+            });
+            grid.appendChild(boton);
+        });
+
+        enviar.addEventListener('click', () => {
+            if (seleccion.size !== 4) {
+                mensaje.textContent = 'Selecciona exactamente cuatro palabras.';
+                mensaje.className = 'respuesta-incorrecta';
+                return;
+            }
+
+            const elegidas = Array.from(seleccion);
+            const grupo = grupos.find((item) => elegidas.every((palabra) => item.palabras.includes(palabra)));
+            if (grupo) {
+                grupo.palabras.forEach((palabra) => {
+                    resueltas.add(palabra);
+                    const boton = grid.querySelector(`[data-palabra="${CSS.escape(palabra)}"]`);
+                    if (boton) {
+                        boton.classList.remove('selected');
+                        boton.classList.add(grupo.color, 'resolved');
+                    }
+                });
+                const categoria = document.createElement('div');
+                categoria.className = `connections-grupo ${grupo.color}`;
+                categoria.innerHTML = `<strong>${grupo.categoria}</strong><span>${grupo.palabras.join(' · ')}</span>`;
+                gruposCompletados.appendChild(categoria);
+                mensaje.textContent = `✅ Grupo correcto: ${grupo.categoria}.`;
+                mensaje.className = 'respuesta-correcta';
+            } else if (grupos.some((item) => elegidas.filter((palabra) => item.palabras.includes(palabra)).length === 3)) {
+                mensaje.textContent = 'Falta una para formar un grupo correcto.';
+                mensaje.className = 'respuesta-incorrecta';
+            } else {
+                mensaje.textContent = '❌ Grupo incorrecto. Prueba otra combinación.';
+                mensaje.className = 'respuesta-incorrecta';
+            }
+
+            limpiarSeleccion();
+            if (resueltas.size === palabras.length) {
+                mensaje.textContent = '✅ Completaste todos los grupos. Ya puedes continuar.';
+                mensaje.className = 'respuesta-correcta';
+                enviar.disabled = true;
+                respuestasSala2[2] = true;
+                consignaSala2Actual = 3;
+                if (continuar) continuar.hidden = false;
+            }
+        });
+
+        if (continuar) {
+            continuar.addEventListener('click', () => {
+                mostrarConsignaSala2(3);
+            });
+        }
     }
 
     function inicializarDragDropFotos() {
@@ -128,6 +224,26 @@
                 card.classList.remove('dragging');
                 // clear draggedElement reference
                 if (draggedElement === card) draggedElement = null;
+            });
+
+            fotosPanel.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            });
+
+            fotosPanel.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const sourceEl = draggedElement;
+                if (!sourceEl) return;
+
+                const origenContenedor = sourceEl.closest('.slot-contenedor');
+                if (origenContenedor) {
+                    origenContenedor.dataset.fotoId = '';
+                }
+                fotosPanel.appendChild(sourceEl);
+                sourceEl.classList.remove('dragging', 'selected');
+                draggedElement = null;
+                actualizarCodigo();
             });
         }
 
@@ -232,9 +348,8 @@
                 const contenedor = slot.querySelector('.slot-contenedor');
                 const existing = contenedor.querySelector('.foto-secuencia-item');
                 if (existing && fotosPanel) fotosPanel.appendChild(existing);
-                contenedor.innerHTML = selectedItem.innerHTML;
+                contenedor.appendChild(selectedItem);
                 contenedor.dataset.fotoId = selectedItem.dataset.secuencia;
-                if (selectedItem.parentElement && selectedItem.parentElement.id === 'fotosAOrdenar') selectedItem.remove();
                 selectedItem.classList.remove('selected');
                 selectedItem = null;
                 actualizarCodigo();
@@ -262,44 +377,6 @@
                 }
             }
         }
-    }
-        if (paisesGrid) {
-            paisesGrid.innerHTML = '';
-            paises.forEach((pais) => {
-                const opcion = document.createElement('button');
-                opcion.type = 'button';
-                opcion.className = 'pais-option';
-                opcion.textContent = pais;
-                opcion.addEventListener('click', function () {
-                    document.querySelectorAll('.pais-option').forEach((item) => item.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-                paisesGrid.appendChild(opcion);
-            });
-        }
-
-        const verificarConsigna2Btn = document.getElementById('verificarConsigna2');
-        if (verificarConsigna2Btn) {
-            verificarConsigna2Btn.addEventListener('click', function () {
-                mostrarConsignaSala2(3);
-            });
-        }
-
-        const verificarConsigna3Btn = document.getElementById('verificarConsigna3');
-        if (verificarConsigna3Btn) {
-            verificarConsigna3Btn.addEventListener('click', function () {
-                const seleccion = document.querySelector('.pais-option.selected');
-                if (seleccion && seleccion.textContent.trim() === 'ALEMANIA') {
-                    alert('✅ ¡Correcto! Has identificado el país correctamente.');
-                } else if (seleccion) {
-                    alert('❌ Esa no es la respuesta correcta. Revisa las pistas del aeropuerto y la ubicación europea.');
-                } else {
-                    alert('❌ Debes seleccionar un país antes de verificar.');
-                }
-            });
-        }
-
-        mostrarConsignaSala2(1);
     }
 
     function mostrarConsignaSala2(numero) {
