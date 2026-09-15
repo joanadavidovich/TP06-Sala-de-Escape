@@ -28,39 +28,37 @@
             });
         });
 
-        if (verificarConsigna1Btn) {
-            verificarConsigna1Btn.addEventListener('click', function () {
-                const codigo = (codigoSecuenciaInput ? codigoSecuenciaInput.value : '').trim();
-                const codigoEsperado = '4-1-5-2-3';
+        if (mejorImagenesBtn) {
+    mejorImagenesBtn.addEventListener('click', function () {
+        const fotos = document.querySelectorAll('.foto-secuencia-item img');
+        fotos.forEach((foto) => {
+            foto.style.filter = 'brightness(1.3) contrast(1.2)';
+        });
 
-                if (codigo === codigoEsperado) {
-                    respuestasSala2[1] = true;
-                    alert('🟢 ¡BIEN! SISTEMA DE CÁMARAS RESTAURADO\n\nAhora puedes MEJORAR LAS IMÁGENES para analizarlas mejor.');
-                    if (mejorImagenesBtn) {
-                        mejorImagenesBtn.disabled = false;
-                        mejorImagenesBtn.textContent = '🔓 MEJORAR IMÁGENES';
-                    }
-                } else {
-                    respuestasSala2[1] = false;
-                    alert('❌ Código incorrecto.\n\nDebes colocar las fotos en el orden correcto. El código se generará automáticamente.\n\nRecuerda: Arrastra cada foto al número (1-5) en que crees que fue tomada.');
-                    if (mejorImagenesBtn) mejorImagenesBtn.disabled = true;
-                }
-            });
+        const panelMejoradas = document.getElementById('fotosMejoradas');
+        if (panelMejoradas) {
+            panelMejoradas.hidden = false;
         }
+
+        alert('🔓 ¡IMÁGENES MEJORADAS!\n\nAhora puedes ver con más claridad. Usa estas pistas para identificar el país.');
+    });
+}
 
         if (mejorImagenesBtn) {
-            mejorImagenesBtn.addEventListener('click', function () {
-                const fotos = document.querySelectorAll('.foto-secuencia-item img');
-                fotos.forEach((foto) => {
-                    foto.style.filter = 'brightness(1.3) contrast(1.2)';
-                });
+    mejorImagenesBtn.addEventListener('click', function () {
+        const fotos = document.querySelectorAll('.foto-secuencia-item img');
+        fotos.forEach((foto) => {
+            foto.style.filter = 'brightness(1.3) contrast(1.2)';
+        });
 
-                const fotosMejoradas = document.getElementById('fotosMejoradas');
-                if (fotosMejoradas) fotosMejoradas.hidden = false;
-
-                alert('🔓 ¡IMÁGENES MEJORADAS!\n\nAhora puedes ver con más claridad. Usa estas pistas para identificar el país.');
-            });
+        const panelMejoradas = document.getElementById('fotosMejoradas');
+        if (panelMejoradas) {
+            panelMejoradas.hidden = false;
         }
+
+        alert('🔓 ¡IMÁGENES MEJORADAS!\n\nAhora puedes ver con más claridad. Usa estas pistas para identificar el país.');
+    });
+}
 
         inicializarFotosMejoradas();
         inicializarConnections();
@@ -88,14 +86,10 @@
     }
 
     function inicializarFotosMejoradas() {
-        document.querySelectorAll('.foto-mejorada-slot input[type="file"]').forEach((input) => {
-            input.addEventListener('change', function () {
-                const archivo = this.files && this.files[0];
-                const preview = document.getElementById(this.dataset.preview);
-                if (!archivo || !preview) return;
-                preview.src = URL.createObjectURL(archivo);
-                preview.classList.add('visible');
-            });
+        // Las fotos mejoradas ahora se muestran desde archivos fijos proporcionados
+        // Si los <img> ya tienen `src`, sólo los mostramos; no permitimos subir archivos.
+        document.querySelectorAll('.fotos-mejoradas img').forEach((img) => {
+            if (img && img.getAttribute('src')) img.classList.add('visible');
         });
     }
 
@@ -185,9 +179,8 @@
             if (resueltas.size === palabras.length) {
                 mensaje.textContent = '✅ Completaste todos los grupos. Ya puedes continuar.';
                 mensaje.className = 'respuesta-correcta';
-                enviar.disabled = true;
-                respuestasSala2[2] = true;
-                consignaSala2Actual = 3;
+                if (enviar) enviar.disabled = true;
+                // Mostrar el botón para continuar al país. No dependemos de variables externas
                 if (continuar) continuar.hidden = false;
             }
         });

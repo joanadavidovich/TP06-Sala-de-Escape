@@ -103,43 +103,35 @@
 
                 <div class="fotos-mejoradas" id="fotosMejoradas" hidden>
                     <h3>🔎 FOTOS MEJORADAS</h3>
-                    <p>Carga aquí las cinco imágenes mejoradas para consultarlas durante la sala.</p>
+                    <p>Aquí se muestran las cinco imágenes mejoradas</p>
                     <div class="fotos-mejoradas-grid">
-                        <label class="foto-mejorada-slot">Foto 1<input type="file" accept="image/*" data-preview="previewFoto1"><img id="previewFoto1" alt="Vista previa de la foto 1"></label>
-                        <label class="foto-mejorada-slot">Foto 2<input type="file" accept="image/*" data-preview="previewFoto2"><img id="previewFoto2" alt="Vista previa de la foto 2"></label>
-                        <label class="foto-mejorada-slot">Foto 3<input type="file" accept="image/*" data-preview="previewFoto3"><img id="previewFoto3" alt="Vista previa de la foto 3"></label>
-                        <label class="foto-mejorada-slot">Foto 4<input type="file" accept="image/*" data-preview="previewFoto4"><img id="previewFoto4" alt="Vista previa de la foto 4"></label>
-                        <label class="foto-mejorada-slot">Foto 5<input type="file" accept="image/*" data-preview="previewFoto5"><img id="previewFoto5" alt="Vista previa de la foto 5"></label>
+                        <div class="foto-mejorada-slot">
+                            <div class="foto-label">Foto 1</div>
+                            <img id="previewFoto1" src="/images/sala2/mejorada1.png" alt="Foto mejorada 1" />
+                        </div>
+                        <div class="foto-mejorada-slot">
+                            <div class="foto-label">Foto 2</div>
+                            <img id="previewFoto2" src="/images/sala2/mejorada2.png" alt="Foto mejorada 2" />
+                        </div>
+                        <div class="foto-mejorada-slot">
+                            <div class="foto-label">Foto 3</div>
+                            <img id="previewFoto3" src="/images/sala2/mejorada3.png" alt="Foto mejorada 3" />
+                        </div>
+                        <div class="foto-mejorada-slot">
+                            <div class="foto-label">Foto 4</div>
+                            <img id="previewFoto4" src="/images/sala2/mejorada4.png" alt="Foto mejorada 4" />
+                        </div>
+                        <div class="foto-mejorada-slot">
+                            <div class="foto-label">Foto 5</div>
+                            <img id="previewFoto5" src="/images/sala2/mejorada5.png" alt="Foto mejorada 5" />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="mapamundi-section-container">
-        <div class="mapamundi-section">
-            <div class="mapamundi-header">
-                <h2>📍 Ubicación en el Mapamundi</h2>
-                <p>Observa la ubicación geográfica de Europa y sus pistas</p>
-            </div>
-
-            <div class="mapamundi-content">
-                <div class="mapamundi-placeholder" id="mapamundiPlaceholder">
-                    <div class="mapamundi-icon">🗺️</div>
-                    <div class="mapamundi-label">Mapa de Europa</div>
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12200837.154720126!2d7.0827299622897435!3d51.11224279096671!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46ed8886cfadda85%3A0x72ef99e6b3fcf079!2sEuropa!5e0!3m2!1ses!2sar!4v1788868634933!5m2!1ses!2sar" width="600" height="450" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-            </div>
-                </div>
-            <div class="mapamundi-pistas">
-                <h4>💡 Pistas del continente:</h4>
-                <ul>
-                    <li>Es un continente europeo</li>
-                    <li>Tiene un aeropuerto internacional importante</li>
-                    <li>Las 5 fotografías contienen claves sobre su identidad</li>
-                </ul>
-            </div>
-        </div>
-    </div>
+    
 
     <!-- CONSIGNA 2: ANÁLISIS DE PISTAS -->
     <div class="consigna-container" id="consigna2">
@@ -172,6 +164,32 @@
             <p id="paisMensaje" role="status"></p>
             <button class="btn btn-primary" id="verificarConsigna3">Verificar País</button>
         </div>
+
+        <div class="mapamundi-section-container">
+        <div class="mapamundi-section">
+            <div class="mapamundi-header">
+                <h2>📍 Ubicación en el Mapamundi</h2>
+                <p>Observa la ubicación geográfica de Europa y sus pistas</p>
+            </div>
+
+            <div class="mapamundi-content">
+                <div class="mapamundi-placeholder" id="mapamundiPlaceholder">
+                    <div class="mapamundi-icon">🗺️</div>
+                    <div class="mapamundi-label">Mapa de Europa</div>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12200837.154720126!2d7.0827299622897435!3d51.11224279096671!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46ed8886cfadda85%3A0x72ef99e6b3fcf079!2sEuropa!5e0!3m2!1ses!2sar!4v1788868634933!5m2!1ses!2sar" width="600" height="450" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
+                </div>
+            <div class="mapamundi-pistas">
+                <h4>💡 Pistas del continente:</h4>
+                <ul>
+                    <li>Es un continente europeo</li>
+                    <li>Tiene un aeropuerto internacional importante</li>
+                    <li>Las 5 fotografías contienen claves sobre su identidad</li>
+                    <li>Limita con Bélgica, Francia y Alemania</li>
+                </ul>
+            </div>
+        </div>
+    </div>
     </div>
 
     <!-- NAVEGACIÓN -->
