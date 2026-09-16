@@ -1677,211 +1677,417 @@ body {
     padding: 12px;
 }
 
-@media (max-width: 768px) {
-    .mapa-puzzle-container {
-        grid-template-columns: 1fr;
-    }
-
-    .mapa-puzzle-wrapper {
-        grid-template-columns: 1fr;
-    }
-
-    .desafio-secuencia {
-        grid-template-columns: 1fr;
-    }
-
-    .foto-secuencia-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .orden-secuencia-dropzone {
-        grid-template-columns: repeat(5, 1fr);
-        min-height: 150px;
-    }
+/* ===== TIMER GLOBAL ===== */
+.room-timer-bar {
+    background: linear-gradient(90deg, #0b1f33 0%, #1e3a5f 100%);
+    color: #fff;
+    border-bottom: 2px solid rgba(255,255,255,0.2);
+    padding: 0.7rem 0;
 }
 
-/* ===== SALA 2: FOTOS MEJORADAS Y CONNECTIONS ===== */
-.fotos-mejoradas {
-    margin-top: 24px;
-    padding: 20px;
-    border: 2px dashed #667eea;
-    border-radius: 12px;
-    background: #f8f9ff;
+.timer-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.8rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
 }
 
-.fotos-mejoradas-grid {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(110px, 1fr));
-    gap: 12px;
-}
-
-.foto-mejorada-slot {
-    min-height: 150px;
-    padding: 10px;
-    border: 1px solid #c9cef2;
-    border-radius: 8px;
-    background: white;
-    font-weight: 600;
+#roomTimer {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    min-width: 90px;
     text-align: center;
-    cursor: pointer;
+    color: #9be7ff;
 }
 
-.foto-mejorada-slot input {
-    display: block;
-    width: 100%;
-    margin-top: 10px;
-    font-size: .75rem;
+#roomTimer.timer-finished {
+    color: #ff8b8b;
+    background: rgba(255, 80, 80, 0.12);
 }
 
-.foto-mejorada-slot img {
-    display: none;
-    width: 100%;
-    height: 90px;
-    margin-top: 8px;
-    object-fit: cover;
-    border-radius: 5px;
+/* ===== SALA 3 ===== */
+.sala3-container {
+    background: rgba(8, 22, 39, 0.7);
+    border-radius: 24px;
+    padding: 2rem;
+    color: #f3f8ff;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
 }
 
-.foto-mejorada-slot img.visible {
-    display: block;
+.sala3-header {
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
-.connections-grid {
+.sala3-header h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+}
+
+.sala3-header p {
+    color: #dfeafc;
+    font-size: 1.15rem;
+}
+
+.sala3-stage {
     display: grid;
-    grid-template-columns: repeat(4, minmax(100px, 1fr));
-    gap: 12px;
-    margin: 20px 0 12px;
+    gap: 2rem;
 }
 
-.connection-word {
-    min-height: 60px;
-    border: 1px solid #c9cef2;
-    border-radius: 8px;
-    background: white;
-    color: #222;
+.objetos-section,
+.puzzle-section,
+.conveyor-section {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 18px;
+    padding: 1.5rem;
+}
+
+.section-title-box {
+    margin-bottom: 1rem;
+}
+
+.section-title-box h2 {
+    font-size: 1.5rem;
+    color: #9be7ff;
+    margin: 0;
+}
+
+.airport-scene {
+    position: relative;
+    height: 420px;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.15);
+    background: linear-gradient(180deg, #dfefff 0%, #bdddfb 25%, #8eb4d8 26%, #7f8b92 27%, #c5c3be 40%, #6c7a88 42%, #2d3e52 100%);
+}
+
+.airport-scene::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.18), transparent 15%, transparent 75%, rgba(0,0,0,0.08));
+}
+
+.airport-scene::after {
+    content: "";
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    bottom: 28%;
+    height: 20px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(0,0,0,0.12), rgba(255,255,255,0.2));
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.1);
+}
+
+.object-marker {
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.65);
+    color: #0f172a;
+    font-size: 1.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.22);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    z-index: 2;
+}
+
+.object-marker:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 26px rgba(0,0,0,0.28);
+}
+
+.object-marker.found {
+    background: rgba(103, 255, 160, 0.9);
+    box-shadow: 0 0 0 6px rgba(103, 255, 160, 0.35);
+}
+
+.object-list-panel {
+    margin-top: 1.2rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.object-list-panel h3 {
+    color: #fff;
+    margin-bottom: 0.8rem;
+}
+
+.object-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+}
+
+.object-list li {
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 0.7rem 0.8rem;
+    color: #dfeafc;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.object-list li.found {
+    text-decoration: line-through;
+    opacity: 0.5;
+    background: rgba(103, 255, 160, 0.14);
+}
+
+.puzzle-box {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2rem;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.puzzle-pieces {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(90px, 1fr));
+    gap: 0.8rem;
+}
+
+.puzzle-piece {
+    position: relative;
+    width: 100%;
+    min-height: 110px;
+    border-radius: 14px;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: linear-gradient(135deg, #d1ecff 0%, #3b82f6 35%, #1e3a8a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.25rem;
     font-weight: 700;
     cursor: pointer;
+    box-shadow: 0 8px 20px rgba(9, 13, 28, 0.26);
+    transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
-.connection-word.selected {
-    background: #dfe4ff;
-    border-color: #667eea;
+.puzzle-piece.selected {
+    border-color: #ffd166;
+    transform: translateY(-4px);
 }
 
-.connection-word.resolved,
-.connections-grupo {
-    color: white;
+.puzzle-piece .rotate-piece {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 999px;
+    width: 28px;
+    height: 28px;
+    color: #fff;
+    font-size: 0.9rem;
+    cursor: pointer;
 }
 
-.connections-aeropuerto {
-    background: #3282b8;
-    border-color: #3282b8;
+.puzzle-board {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(90px, 1fr));
+    gap: 0.8rem;
 }
 
-.connections-geografia {
-    background: #3a9d5d;
-    border-color: #3a9d5d;
+.puzzle-slot {
+    min-height: 110px;
+    border-radius: 14px;
+    border: 2px dashed rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
-.connections-dinero {
-    background: #c98924;
-    border-color: #c98924;
+.puzzle-slot.drag-over {
+    border-color: #9be7ff;
+    background: rgba(155, 231, 255, 0.12);
 }
 
-.connections-colores {
-    background: #d94f70;
-    border-color: #d94f70;
+.puzzle-answer-box {
+    margin-top: 1.5rem;
+    display: grid;
+    gap: 0.8rem;
 }
 
-.connections-mensaje {
-    min-height: 24px;
+.puzzle-title {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #ffd166;
+    text-align: center;
+    margin: 0;
+}
+
+.puzzle-question {
+    margin: 0;
+    text-align: center;
+    color: #dfeafc;
     font-weight: 600;
 }
 
-.connections-grupos {
-    display: grid;
-    gap: 10px;
-    margin-bottom: 18px;
-}
-
-.connections-grupo {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px;
-    border-radius: 8px;
-}
-
+#aeropuertoRespuesta,
+#codigoSala3,
+#sala2CodeInput,
 .pais-respuesta {
-    display: block;
-    width: min(100%, 420px);
-    margin: 8px 0 14px;
-    padding: 12px;
-    border: 2px solid #c9cef2;
-    border-radius: 8px;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+}
+
+#puzzleMensaje,
+#conveyorMensaje,
+#paisMensaje {
+    margin: 0;
+    min-height: 1.2rem;
+    font-weight: 700;
 }
 
 .respuesta-correcta {
-    color: #237a3b;
+    color: #8ef0a6;
 }
 
 .respuesta-incorrecta {
-    color: #a52a2a;
+    color: #ff9a9a;
 }
 
-/* ===== OPCIONES DE PAÍSES ===== */
-.paises-opciones {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+.conveyor-text {
+    margin-bottom: 1rem;
+    color: #dfeafc;
+    font-size: 1.05rem;
 }
 
-.paises-grid {
+.conveyor-track {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(5, minmax(80px, 1fr));
+    gap: 0.8rem;
+    margin-bottom: 1.25rem;
 }
 
-.pais-option {
-    background: white;
-    border: 2px solid #667eea;
-    border-radius: 8px;
-    padding: 15px;
-    font-size: 1rem;
-    font-weight: bold;
+.valija {
+    background: linear-gradient(135deg, #f8d7a2, #d89d4e);
+    border: 2px solid rgba(58, 42, 13, 0.3);
+    border-radius: 16px;
+    min-height: 94px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #2e1c00;
     cursor: pointer;
-    transition: all 0.3s ease;
-    color: #667eea;
+    box-shadow: 0 10px 18px rgba(32, 22, 9, 0.28);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
-.pais-option:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+.valija span {
+    font-size: 0.9rem;
+    font-weight: 900;
+    margin-top: 0.2rem;
 }
 
-.pais-option.selected {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-color: #667eea;
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+.valija.selected {
+    background: linear-gradient(135deg, #8ef0a6, #2ca66f);
+    transform: scale(1.03);
 }
 
-/* ===== PISTAS ===== */
-.pistas-list {
-    background: #f5f5f5;
-    border-left: 4px solid #667eea;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+.valija.wrong {
+    background: linear-gradient(135deg, #ffb7b7, #d14343);
+    animation: shake 0.25s linear;
 }
 
-.pistas-list-item {
-    color: #333;
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 10px;
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-3px); }
+}
+
+.code-box {
+    display: grid;
+    gap: 0.8rem;
+}
+
+#codigoSala3 {
+    min-height: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-align: center;
+}
+
+.sala2-code-panel {
+    margin-top: 2rem;
+    padding: 1.2rem;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 15px;
+    background: rgba(155, 231, 255, 0.08);
+}
+
+.sala2-code-panel h3 {
+    color: #9be7ff;
+    margin-bottom: 0.4rem;
+}
+
+.code-input-row {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.sala4-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+}
+
+.sala4-card {
+    max-width: 760px;
+    background: rgba(12, 18, 34, 0.78);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 22px;
+    padding: 2rem;
+    text-align: center;
+    color: #f3f8ff;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+}
+
+.sala4-card h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 1rem;
+}
+
+.sala4-card p {
+    color: #dfeafc;
+    font-size: 1.05rem;
+}
+
+.sala4-actions {
+    margin-top: 1.5rem;
 }
 
 .rompecabezas-container {
@@ -1890,6 +2096,13 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 20px;
+}
+
+.piezas-panel, .tablero-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
 .piezas-grid {
@@ -1942,17 +2155,4 @@ body {
     height: 100%;
     border: none;
     border-radius: 0;
-}
-
-.mapa-completo-grande {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.mapa-completo-grande img {
-    max-width: 600px;
-    width: 100%;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    margin: 15px 0;
 }

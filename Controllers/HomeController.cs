@@ -114,6 +114,38 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult Sala3()
+    {
+        int? partidaId = HttpContext.Session.GetInt32("PartidaId");
+        int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
+        if (!partidaId.HasValue)
+        {
+            return RedirectToAction("StartPartida");
+        }
+
+        ViewBag.PartidaId = partidaId.Value;
+        ViewBag.UsuarioId = usuarioId;
+
+        return View();
+    }
+
+    public IActionResult Sala4()
+    {
+        int? partidaId = HttpContext.Session.GetInt32("PartidaId");
+        int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
+        if (!partidaId.HasValue)
+        {
+            return RedirectToAction("StartPartida");
+        }
+
+        ViewBag.PartidaId = partidaId.Value;
+        ViewBag.UsuarioId = usuarioId;
+
+        return View();
+    }
+
     [HttpPost]
     public IActionResult CompletarPieza([FromBody] CompletarPiezaRequest request)
     {

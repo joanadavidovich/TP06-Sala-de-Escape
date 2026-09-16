@@ -1,0 +1,138 @@
+@{
+    ViewData["Title"] = "Sala 3 - Pasajero del Aeropuerto";
+}
+
+<div class="sala3-container">
+    <div class="sala3-header">
+        <h1>✈️ SALA 3 — PASAJERO DEL AEROPUERTO ✈️</h1>
+        <p>“Solo 5 objetos pertenecen al pasajero que llegó a esta terminal. Encontralos.”</p>
+    </div>
+
+    <div class="sala3-stage">
+        <section class="objetos-section">
+            <div class="section-title-box">
+                <h2>🔎 Hallazgo visual</h2>
+            </div>
+
+            <div class="airport-scene" id="airportScene">
+                <button class="object-marker found-target ticket" type="button" data-name="boleto" data-emoji="🎫" style="left: 16%; top: 18%;">🎫</button>
+                <button class="object-marker found-target phone" type="button" data-name="telefono" data-emoji="📱" style="left: 30%; top: 38%;">📱</button>
+                <button class="object-marker found-target suitcase" type="button" data-name="valija" data-emoji="🧳" style="left: 70%; top: 26%;">🧳</button>
+                <button class="object-marker found-target newspaper" type="button" data-name="periodico" data-emoji="📰" style="left: 44%; top: 58%;">📰</button>
+                <button class="object-marker found-target camera" type="button" data-name="camara" data-emoji="📷" style="left: 68%; top: 52%;">📷</button>
+                <button class="object-marker found-target map" type="button" data-name="mapa" data-emoji="🗺️" style="left: 22%; top: 73%;">🗺️</button>
+                <button class="object-marker found-target headphones" type="button" data-name="auriculares" data-emoji="🎧" style="left: 55%; top: 77%;">🎧</button>
+                <button class="object-marker found-target document" type="button" data-name="documento" data-emoji="🪪" style="left: 82%; top: 72%;">🪪</button>
+            </div>
+
+            <div class="object-list-panel">
+                <h3>Objetos a encontrar</h3>
+                <ul class="object-list" id="objetosRestantes">
+                    <li data-name="boleto">🎫 boleto</li>
+                    <li data-name="telefono">📱 teléfono</li>
+                    <li data-name="valija">🧳 valija</li>
+                    <li data-name="periodico">📰 periódico</li>
+                    <li data-name="camara">📷 cámara</li>
+                    <li data-name="mapa">🗺️ mapa</li>
+                    <li data-name="auriculares">🎧 auriculares</li>
+                    <li data-name="documento">🪪 documento</li>
+                </ul>
+                <p id="objectMessage" class="object-message" aria-live="polite"></p>
+            </div>
+        </section>
+
+        <section class="puzzle-section" id="sala3PuzzleSection" hidden>
+            <div class="section-title-box">
+                <h2>🧩 Rompecabezas del cartel</h2>
+            </div>
+
+            <div class="puzzle-box">
+                <div class="puzzle-pieces" id="puzzlePieces">
+                    <div class="puzzle-piece" draggable="true" data-piece="1" data-correct="1" data-mirror="true" style="background-position: 0% 0%;">
+                        <span>1</span>
+                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
+                    </div>
+                    <div class="puzzle-piece" draggable="true" data-piece="2" data-correct="2" data-mirror="false" style="background-position: 33.33% 0%;">
+                        <span>2</span>
+                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
+                    </div>
+                    <div class="puzzle-piece" draggable="true" data-piece="3" data-correct="3" data-mirror="true" style="background-position: 66.66% 0%;">
+                        <span>3</span>
+                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
+                    </div>
+                    <div class="puzzle-piece" draggable="true" data-piece="4" data-correct="4" data-mirror="false" style="background-position: 0% 50%;">
+                        <span>4</span>
+                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
+                    </div>
+                    <div class="puzzle-piece" draggable="true" data-piece="5" data-correct="5" data-mirror="false" style="background-position: 33.33% 50%;">
+                        <span>5</span>
+                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
+                    </div>
+                    <div class="puzzle-piece" draggable="true" data-piece="6" data-correct="6" data-mirror="true" style="background-position: 66.66% 50%;">
+                        <span>6</span>
+                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
+                    </div>
+                    <div class="puzzle-piece" draggable="true" data-piece="7" data-correct="7" data-mirror="false" style="background-position: 0% 100%;">
+                        <span>7</span>
+                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
+                    </div>
+                    <div class="puzzle-piece" draggable="true" data-piece="8" data-correct="8" data-mirror="true" style="background-position: 33.33% 100%;">
+                        <span>8</span>
+                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
+                    </div>
+                </div>
+
+                <div class="puzzle-board" id="puzzleBoard">
+                    <div class="puzzle-slot" data-slot="1"></div>
+                    <div class="puzzle-slot" data-slot="2"></div>
+                    <div class="puzzle-slot" data-slot="3"></div>
+                    <div class="puzzle-slot" data-slot="4"></div>
+                    <div class="puzzle-slot" data-slot="5"></div>
+                    <div class="puzzle-slot" data-slot="6"></div>
+                    <div class="puzzle-slot" data-slot="7"></div>
+                    <div class="puzzle-slot" data-slot="8"></div>
+                </div>
+            </div>
+
+            <div class="puzzle-answer-box">
+                <p class="puzzle-title">LUXEMBOURG CITY</p>
+                <p class="puzzle-question">¿Y qué aeropuerto corresponde?</p>
+                <input id="aeropuertoRespuesta" type="text" placeholder="Escribí el aeropuerto" />
+                <button class="btn btn-primary" id="verificarPuzzle">Verificar rompecabezas</button>
+                <p id="puzzleMensaje" role="status"></p>
+            </div>
+        </section>
+
+        <section class="conveyor-section" id="conveyorSection" hidden>
+            <div class="section-title-box">
+                <h2>🧳 Cinta transportadora</h2>
+            </div>
+
+            <p class="conveyor-text">Encontrá las valijas que pertenecen al vuelo que acabás de identificar.</p>
+            <div class="conveyor-track">
+                <button type="button" class="valija" data-number="4" data-correct="true" data-sequence="1">🧳<span>4</span></button>
+                <button type="button" class="valija" data-number="2" data-correct="false" data-sequence="2">🧳<span>2</span></button>
+                <button type="button" class="valija" data-number="8" data-correct="true" data-sequence="3">🧳<span>8</span></button>
+                <button type="button" class="valija" data-number="5" data-correct="false" data-sequence="4">🧳<span>5</span></button>
+                <button type="button" class="valija" data-number="1" data-correct="true" data-sequence="5">🧳<span>1</span></button>
+                <button type="button" class="valija" data-number="7" data-correct="false" data-sequence="6">🧳<span>7</span></button>
+                <button type="button" class="valija" data-number="6" data-correct="true" data-sequence="7">🧳<span>6</span></button>
+                <button type="button" class="valija" data-number="3" data-correct="false" data-sequence="8">🧳<span>3</span></button>
+                <button type="button" class="valija" data-number="9" data-correct="false" data-sequence="9">🧳<span>9</span></button>
+                <button type="button" class="valija" data-number="10" data-correct="false" data-sequence="10">🧳<span>10</span></button>
+            </div>
+
+            <div class="code-box">
+                <label for="codigoSala3">Código del vuelo:</label>
+                <input id="codigoSala3" type="text" readonly placeholder="Selecciona las valijas correctas" />
+                <button class="btn btn-success" id="confirmarCodigoSala3">Confirmar código</button>
+                <p id="conveyorMensaje" role="status"></p>
+            </div>
+        </section>
+    </div>
+
+    <div class="sala-navigation">
+        <a href="@Url.Action("Sala2")" class="btn btn-outline">← Volver a Sala 2</a>
+        <a href="@Url.Action("Index")" class="btn btn-outline">Ir al Inicio</a>
+    </div>
+</div>

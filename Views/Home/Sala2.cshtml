@@ -131,8 +131,6 @@
         </div>
     </div>
 
-    
-
     <!-- CONSIGNA 2: ANÁLISIS DE PISTAS -->
     <div class="consigna-container" id="consigna2">
         <div class="consigna-titulo">
@@ -166,30 +164,40 @@
         </div>
 
         <div class="mapamundi-section-container">
-        <div class="mapamundi-section">
-            <div class="mapamundi-header">
-                <h2>📍 Ubicación en el Mapamundi</h2>
-                <p>Observa la ubicación geográfica de Europa y sus pistas</p>
-            </div>
-
-            <div class="mapamundi-content">
-                <div class="mapamundi-placeholder" id="mapamundiPlaceholder">
-                    <div class="mapamundi-icon">🗺️</div>
-                    <div class="mapamundi-label">Mapa de Europa</div>
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12200837.154720126!2d7.0827299622897435!3d51.11224279096671!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46ed8886cfadda85%3A0x72ef99e6b3fcf079!2sEuropa!5e0!3m2!1ses!2sar!4v1788868634933!5m2!1ses!2sar" width="600" height="450" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-            </div>
+            <div class="mapamundi-section">
+                <div class="mapamundi-header">
+                    <h2>📍 Ubicación en el Mapamundi</h2>
+                    <p>Observa la ubicación geográfica de Europa y sus pistas</p>
                 </div>
-            <div class="mapamundi-pistas">
-                <h4>💡 Pistas del continente:</h4>
-                <ul>
-                    <li>Es un continente europeo</li>
-                    <li>Tiene un aeropuerto internacional importante</li>
-                    <li>Las 5 fotografías contienen claves sobre su identidad</li>
-                    <li>Limita con Bélgica, Francia y Alemania</li>
-                </ul>
+
+                <div class="mapamundi-content">
+                    <div class="mapamundi-placeholder" id="mapamundiPlaceholder">
+                        <div class="mapamundi-icon">🗺️</div>
+                        <div class="mapamundi-label">Mapa de Europa</div>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12200837.154720126!2d7.0827299622897435!3d51.11224279096671!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46ed8886cfadda85%3A0x72ef99e6b3fcf079!2sEuropa!5e0!3m2!1ses!2sar!4v1788868634933!5m2!1ses!2sar" width="600" height="450" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                    </div>
+                </div>
+
+                <div class="mapamundi-pistas">
+                    <h4>💡 Pistas del continente:</h4>
+                    <ul>
+                        <li>Es un continente europeo</li>
+                        <li>Tiene un aeropuerto internacional importante</li>
+                        <li>Las 5 fotografías contienen claves sobre su identidad</li>
+                        <li>Limita con Bélgica, Francia y Alemania</li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="sala2-code-panel" id="sala2CodePanel" hidden>
+            <h3>🔐 Código para pasar a Sala 3</h3>
+            <p>El aeropuerto correcto es Luxemburgo. Ingresá el código que desbloquea la próxima terminal.</p>
+            <div class="code-input-row">
+                <input id="sala2CodeInput" type="text" maxlength="5" placeholder="41523" />
+                <button class="btn btn-primary" id="verificarCodigoSala2">Validar código</button>
+            </div>
+        </div>
     </div>
 
     <!-- NAVEGACIÓN -->

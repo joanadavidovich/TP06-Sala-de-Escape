@@ -525,5 +525,3 @@ function verificarMapaRoto() {
     respuestasConsignas[2] = true;
     mostrarConsigna(3);
 }
-
-
