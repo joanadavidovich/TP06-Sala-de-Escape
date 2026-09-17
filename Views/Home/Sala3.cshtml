@@ -5,8 +5,21 @@
 <div class="sala3-container">
     <div class="sala3-header">
         <h1>✈️ SALA 3 — PASAJERO DEL AEROPUERTO ✈️</h1>
-        <p>“Solo 5 objetos pertenecen al pasajero que llegó a esta terminal. Encontralos.”</p>
-    </div>
+        <p>“Solo 5 objetos pertenecen al pasajero que llegó a esta terminal. Encontralos.”</p>        
+        <div class="progress-tracker">
+            <div class="consigna-progress" data-consigna="1">
+                <span class="step-number">1</span>
+                <span class="step-name">Hallazgo visual</span>
+            </div>
+            <div class="consigna-progress" data-consigna="2">
+                <span class="step-number">2</span>
+                <span class="step-name">Rompecabezas</span>
+            </div>
+            <div class="consigna-progress" data-consigna="3">
+                <span class="step-number">3</span>
+                <span class="step-name">Cinta transportadora</span>
+            </div>
+        </div>    </div>
 
     <div class="sala3-stage">
         <section class="objetos-section">
@@ -15,14 +28,36 @@
             </div>
 
             <div class="airport-scene" id="airportScene">
-                <button class="object-marker found-target ticket" type="button" data-name="boleto" data-emoji="🎫" style="left: 16%; top: 18%;">🎫</button>
-                <button class="object-marker found-target phone" type="button" data-name="telefono" data-emoji="📱" style="left: 30%; top: 38%;">📱</button>
-                <button class="object-marker found-target suitcase" type="button" data-name="valija" data-emoji="🧳" style="left: 70%; top: 26%;">🧳</button>
-                <button class="object-marker found-target newspaper" type="button" data-name="periodico" data-emoji="📰" style="left: 44%; top: 58%;">📰</button>
-                <button class="object-marker found-target camera" type="button" data-name="camara" data-emoji="📷" style="left: 68%; top: 52%;">📷</button>
-                <button class="object-marker found-target map" type="button" data-name="mapa" data-emoji="🗺️" style="left: 22%; top: 73%;">🗺️</button>
-                <button class="object-marker found-target headphones" type="button" data-name="auriculares" data-emoji="🎧" style="left: 55%; top: 77%;">🎧</button>
-                <button class="object-marker found-target document" type="button" data-name="documento" data-emoji="🪪" style="left: 82%; top: 72%;">🪪</button>
+                <button class="object-marker found-target boarding" type="button" data-name="boleto" style="left: 30%; top: 20%;">
+                    <img src="/images/sala3/boleto.png" alt="">
+                </button>
+                <button class="object-marker found-target phone" type="button" data-name="telefono" style="left: 30%; top: 38%;">
+                    <img src="/images/sala3/telefono.png" alt="">
+                </button>
+
+                <button class="object-marker found-target suitcase" type="button" data-name="valija" style="left: 70%; top: 26%;">
+                    <img src="/images/sala3/valija.png" alt="">
+                </button>
+
+                <button class="object-marker found-target newspaper" type="button" data-name="periodico" style="left: 44%; top: 58%;">
+                    <img src="/images/sala3/periodico.png" alt="">
+                </button>
+
+                <button class="object-marker found-target camera" type="button" data-name="camara" style="left: 68%; top: 52%;">
+                    <img src="/images/sala3/camara.png" alt="">
+                </button>
+
+                <button class="object-marker found-target map" type="button" data-name="mapa" style="left: 22%; top: 73%;">
+                    <img src="/images/sala3/mapa.png" alt="">
+                </button>
+
+                <button class="object-marker found-target headphones" type="button" data-name="auriculares" style="left: 55%; top: 77%;">
+                    <img src="/images/sala3/auriculares.gif" alt="">
+                </button>
+
+                <button class="object-marker found-target document" type="button" data-name="documento" style="left: 82%; top: 72%;">
+                    <img src="/images/sala3/documento.png" alt="">
+                </button>
             </div>
 
             <div class="object-list-panel">
