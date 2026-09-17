@@ -77,66 +77,18 @@
         </section>
 
         <section class="puzzle-section" id="sala3PuzzleSection" hidden>
-            <div class="section-title-box">
-                <h2>🧩 Rompecabezas del cartel</h2>
-            </div>
 
-            <div class="puzzle-box">
-                <div class="puzzle-pieces" id="puzzlePieces">
-                    <div class="puzzle-piece" draggable="true" data-piece="1" data-correct="1" data-mirror="true" style="background-position: 0% 0%;">
-                        <span>1</span>
-                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
-                    </div>
-                    <div class="puzzle-piece" draggable="true" data-piece="2" data-correct="2" data-mirror="false" style="background-position: 33.33% 0%;">
-                        <span>2</span>
-                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
-                    </div>
-                    <div class="puzzle-piece" draggable="true" data-piece="3" data-correct="3" data-mirror="true" style="background-position: 66.66% 0%;">
-                        <span>3</span>
-                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
-                    </div>
-                    <div class="puzzle-piece" draggable="true" data-piece="4" data-correct="4" data-mirror="false" style="background-position: 0% 50%;">
-                        <span>4</span>
-                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
-                    </div>
-                    <div class="puzzle-piece" draggable="true" data-piece="5" data-correct="5" data-mirror="false" style="background-position: 33.33% 50%;">
-                        <span>5</span>
-                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
-                    </div>
-                    <div class="puzzle-piece" draggable="true" data-piece="6" data-correct="6" data-mirror="true" style="background-position: 66.66% 50%;">
-                        <span>6</span>
-                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
-                    </div>
-                    <div class="puzzle-piece" draggable="true" data-piece="7" data-correct="7" data-mirror="false" style="background-position: 0% 100%;">
-                        <span>7</span>
-                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
-                    </div>
-                    <div class="puzzle-piece" draggable="true" data-piece="8" data-correct="8" data-mirror="true" style="background-position: 33.33% 100%;">
-                        <span>8</span>
-                        <button type="button" class="rotate-piece" aria-label="Rotar pieza">↻</button>
-                    </div>
-                </div>
+    <div class="puzzle-box">
 
-                <div class="puzzle-board" id="puzzleBoard">
-                    <div class="puzzle-slot" data-slot="1"></div>
-                    <div class="puzzle-slot" data-slot="2"></div>
-                    <div class="puzzle-slot" data-slot="3"></div>
-                    <div class="puzzle-slot" data-slot="4"></div>
-                    <div class="puzzle-slot" data-slot="5"></div>
-                    <div class="puzzle-slot" data-slot="6"></div>
-                    <div class="puzzle-slot" data-slot="7"></div>
-                    <div class="puzzle-slot" data-slot="8"></div>
-                </div>
-            </div>
+    <div class="puzzle-pieces" id="puzzlePieces"></div>
 
-            <div class="puzzle-answer-box">
-                <p class="puzzle-title">LUXEMBOURG CITY</p>
-                <p class="puzzle-question">¿Y qué aeropuerto corresponde?</p>
-                <input id="aeropuertoRespuesta" type="text" placeholder="Escribí el aeropuerto" />
-                <button class="btn btn-primary" id="verificarPuzzle">Verificar rompecabezas</button>
-                <p id="puzzleMensaje" role="status"></p>
-            </div>
-        </section>
+    <div class="puzzle-board" id="puzzleBoard"></div>
+
+</div>
+
+<p id="puzzleMensaje" role="status"></p>
+
+</section>
 
         <section class="conveyor-section" id="conveyorSection" hidden>
             <div class="section-title-box">
@@ -145,16 +97,16 @@
 
             <p class="conveyor-text">Encontrá las valijas que pertenecen al vuelo que acabás de identificar.</p>
             <div class="conveyor-track">
-                <button type="button" class="valija" data-number="4" data-correct="true" data-sequence="1">🧳<span>4</span></button>
-                <button type="button" class="valija" data-number="2" data-correct="false" data-sequence="2">🧳<span>2</span></button>
-                <button type="button" class="valija" data-number="8" data-correct="true" data-sequence="3">🧳<span>8</span></button>
-                <button type="button" class="valija" data-number="5" data-correct="false" data-sequence="4">🧳<span>5</span></button>
-                <button type="button" class="valija" data-number="1" data-correct="true" data-sequence="5">🧳<span>1</span></button>
-                <button type="button" class="valija" data-number="7" data-correct="false" data-sequence="6">🧳<span>7</span></button>
-                <button type="button" class="valija" data-number="6" data-correct="true" data-sequence="7">🧳<span>6</span></button>
-                <button type="button" class="valija" data-number="3" data-correct="false" data-sequence="8">🧳<span>3</span></button>
-                <button type="button" class="valija" data-number="9" data-correct="false" data-sequence="9">🧳<span>9</span></button>
-                <button type="button" class="valija" data-number="10" data-correct="false" data-sequence="10">🧳<span>10</span></button>
+                <button type="button" class="valija" data-number="4" data-correct="true" style="--valija-delay: 0s;" data-image="/images/sala3/valijabien.png"><span>4</span></button>
+                <button type="button" class="valija" data-number="2" data-correct="false" style="--valija-delay: 1.2s;" data-image="/images/sala3/valijamal.png"><span>2</span></button>
+                <button type="button" class="valija" data-number="8" data-correct="true" style="--valija-delay: 2.4s;" data-image="/images/sala3/valijabien.png"><span>8</span></button>
+                <button type="button" class="valija" data-number="5" data-correct="false" style="--valija-delay: 3.6s;" data-image="/images/sala3/valijamal.png"><span>5</span></button>
+                <button type="button" class="valija" data-number="1" data-correct="true" style="--valija-delay: 4.8s;" data-image="/images/sala3/valijabien.png"><span>1</span></button>
+                <button type="button" class="valija" data-number="7" data-correct="false" style="--valija-delay: 6s;" data-image="/images/sala3/valijamal.png"><span>7</span></button>
+                <button type="button" class="valija" data-number="6" data-correct="true" style="--valija-delay: 7.2s;" data-image="/images/sala3/valijabien.png"><span>6</span></button>
+                <button type="button" class="valija" data-number="3" data-correct="false" style="--valija-delay: 8.4s;" data-image="/images/sala3/valijamal.png"><span>3</span></button>
+                <button type="button" class="valija" data-number="9" data-correct="false" style="--valija-delay: 9.6s;" data-image="/images/sala3/valijamal.png"><span>9</span></button>
+                <button type="button" class="valija" data-number="10" data-correct="false" style="--valija-delay: 10.8s;" data-image="/images/sala3/valijamal.png"><span>10</span></button>
             </div>
 
             <div class="code-box">

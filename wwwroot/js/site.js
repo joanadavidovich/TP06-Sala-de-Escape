@@ -1034,6 +1034,24 @@
         const markers = document.querySelectorAll('.object-marker');
     const listItems = document.querySelectorAll('#objetosRestantes li');
 
+    function mostrarEtapaSala3(etapa) {
+        const etapas = [
+            document.querySelector('.objetos-section'),
+            document.getElementById('sala3PuzzleSection'),
+            document.getElementById('conveyorSection')
+        ];
+
+        etapas.forEach((elemento, indice) => {
+            if (elemento) elemento.hidden = indice !== etapa;
+        });
+
+        document.querySelectorAll('.sala3-header .consigna-progress').forEach((item) => {
+            item.classList.toggle('active', Number(item.dataset.consigna) === etapa + 1);
+        });
+    }
+
+    mostrarEtapaSala3(0);
+
     if (markers.length) {
         markers.forEach((marker) => {
             marker.addEventListener('click', () => {
@@ -1051,160 +1069,556 @@
 
                 const remaining = Array.from(listItems).filter((li) => !li.classList.contains('found')).length;
                 if (remaining === 0) {
-                    const puzzleSection = document.getElementById('sala3PuzzleSection');
-                    if (puzzleSection) {
-                        puzzleSection.hidden = false;
-                        alert('✅ ¡Encontraste todos los objetos! Ahora arma el cartel del aeropuerto.');
-                    }
+                    alert('✅ ¡Encontraste todos los objetos! Ahora arma el cartel del aeropuerto.');
+                    mostrarEtapaSala3(1);
                 }
             });
         });
     }
 
-    const pieces = document.querySelectorAll('.puzzle-piece');
-    const slots = document.querySelectorAll('.puzzle-slot');
-    let selectedPiece = null;
+const puzzlePieces = document.getElementById('puzzlePieces');
+const puzzleBoard = document.getElementById('puzzleBoard');
+const puzzleMensaje = document.getElementById('puzzleMensaje');
 
-    if (pieces.length && slots.length) {
-        const applyTransform = (piece) => {
-            const deg = Number(piece.dataset.rotation || 0);
-            const mirror = piece.dataset.mirror === 'true';
-            piece.style.transform = `rotate(${deg}deg)${mirror ? ' scaleX(-1)' : ''}`;
+const puzzleSize = 3;
+
+// FOTO FIJA DEL ROMPECABEZAS
+const puzzleImageURL = '/images/sala3/rompecabezas.png';
+
+let puzzleSolved = false;
+
+
+function crearRompecabezas() {
+
+    if (!puzzlePieces || !puzzleBoard) return;
+
+    puzzleSolved = false;
+
+    puzzlePieces.innerHTML = '';
+    puzzleBoard.innerHTML = '';
+
+    if (puzzleMensaje) {
+        puzzleMensaje.textContent =
+            'Mantené apretada una pieza y arrastrala hasta su lugar.';
+        puzzleMensaje.className = '';
+    }
+
+    // Crear los 9 huecos
+    for (let i = 0; i < 9; i++) {
+
+        const slot = document.createElement('div');
+
+        slot.className = 'puzzle-slot';
+        slot.dataset.slot = String(i);
+
+        puzzleBoard.appendChild(slot);
+    }
+    const indices = Array.from(
+        { length: 9 },
+        (_, i) => i
+    );
+    indices.sort(() => Math.random() - 0.5);
+
+    indices.forEach(index => {
+
+        const piece = document.createElement('div');
+
+        piece.className = 'puzzle-piece';
+
+        piece.dataset.index = String(index);
+        piece.dataset.locked = 'false';
+
+        piece.style.backgroundImage =
+            `url("${puzzleImageURL}")`;
+
+        piece.style.backgroundSize = '300% 300%';
+
+        const fila = Math.floor(index / 3);
+        const columna = index % 3;
+
+        piece.style.backgroundPosition =
+            `${columna * 50}% ${fila * 50}%`;
+        piece.draggable = false;
+
+        puzzlePieces.appendChild(piece);
+
+        activarArrastrePieza(piece);
+    });
+}
+
+function activarArrastrePieza(piece) {
+    let arrastre = null;
+
+    piece.addEventListener('pointerdown', (event) => {
+        if (piece.dataset.locked === 'true' || arrastre) return;
+
+        event.preventDefault();
+
+        const rect = piece.getBoundingClientRect();
+        const boardRect = puzzleBoard.getBoundingClientRect();
+        const ancho = boardRect.width / puzzleSize;
+        const alto = boardRect.height / puzzleSize;
+
+        arrastre = {
+            pointerId: event.pointerId,
+            offsetX: event.clientX - rect.left,
+            offsetY: event.clientY - rect.top,
+            ancho,
+            alto
         };
 
-        pieces.forEach((piece) => {
-            piece.dataset.rotation = '0';
-            applyTransform(piece);
+        puzzleBoard.appendChild(piece);
+        piece.style.position = 'absolute';
+        piece.style.width = `${ancho}px`;
+        piece.style.height = `${alto}px`;
+        piece.style.left = `${event.clientX - boardRect.left - arrastre.offsetX}px`;
+        piece.style.top = `${event.clientY - boardRect.top - arrastre.offsetY}px`;
+        piece.classList.add('dragging');
 
-            const rotateButton = piece.querySelector('.rotate-piece');
-            if (rotateButton) {
-                rotateButton.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    const current = Number(piece.dataset.rotation || 0);
-                    piece.dataset.rotation = String((current + 90) % 360);
-                    applyTransform(piece);
-                });
+        if (piece.setPointerCapture) {
+            piece.setPointerCapture(event.pointerId);
+        }
+    });
+
+    const moverPieza = (event) => {
+        if (!arrastre || event.pointerId !== arrastre.pointerId) return;
+
+        event.preventDefault();
+
+        const boardRect = puzzleBoard.getBoundingClientRect();
+        const maxX = boardRect.width - arrastre.ancho;
+        const maxY = boardRect.height - arrastre.alto;
+        const x = Math.max(-arrastre.ancho * 0.25, Math.min(
+            event.clientX - boardRect.left - arrastre.offsetX,
+            maxX + arrastre.ancho * 0.25
+        ));
+        const y = Math.max(-arrastre.alto * 0.25, Math.min(
+            event.clientY - boardRect.top - arrastre.offsetY,
+            maxY + arrastre.alto * 0.25
+        ));
+
+        piece.style.left = `${x}px`;
+        piece.style.top = `${y}px`;
+    };
+
+    const soltarPieza = (event, cancelar = false) => {
+        if (!arrastre || event.pointerId !== arrastre.pointerId) return;
+
+        event.preventDefault();
+        const estado = arrastre;
+        arrastre = null;
+        piece.classList.remove('dragging');
+
+        try {
+            if (piece.hasPointerCapture(event.pointerId)) {
+                piece.releasePointerCapture(event.pointerId);
             }
+        } catch { }
 
-            piece.addEventListener('click', () => {
-                selectedPiece = piece;
-                pieces.forEach((other) => other.classList.toggle('selected', other === piece));
-            });
+        if (cancelar) {
+            volverAPiezas(piece);
+            return;
+        }
 
-            piece.addEventListener('dragstart', (event) => {
-                selectedPiece = piece;
-                event.dataTransfer.setData('text/plain', piece.dataset.piece);
-            });
+        intentarEncastrar(piece, estado.ancho, estado.alto);
+    };
+
+    document.addEventListener('pointermove', moverPieza, { passive: false });
+    document.addEventListener('pointerup', soltarPieza, { passive: false });
+    document.addEventListener('pointercancel', (event) => soltarPieza(event, true), { passive: false });
+}
+
+
+function intentarEncastrar(piece, anchoPieza, altoPieza) {
+
+    const indexCorrecto =
+        Number(piece.dataset.index);
+
+    const boardRect =
+        puzzleBoard.getBoundingClientRect();
+
+    const ancho = anchoPieza || boardRect.width / puzzleSize;
+    const alto = altoPieza || boardRect.height / puzzleSize;
+
+    const pieceRect =
+        piece.getBoundingClientRect();
+
+    const centroX =
+        pieceRect.left +
+        pieceRect.width / 2;
+
+    const centroY =
+        pieceRect.top +
+        pieceRect.height / 2;
+
+    const columna =
+        indexCorrecto % puzzleSize;
+
+    const fila =
+        Math.floor(indexCorrecto / puzzleSize);
+
+    const objetivoX =
+        boardRect.left +
+        columna * ancho +
+        ancho / 2;
+
+    const objetivoY =
+        boardRect.top +
+        fila * alto +
+        alto / 2;
+
+    const distancia =
+        Math.sqrt(
+            Math.pow(centroX - objetivoX, 2) +
+            Math.pow(centroY - objetivoY, 2)
+        );
+    const tolerancia =
+        Math.min(ancho, alto) * 0.45;
+
+
+    if (distancia <= tolerancia) {
+
+        const slot =
+            puzzleBoard.querySelector(
+                `.puzzle-slot[data-slot="${indexCorrecto}"]`
+            );
+
+        if (!slot) return;
+
+        // Si ya hay una pieza en ese lugar
+        if (slot.querySelector('.puzzle-piece')) {
+
+            volverAPiezas(piece);
+
+            return;
+        }
+        slot.appendChild(piece);
+
+        piece.style.position = 'absolute';
+
+        piece.style.left = '0';
+        piece.style.top = '0';
+
+        piece.style.width = '100%';
+        piece.style.height = '100%';
+
+        piece.style.backgroundSize = '300% 300%';
+
+        // Nunca rotar
+        piece.style.transform = 'none';
+
+        piece.dataset.locked = 'true';
+
+        verificarRompecabezas();
+
+    } else {
+        volverAPiezas(piece);
+    }
+}
+
+
+function volverAPiezas(piece) {
+
+    piece.dataset.locked = 'false';
+
+    piece.style.position = '';
+    piece.style.left = '';
+    piece.style.top = '';
+
+    piece.style.width = '';
+    piece.style.height = '';
+
+    piece.style.backgroundSize = '300% 300%';
+
+    piece.style.transform = 'none';
+
+    puzzlePieces.appendChild(piece);
+}
+
+
+function verificarRompecabezas() {
+
+    const slots =
+        puzzleBoard.querySelectorAll('.puzzle-slot');
+
+    const completo =
+        Array.from(slots).every(slot => {
+
+            const piece =
+                slot.querySelector('.puzzle-piece');
+
+            if (!piece) return false;
+
+            return Number(piece.dataset.index) ===
+                   Number(slot.dataset.slot);
         });
 
-        slots.forEach((slot) => {
-            slot.addEventListener('dragover', (event) => {
-                event.preventDefault();
-                slot.classList.add('drag-over');
-            });
 
-            slot.addEventListener('dragleave', () => {
-                slot.classList.remove('drag-over');
-            });
+    if (!completo || puzzleSolved) return;
 
-            slot.addEventListener('drop', (event) => {
-                event.preventDefault();
-                slot.classList.remove('drag-over');
+    puzzleSolved = true;
 
-                if (!selectedPiece) return;
-                const pieceToPlace = selectedPiece;
-                const targetSlot = slot.getAttribute('data-slot');
+    if (puzzleMensaje) {
 
-                slot.innerHTML = '';
-                slot.appendChild(pieceToPlace);
-                pieceToPlace.classList.remove('selected');
-                pieceToPlace.dataset.placedSlot = targetSlot;
-                selectedPiece = null;
+        puzzleMensaje.textContent =
+            '🎉 ¡FOTO RECONSTRUIDA! Prepará las valijas...';
 
-                const allPlaced = Array.from(slots).every((item) => item.querySelector('.puzzle-piece'));
-                if (allPlaced) {
-                    const solved = Array.from(slots).every((item) => {
-                        const piece = item.querySelector('.puzzle-piece');
-                        return piece && Number(piece.dataset.correct) === Number(item.dataset.slot);
-                    });
+        puzzleMensaje.className =
+            'respuesta-correcta';
+    }
 
-                    if (solved) {
-                        document.getElementById('puzzleMensaje').textContent = '✅ ¡Rompecabezas armado! La palabra del cartel quedó completa.';
-                        document.getElementById('puzzleMensaje').className = 'respuesta-correcta';
+    setTimeout(() => {
 
-                        const conveyorSection = document.getElementById('conveyorSection');
-                        if (conveyorSection) {
-                            conveyorSection.hidden = false;
-                        }
+        mostrarEtapaSala3(2);
+
+        iniciarCintaSala3();
+
+    }, 1200);
+}
+crearRompecabezas();
+let codigoValijas = '';
+let juegoCintaActivo = false;
+let timeoutReinicioCinta = null;
+
+function iniciarCintaSala3() {
+
+    const valijas =
+        document.querySelectorAll('.valija');
+
+    if (!valijas.length) return;
+
+
+    clearTimeout(timeoutReinicioCinta);
+
+    codigoValijas = '';
+
+    juegoCintaActivo = true;
+
+
+    const codigoInput =
+        document.getElementById('codigoSala3');
+
+    if (codigoInput) {
+        codigoInput.value = '';
+    }
+
+
+    const mensaje =
+        document.getElementById('conveyorMensaje');
+
+    if (mensaje) {
+
+        mensaje.textContent =
+            '🧳 ¡ATENCIÓN! Seleccioná únicamente las valijas del vuelo.';
+
+        mensaje.className = '';
+    }
+
+
+    valijas.forEach((valija, index) => {
+
+        valija.dataset.usada = 'false';
+
+        valija.classList.remove(
+            'selected',
+            'wrong',
+            'cinta-reinicio'
+        );
+        valija.style.setProperty(
+            '--valija-delay',
+            `${index * 0.65}s`
+        );
+    });
+}
+
+function perderCintaSala3(valijaIncorrecta) {
+
+    if (!juegoCintaActivo) return;
+
+    juegoCintaActivo = false;
+
+
+    valijaIncorrecta.classList.add('wrong');
+
+
+    const mensaje =
+        document.getElementById('conveyorMensaje');
+
+    if (mensaje) {
+
+        mensaje.textContent =
+            '❌ ¡TE EQUIVOCASTE DE VALIJA! La cinta vuelve a comenzar desde cero.';
+
+        mensaje.className =
+            'respuesta-incorrecta';
+    }
+    codigoValijas = '';
+
+    const codigoInput =
+        document.getElementById('codigoSala3');
+
+    if (codigoInput) {
+        codigoInput.value = '';
+    }
+    timeoutReinicioCinta = setTimeout(() => {
+
+        iniciarCintaSala3();
+
+    }, 1000);
+}
+
+function inicializarCintaSala3() {
+
+    const valijas =
+        document.querySelectorAll('.valija');
+
+    if (!valijas.length) return;
+
+    valijas.forEach(valija => {
+
+        if (!valija.querySelector('img')) {
+
+            const image =
+                document.createElement('img');
+
+            image.src =
+                valija.dataset.image;
+
+            image.alt =
+                `Valija ${valija.dataset.number}`;
+
+            image.addEventListener(
+                'error',
+                () => image.remove()
+            );
+
+            valija.prepend(image);
+        }
+        valija.addEventListener('click', () => {
+
+            if (!juegoCintaActivo) return;
+
+            if (valija.dataset.usada === 'true') {
+                return;
+            }
+
+
+            const correcto =
+                valija.dataset.correct === 'true';
+            if (correcto) {
+
+                valija.dataset.usada = 'true';
+
+                valija.classList.add('selected');
+
+
+                codigoValijas +=
+                    valija.dataset.number;
+
+
+                const codigoInput =
+                    document.getElementById('codigoSala3');
+
+                if (codigoInput) {
+                    codigoInput.value =
+                        codigoValijas;
+                }
+
+
+                const mensaje =
+                    document.getElementById(
+                        'conveyorMensaje'
+                    );
+
+                if (mensaje) {
+
+                    mensaje.textContent =
+                        `✅ Valija ${valija.dataset.number} correcta.`;
+
+                    mensaje.className =
+                        'respuesta-correcta';
+                }
+                const correctas =
+                    Array.from(valijas)
+                        .filter(v =>
+                            v.dataset.correct === 'true'
+                        ).length;
+
+
+                if (
+                    codigoValijas.length === correctas
+                ) {
+
+                    juegoCintaActivo = false;
+
+                    if (mensaje) {
+
+                        mensaje.textContent =
+                            '🎉 ¡Encontraste todas las valijas correctas!';
                     }
                 }
-            });
-
-            slot.addEventListener('click', () => {
-                if (!selectedPiece) return;
-                const pieceToPlace = selectedPiece;
-                const slotNumber = slot.dataset.slot;
-                if (slot.querySelector('.puzzle-piece')) {
-                    slot.innerHTML = '';
-                }
-                slot.appendChild(pieceToPlace);
-                pieceToPlace.classList.remove('selected');
-                pieceToPlace.dataset.placedSlot = slotNumber;
-                selectedPiece = null;
-            });
-        });
-    }
-
-    const verificarPuzzleBtn = document.getElementById('verificarPuzzle');
-    if (verificarPuzzleBtn) {
-        verificarPuzzleBtn.addEventListener('click', () => {
-            const respuesta = document.getElementById('aeropuertoRespuesta');
-            const mensaje = document.getElementById('puzzleMensaje');
-            if (!respuesta || !mensaje) return;
-
-            const texto = respuesta.value.trim().toUpperCase();
-            const validAnswers = ['AEROPUERTO DE LUXEMBURGO', 'AÉROPORT DE LUXEMBOURG', 'LUXEMBOURG AIRPORT', 'LUXEMBOURG'];
-
-            if (validAnswers.includes(texto) || (texto.includes('LUXEMBOURG') && texto.includes('AER'))) {
-                mensaje.textContent = '✅ ¡Correcto! El aeropuerto corresponde a Luxembourg Airport.';
-                mensaje.className = 'respuesta-correcta';
-
-                const conveyorSection = document.getElementById('conveyorSection');
-                if (conveyorSection) {
-                    conveyorSection.hidden = false;
-                }
             } else {
-                mensaje.textContent = '❌ No es la respuesta correcta. Piensa en el aeropuerto de Luxemburgo.';
-                mensaje.className = 'respuesta-incorrecta';
+
+                perderCintaSala3(valija);
             }
+
         });
-    }
+    });
 
-    const valijas = document.querySelectorAll('.valija');
-    let codigoValijas = '';
 
-    if (valijas.length) {
-        valijas.forEach((valija) => {
-            valija.addEventListener('click', () => {
-                if (valija.dataset.usada === 'true') return;
+    iniciarCintaSala3();
+}
+inicializarCintaSala3();
 
-                const correcto = valija.dataset.correct === 'true';
-                if (correcto) {
-                    valija.dataset.usada = 'true';
-                    valija.classList.add('selected');
-                    codigoValijas += valija.dataset.number;
-                    document.getElementById('codigoSala3').value = codigoValijas;
-                    document.getElementById('conveyorMensaje').textContent = '✅ Valija correcta marcada.';
-                    document.getElementById('conveyorMensaje').className = 'respuesta-correcta';
-                } else {
-                    valija.classList.add('wrong');
-                    setTimeout(() => valija.classList.remove('wrong'), 500);
-                    document.getElementById('conveyorMensaje').textContent = '❌ Esa valija no corresponde al vuelo correcto.';
-                    document.getElementById('conveyorMensaje').className = 'respuesta-incorrecta';
-                }
-            });
-        });
-    }
+
+if (confirmarCodigoBtn) {
+
+    confirmarCodigoBtn.addEventListener(
+        'click',
+        () => {
+
+            const codigo =
+                document.getElementById(
+                    'codigoSala3'
+                ).value.trim();
+
+
+            const mensaje =
+                document.getElementById(
+                    'conveyorMensaje'
+                );
+
+
+            if (codigo === '4816') {
+
+                juegoCintaActivo = false;
+
+                mensaje.textContent =
+                    '✅ Código 4816 correcto. Puedes pasar a la Sala 4.';
+
+                mensaje.className =
+                    'respuesta-correcta';
+
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        '/Home/Sala4';
+
+                }, 1200);
+
+
+            } else {
+
+                mensaje.textContent =
+                    '❌ Código incompleto o incorrecto.';
+
+                mensaje.className =
+                    'respuesta-incorrecta';
+            }
+        }
+    );
+}
 
     const confirmarCodigoBtn = document.getElementById('confirmarCodigoSala3');
     if (confirmarCodigoBtn) {
