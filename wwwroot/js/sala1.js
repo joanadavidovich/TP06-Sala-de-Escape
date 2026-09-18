@@ -475,7 +475,9 @@ function avanzarConsigna() {
 // ===== CÓDIGO FINAL =====
 function mostrarCodigoFinal() {
     if (respuestasConsignas[1] && respuestasConsignas[2] && respuestasConsignas[3]) {
-        document.getElementById('codigoFinal').style.display = 'flex';
+        const codigoFinalElement = document.getElementById('codigoFinal');
+        codigoFinalElement.hidden = false;
+        codigoFinalElement.style.display = 'flex';
         
         const btnEnviar = document.getElementById('enviarCodigo');
         if (btnEnviar) {

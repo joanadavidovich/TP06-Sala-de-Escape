@@ -3,12 +3,66 @@
 }
 
 <div class="sala4-container">
-    <div class="sala4-card">
-        <h1>🎉 ¡HAS SUPERADO LA PRUEBA! 🎉</h1>
-        <p>Completaste la pista del aeropuerto y lograste identificar el destino correcto.</p>
-        <p><strong>Sala 4</strong> representa la salida final del recorrido y la confirmación de que la misión se cumplió.</p>
+    <div class="sala4-card simon-card">
+        <p class="sala4-eyebrow">SALA 4 · PUERTA DE ESCAPE</p>
+        <h1>Panel de salida</h1>
+        <p>Observá la secuencia y repetila usando los botones en el mismo orden.</p>
+
+        <div class="sala4-progress" aria-live="polite">
+            <span id="simonRound">Ronda 1 de 3</span>
+            <span id="simonStatus">Preparando el panel...</span>
+        </div>
+
+        <div class="simon-panel" id="simonPanel" aria-label="Panel de colores y formas">
+            <button class="simon-button simon-red simon-circle" type="button" data-simon-id="red" aria-label="Botón rojo"></button>
+            <button class="simon-button simon-blue simon-diamond" type="button" data-simon-id="blue" aria-label="Botón azul"></button>
+            <button class="simon-button simon-green simon-triangle" type="button" data-simon-id="green" aria-label="Botón verde"></button>
+            <button class="simon-button simon-yellow simon-square" type="button" data-simon-id="yellow" aria-label="Botón amarillo"></button>
+        </div>
+
+        <p id="simonMessage" class="sala4-message" role="status"></p>
+
+        <div id="simonResult" class="sala4-result" hidden>
+            <h2>SISTEMA DE NAVEGACIÓN RESTAURADO</h2>
+            <p>La puerta habilitó la sala de control.</p>
+        </div>
+
+        <section id="emergencyGame" class="sala4-game emergency-game" hidden>
+            <p class="sala4-eyebrow">JUEGO 2 · PUERTA DE EMERGENCIA</p>
+            <h2>EMERGENCY EXIT</h2>
+            <p>El sistema no reconoce el orden de apertura. Activá los objetos de la sala para encontrar las pistas.</p>
+            <div class="emergency-clues" aria-label="Objetos que revelan pistas">
+                <button class="emergency-clue" type="button" data-clue="🔴 va antes que 🔵">🖥️ Pantalla</button>
+                <button class="emergency-clue" type="button" data-clue="🟢 no está al principio">💡 Luz</button>
+                <button class="emergency-clue" type="button" data-clue="⭐ está entre 🔴 y 🟡">⏰ Reloj</button>
+                <button class="emergency-clue" type="button" data-clue="✈️ está después de 🟢">📡 Señal</button>
+                <button class="emergency-clue" type="button" data-clue="🔵 ocupa la posición 2">🧳 Valija</button>
+            </div>
+            <p id="emergencyClueMessage" class="sala4-message" role="status"></p>
+            <div id="emergencyButtons" class="emergency-buttons" aria-label="Botones de emergencia">
+                <button class="emergency-button" type="button" data-emergency-id="red">🔴</button>
+                <button class="emergency-button" type="button" data-emergency-id="blue">🔵</button>
+                <button class="emergency-button" type="button" data-emergency-id="green">🟢</button>
+                <button class="emergency-button" type="button" data-emergency-id="yellow">🟡</button>
+                <button class="emergency-button" type="button" data-emergency-id="star">⭐</button>
+                <button class="emergency-button" type="button" data-emergency-id="plane">✈️</button>
+                <button class="emergency-button" type="button" data-emergency-id="bell">🔔</button>
+                <button class="emergency-button" type="button" data-emergency-id="key">🔑</button>
+                <button class="emergency-button" type="button" data-emergency-id="lock">🔒</button>
+                <button class="emergency-button" type="button" data-emergency-id="bolt">⚡</button>
+                <button class="emergency-button" type="button" data-emergency-id="circle">⚪</button>
+                <button class="emergency-button" type="button" data-emergency-id="cross">❌</button>
+            </div>
+            <p id="emergencySequence" class="emergency-sequence" aria-live="polite">Secuencia: _ _ _ _ _ _</p>
+            <p id="emergencyMessage" class="sala4-message" role="status"></p>
+            <div id="finalEscape" class="sala4-result" hidden>
+                <h2>🚨 ALARMA DESACTIVADA</h2>
+                <p>PUERTAS DESBLOQUEADAS. ESCAPARON.</p>
+            </div>
+        </section>
+
         <div class="sala4-actions">
-            <a href="@Url.Action("Index")" class="btn btn-primary">Volver al inicio</a>
+            <a href="@Url.Action("Index")" class="btn btn-outline">Volver al inicio</a>
         </div>
     </div>
 </div>

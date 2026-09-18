@@ -593,6 +593,7 @@
             if (respuestasConsignas[1] && respuestasConsignas[2] && respuestasConsignas[3]) {
                 const modal = document.getElementById('codigoFinal');
                 if (modal) {
+                    modal.hidden = false;
                     modal.style.display = 'flex';
                     modal.classList.add('visible');
                 }
@@ -1424,10 +1425,8 @@ function iniciarCintaSala3() {
             'wrong',
             'cinta-reinicio'
         );
-        valija.style.setProperty(
-            '--valija-delay',
-            `${index * 0.65}s`
-        );
+        valija.style.setProperty('--valija-delay', `-${index * 1.55}s`);
+        valija.style.setProperty('--valija-lane', `${(index % 3 - 1) * 34}px`);
     });
 }
 
@@ -1538,16 +1537,12 @@ function inicializarCintaSala3() {
                     mensaje.className =
                         'respuesta-correcta';
                 }
-                const correctas =
-                    Array.from(valijas)
-                        .filter(v =>
-                            v.dataset.correct === 'true'
-                        ).length;
+                const correctas = Array.from(valijas)
+                    .filter((v) => v.dataset.correct === 'true').length;
+                const seleccionadas = Array.from(valijas)
+                    .filter((v) => v.dataset.correct === 'true' && v.dataset.usada === 'true').length;
 
-
-                if (
-                    codigoValijas.length === correctas
-                ) {
+                if (seleccionadas === correctas) {
 
                     juegoCintaActivo = false;
 
@@ -1570,63 +1565,16 @@ function inicializarCintaSala3() {
 }
 inicializarCintaSala3();
 
-
-if (confirmarCodigoBtn) {
-
-    confirmarCodigoBtn.addEventListener(
-        'click',
-        () => {
-
-            const codigo =
-                document.getElementById(
-                    'codigoSala3'
-                ).value.trim();
-
-
-            const mensaje =
-                document.getElementById(
-                    'conveyorMensaje'
-                );
-
-
-            if (codigo === '4816') {
-
-                juegoCintaActivo = false;
-
-                mensaje.textContent =
-                    '✅ Código 4816 correcto. Puedes pasar a la Sala 4.';
-
-                mensaje.className =
-                    'respuesta-correcta';
-
-
-                setTimeout(() => {
-
-                    window.location.href =
-                        '/Home/Sala4';
-
-                }, 1200);
-
-
-            } else {
-
-                mensaje.textContent =
-                    '❌ Código incompleto o incorrecto.';
-
-                mensaje.className =
-                    'respuesta-incorrecta';
-            }
-        }
-    );
-}
-
     const confirmarCodigoBtn = document.getElementById('confirmarCodigoSala3');
     if (confirmarCodigoBtn) {
         confirmarCodigoBtn.addEventListener('click', () => {
             const codigo = document.getElementById('codigoSala3').value.trim();
             const mensaje = document.getElementById('conveyorMensaje');
 
-            if (codigo === '4816') {
+            const codigoValido = codigo.length === 4 &&
+                codigo.split('').sort().join('') === '1468';
+
+            if (codigoValido) {
                 mensaje.textContent = '✅ Código 4816 correcto. Puedes pasar a la Sala 4.';
                 mensaje.className = 'respuesta-correcta';
                 setTimeout(() => {
@@ -1641,7 +1589,200 @@ if (confirmarCodigoBtn) {
 }
 
 function initSala4() {
-    return null;
+    const buttons = Array.from(document.querySelectorAll('.simon-button'));
+    const roundLabel = document.getElementById('simonRound');
+    const statusLabel = document.getElementById('simonStatus');
+    const message = document.getElementById('simonMessage');
+    const result = document.getElementById('simonResult');
+    const simonPanel = document.getElementById('simonPanel');
+    const emergencyGame = document.getElementById('emergencyGame');
+    if (!buttons.length || !roundLabel || !statusLabel || !message || !result) return;
+
+    const roundLengths = [3, 4, 5];
+    let round = 0;
+    let sequence = [];
+    let playerIndex = 0;
+    let acceptingInput = false;
+    let playbackToken = 0;
+    let audioContext = null;
+
+    const tones = { red: 261.63, blue: 329.63, green: 392, yellow: 523.25 };
+
+    const wait = (duration) => new Promise((resolve) => setTimeout(resolve, duration));
+
+    function updateLabels() {
+        roundLabel.textContent = `Ronda ${round + 1} de ${roundLengths.length}`;
+    }
+
+    function playTone(id) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        audioContext ||= new AudioContext();
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.frequency.value = tones[id] || 330;
+        oscillator.type = 'sine';
+        gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.16, audioContext.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.38);
+        oscillator.connect(gain).connect(audioContext.destination);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.4);
+    }
+
+    function flashButton(button, duration = 720) {
+        button.classList.add('simon-lit');
+        playTone(button.dataset.simonId);
+        return wait(duration).then(() => button.classList.remove('simon-lit'));
+    }
+
+    async function showSequence() {
+        const token = ++playbackToken;
+        acceptingInput = false;
+        playerIndex = 0;
+        statusLabel.textContent = 'Memorizá la secuencia';
+        message.textContent = '';
+        await wait(900);
+
+        for (const id of sequence) {
+            if (token !== playbackToken) return;
+            const button = buttons.find((item) => item.dataset.simonId === id);
+            if (button) await flashButton(button);
+            await wait(320);
+        }
+
+        if (token === playbackToken) {
+            acceptingInput = true;
+            statusLabel.textContent = 'Ahora repetila';
+        }
+    }
+
+    function startRound() {
+        updateLabels();
+        sequence = Array.from({ length: roundLengths[round] }, () => {
+            return buttons[Math.floor(Math.random() * buttons.length)].dataset.simonId;
+        });
+        showSequence();
+    }
+
+    function restartFromZero() {
+        playbackToken++;
+        acceptingInput = false;
+        round = 0;
+        result.hidden = true;
+        message.textContent = 'Te equivocaste. El panel se reinicia desde la ronda 1.';
+        message.className = 'sala4-message sala4-error';
+        setTimeout(startRound, 900);
+    }
+
+    function completeGame() {
+        acceptingInput = false;
+        statusLabel.textContent = 'Secuencia completa';
+        message.textContent = 'Sistema de navegación restaurado. Preparando la puerta de emergencia.';
+        message.className = 'sala4-message sala4-success';
+        result.hidden = false;
+        if (simonPanel) simonPanel.hidden = true;
+        if (emergencyGame) {
+            emergencyGame.hidden = false;
+            iniciarJuegoEmergencia();
+        }
+    }
+
+    function iniciarJuegoEmergencia() {
+        const buttons = Array.from(document.querySelectorAll('.emergency-button'));
+        const clues = Array.from(document.querySelectorAll('.emergency-clue'));
+        const clueMessage = document.getElementById('emergencyClueMessage');
+        const sequenceLabel = document.getElementById('emergencySequence');
+        const messageLabel = document.getElementById('emergencyMessage');
+        const finalEscape = document.getElementById('finalEscape');
+        const correctSequence = ['red', 'star', 'blue', 'green', 'plane', 'yellow'];
+        let entered = [];
+        let finished = false;
+
+        clues.forEach((clue) => {
+            clue.addEventListener('click', () => {
+                clue.classList.add('revealed');
+                clueMessage.textContent = clue.dataset.clue;
+            });
+        });
+
+        buttons.forEach((button) => {
+            button.addEventListener('click', () => {
+                if (finished) return;
+                const position = entered.length;
+                if (button.dataset.emergencyId !== correctSequence[position]) {
+                    entered = [];
+                    buttons.forEach((item) => item.classList.remove('emergency-pressed'));
+                    sequenceLabel.textContent = 'Secuencia incorrecta. Volvé a empezar: _ _ _ _ _ _';
+                    messageLabel.textContent = 'El panel se reinició.';
+                    messageLabel.className = 'sala4-message sala4-error';
+                    return;
+                }
+
+                entered.push(button.dataset.emergencyId);
+                button.classList.add('emergency-pressed');
+                sequenceLabel.textContent = `Secuencia: ${entered.map((id) => buttons.find((item) => item.dataset.emergencyId === id).textContent).join(' → ')}${entered.length < correctSequence.length ? ' → _' : ''}`;
+                messageLabel.textContent = `${entered.length} de ${correctSequence.length} posiciones correctas.`;
+                messageLabel.className = 'sala4-message sala4-success';
+
+                if (entered.length === correctSequence.length) {
+                    finished = true;
+                    buttons.forEach((item) => item.disabled = true);
+                    iniciarCuentaRegresiva(messageLabel, finalEscape);
+                }
+            });
+        });
+    }
+
+    function iniciarCuentaRegresiva(messageLabel, finalEscape) {
+        let restante = 3;
+        messageLabel.className = 'sala4-message sala4-success emergency-countdown';
+        messageLabel.textContent = `${restante}...`;
+        const timer = setInterval(() => {
+            restante--;
+            if (restante > 0) {
+                messageLabel.textContent = `${restante}...`;
+                return;
+            }
+            clearInterval(timer);
+            messageLabel.textContent = '🚨 ALARMA DESACTIVADA';
+            finalEscape.hidden = false;
+        }, 900);
+    }
+
+    buttons.forEach((button) => {
+        button.addEventListener('click', async () => {
+            if (!acceptingInput) return;
+
+            const expected = sequence[playerIndex];
+            if (button.dataset.simonId !== expected) {
+                restartFromZero();
+                return;
+            }
+
+            acceptingInput = false;
+            await flashButton(button, 260);
+            playerIndex++;
+
+            if (playerIndex < sequence.length) {
+                acceptingInput = true;
+                return;
+            }
+
+            acceptingInput = false;
+            if (round === roundLengths.length - 1) {
+                completeGame();
+                return;
+            }
+
+            round++;
+            message.textContent = '¡Bien! Preparando la siguiente ronda.';
+            message.className = 'sala4-message sala4-success';
+            setTimeout(startRound, 800);
+        });
+    });
+
+    startRound();
 }
 
 document.addEventListener('DOMContentLoaded', initSalaEscapePage);
