@@ -8,29 +8,40 @@ namespace TP06_Sala_de_Escape.Models
 {
     public class BD
     {
-        // Cadena de conexion por defecto a TP06 local. Cambiar si es necesario.
-        private static string _connectionString = @"Server=localhost;Database=TP06;Integrated Security=True;TrustServerCertificate=True;";
+        private static string _connectionString = @"Server=localhost\SQLEXPRESS;Database=TP06;Integrated Security=True;TrustServerCertificate=True;";
 
-        // Agrega un usuario y devuelve el id que puso la BD (IDENTITY)
         public int AgregarUsuario(Usuario usuario)
         {
-            string sql = @"INSERT INTO Usuario (nombre, email, fechaCreacion) OUTPUT INSERTED.id VALUES (@Nombre, @Email, @FechaCreacion);";
+            AsegurarColumnaPassword();
+            string sql = @"INSERT INTO Usuario (nombre, email, passwordHash, fechaCreacion) OUTPUT INSERTED.id VALUES (@Nombre, @Email, @PasswordHash, @FechaCreacion);";
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                return connection.QuerySingle<int>(sql, new { Nombre = usuario.Nombre, Email = usuario.Email, FechaCreacion = usuario.FechaCreacion });
+                return connection.QuerySingle<int>(sql, new { Nombre = usuario.Nombre, Email = usuario.Email, PasswordHash = usuario.PasswordHash, FechaCreacion = usuario.FechaCreacion });
             }
         }
 
         // Obtener usuario por nombre
         public Usuario? ObtenerUsuarioPorNombre(string nombre)
         {
+            AsegurarColumnaPassword();
             string sql = "SELECT * FROM Usuario WHERE nombre = @Nombre";
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
                 return connection.QueryFirstOrDefault<Usuario>(sql, new { Nombre = nombre });
             }
+        }
+
+        private void AsegurarColumnaPassword()
+        {
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+            connection.Execute(@"
+                IF COL_LENGTH('dbo.Usuario', 'passwordHash') IS NULL
+                BEGIN
+                    ALTER TABLE dbo.Usuario ADD passwordHash NVARCHAR(512) NULL;
+                END");
         }
 
         // Obtener usuario por id
@@ -74,6 +85,21 @@ namespace TP06_Sala_de_Escape.Models
         public Partida? ObtenerUltimaPartidaPorUsuario(int usuarioId)
         {
             string sql = "SELECT TOP 1 * FROM Partidas WHERE UsuarioId = @UsuarioId ORDER BY fechaInicio DESC";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                return connection.QueryFirstOrDefault<Partida>(sql, new { UsuarioId = usuarioId });
+            }
+        }
+
+        public Partida? ObtenerPartidaEnCursoPorUsuario(int usuarioId)
+        {
+            string sql = @"
+                SELECT TOP 1 *
+                FROM Partidas
+                WHERE UsuarioId = @UsuarioId AND estado = 'in_progress'
+                ORDER BY fechaInicio DESC";
+
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();

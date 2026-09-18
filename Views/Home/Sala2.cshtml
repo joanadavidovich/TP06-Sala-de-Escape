@@ -6,7 +6,7 @@
     <!-- HEADER -->
     <div class="sala2-header">
         <h1>📸 SALA 2 — LAS IMÁGENES BORROSAS 📸</h1>
-        <p>Objetivo: Descubrir el país. Están en Europa, pero ¿dónde exactamente?</p>
+        <p>La navegación recuperó imágenes del aterrizaje, pero las cámaras quedaron fuera de secuencia. Cada registro aporta una parte de la ubicación.</p>
 
         <div class="progress-tracker">
             <div class="consigna-progress" data-consigna="1">
@@ -24,13 +24,17 @@
         </div>
     </div>
 
+    <section class="room-game-list" id="sala2Juegos" aria-label="Juegos de Sala 2">
+        <article class="game-item is-available" data-game-item="1"><div><span class="game-item-number">01</span><h2>Ordenar el registro de cámaras</h2><p>Reconstruí la línea temporal para que el sistema pueda mejorar las fotografías.</p></div><button class="btn btn-primary game-open" type="button" data-open-game="1">Abrir juego</button></article>
+        <article class="game-item is-locked" data-game-item="2"><div><span class="game-item-number">02</span><h2>Conectar las pistas recuperadas</h2><p>Las imágenes mejoradas contienen palabras que pertenecen a grupos distintos. Separalas para revelar la relación.</p></div><button class="btn btn-primary game-open" type="button" data-open-game="2" disabled>Bloqueado</button></article>
+        <article class="game-item is-locked" data-game-item="3"><div><span class="game-item-number">03</span><h2>Confirmar la ubicación</h2><p>Usá la evidencia reunida para identificar el país y luego recuperar la secuencia de salida.</p></div><button class="btn btn-primary game-open" type="button" data-open-game="3" disabled>Bloqueado</button></article>
+    </section>
+
     <!-- CONSIGNA 1: LAS 5 FOTOGRAFÍAS BORROSAS -->
     <div class="consigna-container active" id="consigna1">
         <div class="consigna-titulo">
             <h2>🧩 CONSIGNA 1 — ORDENAR LAS FOTOS</h2>
-            <p>Las cámaras del aeropuerto se dañaron. Debes reconstruir el orden en que se grabaron.</p>
-            <p><strong>📌 Instrucciones:</strong> Arrastra cada foto al número correcto (1, 2, 3, 4, 5) según cuándo crees que fue tomada.</p>
-            <p class="consigna-warning">✅ Una vez ordenes las 5 fotos, el código se generará automáticamente y podrás desbloquear las imágenes.</p>
+            <div class="game-instructions"><p><strong>Contexto:</strong> Las cámaras de la terminal conservaron cinco fotografías, pero sus registros llegaron mezclados.</p><p><strong>Objetivo:</strong> reconstruir la secuencia temporal para que el sistema pueda enfocar las imágenes.</p><p><strong>Mecánica:</strong> arrastrá cada foto al número de la ranura que corresponde a su hora y usá el botón de verificación.</p><p><strong>Resultado:</strong> la secuencia validada permite mejorar el material sin mostrar todavía la ubicación.</p></div>
         </div>
 
         <div class="desafio-secuencia">
@@ -126,6 +130,7 @@
                             <img id="previewFoto5" src="/images/sala2/mejorada5.png" alt="Foto mejorada 5" />
                         </div>
                     </div>
+                    <button class="btn btn-primary" id="continuarFotos" type="button" hidden>Continuar al análisis</button>
                 </div>
             </div>
         </div>
@@ -135,7 +140,7 @@
     <div class="consigna-container" id="consigna2">
         <div class="consigna-titulo">
             <h2>🔍 CONSIGNA 2 — Análisis de Pistas</h2>
-            <p>Relaciona los elementos de las 5 fotografías para encontrar el país.</p>
+            <div class="game-instructions"><p><strong>Contexto:</strong> Las fotos mejoradas contienen palabras del aeropuerto, del mapa y de la terminal.</p><p><strong>Objetivo:</strong> separar las palabras en cuatro grupos que compartan una relación.</p><p><strong>Mecánica:</strong> seleccioná exactamente cuatro tarjetas y enviá el grupo; las tarjetas resueltas quedan fuera del tablero.</p><p><strong>Resultado:</strong> los cuatro grupos completos liberan la pantalla de identificación.</p></div>
         </div>
 
         <div class="analisis-container">
@@ -153,7 +158,7 @@
     <div class="consigna-container" id="consigna3">
         <div class="consigna-titulo">
             <h2>🎯 CONSIGNA 3 — ¿En qué país estamos?</h2>
-            <p>Basándote en todas las pistas, identifica el país donde se encuentra el aeropuerto.</p>
+            <div class="game-instructions"><p><strong>Contexto:</strong> La evidencia de las cámaras ya permite ubicar la terminal dentro de Europa.</p><p><strong>Objetivo:</strong> identificar el país antes de abrir la próxima ruta.</p><p><strong>Mecánica:</strong> compará las fotografías, el mapa y los grupos resueltos; escribí el país y verificá la respuesta.</p><p><strong>Resultado:</strong> la confirmación muestra el teclado donde ingresarás la secuencia descubierta durante la investigación.</p></div>
         </div>
 
         <div class="paises-opciones">
@@ -193,6 +198,8 @@
         <div class="sala2-code-panel" id="sala2CodePanel" hidden>
             <h3>🔐 Código para pasar a Sala 3</h3>
             <p>Ingresá el código que desbloquea la próxima terminal.</p>
+            <button class="hint-button" type="button" id="pistaSala2" aria-label="Mostrar pista">💡</button>
+            <p class="room-hint" id="pistaSala2Texto" hidden>La terminal pide una secuencia que ya apareció cuando las cámaras recuperaron su orden.</p>
             <div class="code-input-row">
                 <input id="sala2CodeInput" type="text" maxlength="5" placeholder="Código de acceso" />
                 <button class="btn btn-primary" id="verificarCodigoSala2">Validar código</button>
@@ -202,7 +209,6 @@
 
     <!-- NAVEGACIÓN -->
     <div class="sala-navigation">
-        <a href="@Url.Action("Sala1")" class="btn btn-outline">← Volver a Sala 1</a>
         <a href="@Url.Action("Index")" class="btn btn-outline">Ir al Inicio</a>
     </div>
 </div>

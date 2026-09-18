@@ -5,7 +5,7 @@
 <div class="sala3-container">
     <div class="sala3-header">
         <h1>✈️ SALA 3 — PASAJERO DEL AEROPUERTO ✈️</h1>
-        <p>“Solo 5 objetos pertenecen al pasajero que llegó a esta terminal. Encontralos.”</p>        
+        <p>El manifiesto del vuelo se perdió durante el aterrizaje. Recuperá los objetos y la identificación del equipaje para reconstruir la ruta de salida.</p>
         <div class="progress-tracker">
             <div class="consigna-progress" data-consigna="1">
                 <span class="step-number">1</span>
@@ -20,6 +20,12 @@
                 <span class="step-name">Cinta transportadora</span>
             </div>
         </div>    </div>
+
+    <section class="room-game-list" id="sala3Juegos" aria-label="Juegos de Sala 3">
+        <article class="game-item is-available" data-game-item="1"><div><span class="game-item-number">01</span><h2>Revisar la escena de llegada</h2><p>El pasajero dejó objetos entre los restos de la terminal. Hacé clic en cada elemento de la lista cuando lo encuentres en la escena.</p></div><button class="btn btn-primary game-open" type="button" data-open-game="1">Abrir juego</button></article>
+        <article class="game-item is-locked" data-game-item="2"><div><span class="game-item-number">02</span><h2>Reconstruir la identificación</h2><p>Los objetos recuperados apuntan a una imagen dañada. Arrastrá cada fragmento hasta su posición para volver a leerla.</p></div><button class="btn btn-primary game-open" type="button" data-open-game="2" disabled>Bloqueado</button></article>
+        <article class="game-item is-locked" data-game-item="3"><div><span class="game-item-number">03</span><h2>Separar el equipaje del vuelo</h2><p>La cinta mezcló las valijas durante la evacuación. Observá cada etiqueta, seleccioná sólo las que pertenecen al vuelo y conservá su orden numérico.</p></div><button class="btn btn-primary game-open" type="button" data-open-game="3" disabled>Bloqueado</button></article>
+    </section>
 
     <div class="sala3-stage">
         <section class="objetos-section">
@@ -78,6 +84,8 @@
 
         <section class="puzzle-section" id="sala3PuzzleSection" hidden>
 
+    <div class="game-instructions"><p><strong>Contexto:</strong> Entre los objetos apareció una fotografía del cartel de la terminal, pero quedó partida.</p><p><strong>Objetivo:</strong> reconstruir la imagen para leer la información del aeropuerto.</p><p><strong>Mecánica:</strong> mantené presionada una pieza, arrastrala sobre el tablero y soltala cerca de su posición; las piezas correctas quedan fijadas.</p><p><strong>Resultado:</strong> la fotografía completa identifica qué equipaje debe revisarse.</p></div>
+
     <div class="puzzle-box">
 
     <div class="puzzle-pieces" id="puzzlePieces"></div>
@@ -95,18 +103,19 @@
                 <h2>🧳 Cinta transportadora</h2>
             </div>
 
-            <p class="conveyor-text">Encontrá las valijas que pertenecen al vuelo que acabás de identificar.</p>
+            <div class="game-instructions"><p><strong>Contexto:</strong> El personal de tierra dejó el equipaje separado en varios carriles después de evacuar la terminal.</p><p><strong>Objetivo:</strong> recuperar sólo las valijas vinculadas con el vuelo identificado y reconstruir su número.</p><p><strong>Mecánica:</strong> hacé clic en una valija para inspeccionarla; si es correcta queda marcada con un contorno pequeño, y una elección incorrecta reinicia la cinta.</p><p><strong>Resultado:</strong> las cuatro etiquetas correctas forman el código de vuelo que abre la última sala.</p></div>
+            <p class="conveyor-text">El personal de tierra apartó el equipaje después del aterrizaje de emergencia. Las valijas quedaron distribuidas en distintos carriles y sólo las etiquetas del vuelo identificado sirven para reconstruir el código.</p>
             <div class="conveyor-track">
-                <button type="button" class="valija" data-number="4" data-correct="true" style="--valija-delay: 0s;" data-image="/images/sala3/valijabien.png"><span>4</span></button>
-                <button type="button" class="valija" data-number="2" data-correct="false" style="--valija-delay: 1.2s;" data-image="/images/sala3/valijamal.png"><span>2</span></button>
-                <button type="button" class="valija" data-number="8" data-correct="true" style="--valija-delay: 2.4s;" data-image="/images/sala3/valijabien.png"><span>8</span></button>
-                <button type="button" class="valija" data-number="5" data-correct="false" style="--valija-delay: 3.6s;" data-image="/images/sala3/valijamal.png"><span>5</span></button>
-                <button type="button" class="valija" data-number="1" data-correct="true" style="--valija-delay: 4.8s;" data-image="/images/sala3/valijabien.png"><span>1</span></button>
-                <button type="button" class="valija" data-number="7" data-correct="false" style="--valija-delay: 6s;" data-image="/images/sala3/valijamal.png"><span>7</span></button>
-                <button type="button" class="valija" data-number="6" data-correct="true" style="--valija-delay: 7.2s;" data-image="/images/sala3/valijabien.png"><span>6</span></button>
-                <button type="button" class="valija" data-number="3" data-correct="false" style="--valija-delay: 8.4s;" data-image="/images/sala3/valijamal.png"><span>3</span></button>
-                <button type="button" class="valija" data-number="9" data-correct="false" style="--valija-delay: 9.6s;" data-image="/images/sala3/valijamal.png"><span>9</span></button>
-                <button type="button" class="valija" data-number="10" data-correct="false" style="--valija-delay: 10.8s;" data-image="/images/sala3/valijamal.png"><span>10</span></button>
+                <button type="button" class="valija" data-number="4" data-correct="true" style="--valija-start: 8%; --valija-lane: 18%;" data-image="/images/sala3/valijabien.png"><span>4</span></button>
+                <button type="button" class="valija" data-number="2" data-correct="false" style="--valija-start: 26%; --valija-lane: 72%;" data-image="/images/sala3/valijamal.png"><span>2</span></button>
+                <button type="button" class="valija" data-number="8" data-correct="true" style="--valija-start: 44%; --valija-lane: 42%;" data-image="/images/sala3/valijabien.png"><span>8</span></button>
+                <button type="button" class="valija" data-number="5" data-correct="false" style="--valija-start: 62%; --valija-lane: 14%;" data-image="/images/sala3/valijamal.png"><span>5</span></button>
+                <button type="button" class="valija" data-number="1" data-correct="true" style="--valija-start: 78%; --valija-lane: 78%;" data-image="/images/sala3/valijabien.png"><span>1</span></button>
+                <button type="button" class="valija" data-number="7" data-correct="false" style="--valija-start: 12%; --valija-lane: 58%;" data-image="/images/sala3/valijamal.png"><span>7</span></button>
+                <button type="button" class="valija" data-number="6" data-correct="true" style="--valija-start: 36%; --valija-lane: 82%;" data-image="/images/sala3/valijabien.png"><span>6</span></button>
+                <button type="button" class="valija" data-number="3" data-correct="false" style="--valija-start: 54%; --valija-lane: 66%;" data-image="/images/sala3/valijamal.png"><span>3</span></button>
+                <button type="button" class="valija" data-number="9" data-correct="false" style="--valija-start: 70%; --valija-lane: 34%;" data-image="/images/sala3/valijamal.png"><span>9</span></button>
+                <button type="button" class="valija" data-number="10" data-correct="false" style="--valija-start: 88%; --valija-lane: 52%;" data-image="/images/sala3/valijamal.png"><span>10</span></button>
             </div>
 
             <div class="code-box">
@@ -119,7 +128,6 @@
     </div>
 
     <div class="sala-navigation">
-        <a href="@Url.Action("Sala2")" class="btn btn-outline">← Volver a Sala 2</a>
         <a href="@Url.Action("Index")" class="btn btn-outline">Ir al Inicio</a>
     </div>
 </div>

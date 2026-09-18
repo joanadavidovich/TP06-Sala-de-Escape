@@ -42,8 +42,21 @@
             </ul>
         </div>
 
+        @{ var salaActual = (int?)ViewBag.SalaActual ?? 0; }
+        @{ var usuarioNombre = ViewBag.UsuarioNombre as string; }
+
+        @if (!string.IsNullOrWhiteSpace(usuarioNombre))
+        {
+            <div class="session-bar" role="status">
+                <span><strong>Sesión activa</strong> · @usuarioNombre</span>
+                <form method="post" asp-action="Logout" asp-controller="Home">
+                    <button type="submit" class="session-logout">Cerrar sesión</button>
+                </form>
+            </div>
+        }
+
         <div class="rooms-grid">
-            <div class="room-card">
+            <div class="room-card room-available">
                 <div class="compass">🧭</div>
                 <div class="room-card-content">
                     <div class="room-number">1</div>
@@ -51,12 +64,15 @@
                     <p class="room-badge">NIVEL PRINCIPIANTE</p>
                     <p>Reconstituye el antiguo mapa del mundo resolviendo acertijos geográficos. Las piezas del puzzle te revelarán la ubicación.</p>
                     <div class="action-buttons">
-                        <a href="/Home/StartPartida" class="btn-start">Jugar Sala 1</a>
+                        @if (salaActual <= 1)
+                        {
+                            <a href="@(salaActual > 0 ? Url.Action("Sala1") : Url.Action("StartPartida"))" class="btn-start">@(salaActual > 0 ? "Continuar Sala 1" : "Comenzar Sala 1")</a>
+                        }
                     </div>
                 </div>
             </div>
 
-            <div class="room-card">
+            <div class="room-card @(salaActual >= 2 ? "room-available" : "room-locked")">
                 <div class="compass">🌍</div>
                 <div class="room-card-content">
                     <div class="room-number">2</div>
@@ -64,12 +80,19 @@
                     <p class="room-badge">NIVEL INTERMEDIO</p>
                     <p>Descubre el país del aeropuerto a partir de pistas visuales, conexiones y la lógica de Europa.</p>
                     <div class="action-buttons">
-                        <a href="/Home/Sala2" class="btn-start">Acceder Sala 2</a>
+                        @if (salaActual >= 2)
+                        {
+                            <a href="/Home/Sala2" class="btn-start">Acceder Sala 2</a>
+                        }
+                        else
+                        {
+                            <span class="room-locked-label">🔒 Se desbloquea al completar Sala 1</span>
+                        }
                     </div>
                 </div>
             </div>
 
-            <div class="room-card">
+            <div class="room-card @(salaActual >= 3 ? "room-available" : "room-locked")">
                 <div class="compass">✈️</div>
                 <div class="room-card-content">
                     <div class="room-number">3</div>
@@ -77,12 +100,19 @@
                     <p class="room-badge">NIVEL AVANZADO</p>
                     <p>Encuentra los objetos ocultos, arma el cartel del aeropuerto y separa las valijas correctas del vuelo correcto.</p>
                     <div class="action-buttons">
-                        <a href="/Home/Sala3" class="btn-start">Acceder Sala 3</a>
+                        @if (salaActual >= 3)
+                        {
+                            <a href="/Home/Sala3" class="btn-start">Acceder Sala 3</a>
+                        }
+                        else
+                        {
+                            <span class="room-locked-label">🔒 Se desbloquea en orden</span>
+                        }
                     </div>
                 </div>
             </div>
 
-            <div class="room-card">
+            <div class="room-card @(salaActual >= 4 ? "room-available" : "room-locked")">
                 <div class="compass">🎯</div>
                 <div class="room-card-content">
                     <div class="room-number">4</div>
@@ -90,17 +120,29 @@
                     <p class="room-badge">NIVEL EXPERTO</p>
                     <p>El destino final revela si lograste identificar la terminal correcta y escapar del aeropuerto.</p>
                     <div class="action-buttons">
-                        <a href="/Home/Sala4" class="btn-start">Acceder Sala 4</a>
+                        @if (salaActual >= 4)
+                        {
+                            <a href="/Home/Sala4" class="btn-start">Acceder Sala 4</a>
+                        }
+                        else
+                        {
+                            <span class="room-locked-label">🔒 Se desbloquea en orden</span>
+                        }
                     </div>
                 </div>
             </div>
         </div>
 
+        @if (TempData["AuthNotice"] is string authNotice)
+        {
+            <div class="auth-notice" role="status">@authNotice</div>
+        }
+
         <div class="auth-footer">
-            <p>Para comenzar tu aventura en la sala de escape geográfica, debes registrarte o iniciar sesión.</p>
+            <p>La partida se guarda con tu usuario para que puedas volver sin perder la sala ni el tiempo restante.</p>
             <div>
-                <a href="/Home/Register" class="btn-auth">📝 Registrarse</a>
-                <a href="/Home/Login" class="btn-auth">🔓 Iniciar Sesión</a>
+                <a href="/Home/Register" class="btn-auth">📝 Crear perfil</a>
+                <a href="/Home/Login" class="btn-auth">🔓 Ya tengo una cuenta</a>
             </div>
         </div>
     </div>

@@ -6,7 +6,7 @@
     <!-- HEADER -->
     <div class="sala1-header">
         <h1>🟦 SALA 1 — EL MAPA DESTRUIDO 🌎</h1>
-        <p>Objetivo: descubrir el continente. Esta sala es exclusivamente sobre reconstruir información geográfica.</p>
+        <p>El aterrizaje dañó el mapa de navegación. Recuperá sus datos en tres pasos para identificar el continente y liberar la siguiente terminal.</p>
         
         <div class="progress-tracker">
             <div class="consigna-progress" data-consigna="1">
@@ -24,11 +24,26 @@
         </div>
     </div>
 
+    <section class="room-game-list" id="sala1Juegos" aria-label="Juegos de Sala 1">
+        <article class="game-item is-available" data-game-item="1">
+            <div><span class="game-item-number">01</span><h2>Reconstruir la ruta visual</h2><p>Las imágenes del vuelo quedaron mezcladas. Ordenalas de oeste a este para recuperar el nombre del archivo de navegación.</p></div>
+            <button class="btn btn-primary game-open" type="button" data-open-game="1">Abrir juego</button>
+        </article>
+        <article class="game-item is-locked" data-game-item="2">
+            <div><span class="game-item-number">02</span><h2>Armar el mapa de emergencia</h2><p>Con la ruta recuperada, volvé a ensamblar el mapa que se desprendió durante el aterrizaje.</p></div>
+            <button class="btn btn-primary game-open" type="button" data-open-game="2" disabled>Bloqueado</button>
+        </article>
+        <article class="game-item is-locked" data-game-item="3">
+            <div><span class="game-item-number">03</span><h2>Ubicar la señal del continente</h2><p>Los monumentos encontrados en el avión indican dónde terminó el vuelo. Clasificalos para confirmar la región.</p></div>
+            <button class="btn btn-primary game-open" type="button" data-open-game="3" disabled>Bloqueado</button>
+        </article>
+    </section>
+
     <!-- CONSIGNA 1: LAS 9 IMÁGENES -->
     <div class="consigna-container active" id="consigna1">
         <div class="consigna-titulo">
             <h2>🧩 CONSIGNA 1 — Las 9 imágenes</h2>
-            <p>Estas imágenes están desordenadas. Encontrá el orden correcto.</p>
+            <div class="game-instructions"><p><strong>Contexto:</strong> La computadora del avión sólo conserva fragmentos de fotografías del recorrido.</p><p><strong>Objetivo:</strong> reconstruir la ruta geográfica que siguió el vuelo.</p><p><strong>Mecánica:</strong> arrastrá cada imagen a un casillero y ordená los lugares de oeste a este; podés intercambiar piezas.</p><p><strong>Resultado:</strong> el orden correcto formará una palabra que identifica el documento recuperado.</p></div>
         </div>
 
         <div class="consigna1-grid">
@@ -59,7 +74,7 @@
     <div class="consigna-container" id="consigna2">
     <div class="consigna-titulo">
         <h2>🗺️ CONSIGNA 2 — El Mapa Roto</h2>
-        <p>Reconstruye el mapamundi arrastrando cada pieza a su lugar correcto en el tablero.</p>
+        <div class="game-instructions"><p><strong>Contexto:</strong> El mapa de emergencia se desprendió cuando el avión aterrizó y la ruta quedó ilegible.</p><p><strong>Objetivo:</strong> volver a formar el mapamundi para recuperar la referencia de navegación.</p><p><strong>Mecánica:</strong> arrastrá cada pieza desde el panel de disponibles hasta el lugar que completa la imagen.</p><p><strong>Resultado:</strong> un mapa completo habilita la clasificación de los monumentos.</p></div>
     </div>
 
     <div class="rompecabezas-container">
@@ -83,7 +98,7 @@
     <div class="consigna-container" id="consigna3">
         <div class="consigna-titulo">
             <h2>🌏 CONSIGNA 3 — Ubica los Continentes</h2>
-            <p>Cada imagen fue colocada en el lugar equivocado. Ubícalas correctamente en su continente.</p>
+            <div class="game-instructions"><p><strong>Contexto:</strong> El mapa reparado muestra seis monumentos que quedaron separados de sus referencias.</p><p><strong>Objetivo:</strong> confirmar en qué continente terminó el vuelo.</p><p><strong>Mecánica:</strong> arrastrá cada monumento hacia la zona continental que le corresponde; una zona acepta una imagen.</p><p><strong>Resultado:</strong> la clasificación completa revela la región necesaria para interpretar la clave de salida.</p></div>
         </div>
 
         <div class="continentes-grid">
@@ -130,6 +145,8 @@
         <div class="codigo-modal">
             <h2>🔐 CÓDIGO DE ACCESO</h2>
             <p>Ingresa el código para acceder a la Sala 2:</p>
+            <button class="hint-button" type="button" id="pistaSala1" aria-label="Mostrar pista">💡</button>
+            <p class="room-hint" id="pistaSala1Texto" hidden>El mapa, el vuelo y el continente que acabás de reconstruir guardan las cuatro piezas de esta clave.</p>
             <input type="text" id="codigoInput" class="codigo-input" placeholder="Escribe el código..." />
             <button class="btn btn-primary" id="enviarCodigo">Verificar Código</button>
             <p id="mensajeCodigo"></p>

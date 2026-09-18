@@ -1,15 +1,29 @@
 @{
-    ViewData["Title"] = "Iniciar Sesion";
+    ViewData["Title"] = "Iniciar sesión";
 }
 
-<h2>Iniciar sesión</h2>
+<main class="auth-page">
+    <section class="auth-card" aria-labelledby="loginTitle">
+        <div class="auth-card-mark">✈</div>
+        <p class="auth-eyebrow">DESTINO DESCONOCIDO · ACCESO</p>
+        <h1 id="loginTitle">Retomar la partida</h1>
+        <p class="auth-lead">Ingresá con tu nombre y contraseña. Tu sala desbloqueada, tu progreso y el tiempo de la partida quedan asociados a tu cuenta.</p>
 
-<form method="post" asp-action="Login" asp-controller="Home">
-    <div>
-        <label>Nombre</label>
-        <input type="text" name="nombre" />
-    </div>
-    <div>
-        <button type="submit">Entrar</button>
-    </div>
-</form>
+        @if (ViewBag.Error is string error)
+        {
+            <div class="auth-error" role="alert">@error</div>
+        }
+
+        <form class="auth-form" method="post" asp-action="Login" asp-controller="Home">
+            <input type="hidden" name="returnUrl" value="@Context.Request.Query["returnUrl"]" />
+            <label for="nombre">Nombre del perfil</label>
+            <input id="nombre" type="text" name="nombre" autocomplete="username" required autofocus placeholder="Ej. Ana García" />
+            <label for="password">Contraseña</label>
+            <input id="password" type="password" name="password" autocomplete="current-password" required placeholder="Tu contraseña" />
+            <button class="btn-auth-submit" type="submit">Entrar a mi partida <span>→</span></button>
+        </form>
+
+        <p class="auth-switch">¿Es tu primera vez? <a href="@Url.Action("Register")">Crear un perfil</a></p>
+        <a class="auth-back" href="@Url.Action("Index")">← Volver a la Home</a>
+    </section>
+</main>

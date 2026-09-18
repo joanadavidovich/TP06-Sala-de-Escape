@@ -10,21 +10,28 @@
         }
     }
 
+    function desbloquearSala(sala) {
+        return fetch('/Home/DesbloquearSala', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sala })
+        }).then((response) => response.ok ? response.json() : Promise.reject(new Error('Transición no válida')));
+    }
+
+    function guardarNivel(nivel) {
+        return fetch('/Home/GuardarNivel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nivel })
+        });
+    }
+
     function initRoomTimer() {
         const timerEl = document.getElementById('roomTimer');
         if (!timerEl) return;
 
-        const roomKey =
-            document.querySelector('.sala1-container') ? 'escapeRoomSala1StartedAt' :
-            document.querySelector('.sala2-container') ? 'escapeRoomSala2StartedAt' :
-            document.querySelector('.sala3-container') ? 'escapeRoomSala3StartedAt' :
-            document.querySelector('.sala4-container') ? 'escapeRoomSala4StartedAt' : 'escapeRoomDefaultStartedAt';
-
-        if (!sessionStorage.getItem(roomKey)) {
-            sessionStorage.setItem(roomKey, String(Date.now()));
-        }
-
-        const startedAt = Number(sessionStorage.getItem(roomKey));
+        const storedStart = document.body.dataset.partidaStartedAt;
+        const startedAt = storedStart ? Date.parse(storedStart) : Date.now();
         const totalSeconds = 30 * 60;
         const endTime = startedAt + (totalSeconds * 1000);
 
@@ -655,25 +662,53 @@
 
         function initSala2() {
         let consignaSala2Actual = 1;
-        const respuestasSala2 = { 1: false, 2: false, 3: false };
+        const nivelInicial = Number(document.body.dataset.nivelActual || 1);
+        const respuestasSala2 = { 1: nivelInicial > 1, 2: nivelInicial > 2, 3: false };
 
         const verificarConsigna1Btn = document.getElementById('verificarConsigna1');
         const mejorImagenesBtn = document.getElementById('mejorarImagenes');
+        const continuarFotosBtn = document.getElementById('continuarFotos');
         const codigoSecuenciaInput = document.getElementById('codigoSecuencia');
         const progressItems = document.querySelectorAll('.consigna-progress');
 
-        inicializarDragDropFotos();
-        inicializarConnections();
-
-        progressItems.forEach((item) => {
-            item.addEventListener('click', function () {
-                const numero = Number(this.getAttribute('data-consigna'));
-                if (numero > consignaSala2Actual && !respuestasSala2[numero - 1]) {
-                    alert('Debes completar las consignas en orden.');
-                    return;
+        function mostrarListaSala2() {
+            document.querySelectorAll('.sala2-container .consigna-container').forEach((item) => { item.style.display = 'none'; });
+            const lista = document.getElementById('sala2Juegos');
+            if (lista) lista.hidden = false;
+            document.querySelectorAll('#sala2Juegos [data-game-item]').forEach((item) => {
+                const numero = Number(item.dataset.gameItem);
+                const disponible = numero === 1 || respuestasSala2[numero - 1];
+                const completo = respuestasSala2[numero];
+                const boton = item.querySelector('.game-open');
+                item.classList.toggle('is-locked', !disponible);
+                item.classList.toggle('is-complete', completo);
+                if (boton) {
+                    boton.disabled = !disponible || completo;
+                    boton.textContent = completo ? 'Completado' : disponible ? 'Abrir juego' : 'Bloqueado';
                 }
+            });
+        }
+
+        document.querySelectorAll('#sala2Juegos [data-open-game]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const numero = Number(button.dataset.openGame);
+                if (numero > 1 && !respuestasSala2[numero - 1]) return;
+                document.getElementById('sala2Juegos').hidden = true;
                 mostrarConsignaSala2(numero);
             });
+        });
+
+        const pistaSala2 = document.getElementById('pistaSala2');
+        const pistaSala2Texto = document.getElementById('pistaSala2Texto');
+        if (pistaSala2 && pistaSala2Texto) {
+            pistaSala2.addEventListener('click', () => { pistaSala2Texto.hidden = !pistaSala2Texto.hidden; });
+        }
+
+        inicializarDragDropFotos();
+        inicializarConnections(() => {
+            respuestasSala2[2] = true;
+            guardarNivel(3);
+            mostrarListaSala2();
         });
 
         if (verificarConsigna1Btn) {
@@ -683,7 +718,6 @@
 
                 if (codigo === codigoEsperado) {
                     alert('🟢 ¡BIEN! SISTEMA DE CÁMARAS RESTAURADO\n\nAhora puedes MEJORAR LAS IMÁGENES para analizarlas mejor.');
-                    respuestasSala2[1] = true;
                     consignaSala2Actual = Math.max(consignaSala2Actual, 2);
                     if (mejorImagenesBtn) {
                         mejorImagenesBtn.disabled = false;
@@ -708,7 +742,16 @@
                     panelMejoradas.hidden = false;
                 }
 
-                alert('🔓 ¡IMÁGENES MEJORADAS!\n\nAhora puedes ver con más claridad. Usa estas pistas para identificar el país.');
+                if (continuarFotosBtn) continuarFotosBtn.hidden = false;
+                alert('🔓 ¡IMÁGENES MEJORADAS!\n\nAhora podés ver con más claridad. Revisá las cinco imágenes antes de continuar al análisis.');
+            });
+        }
+
+        if (continuarFotosBtn) {
+            continuarFotosBtn.addEventListener('click', () => {
+                respuestasSala2[1] = true;
+                guardarNivel(2);
+                mostrarListaSala2();
             });
         }
 
@@ -747,8 +790,12 @@
                 const codigo = input ? input.value.trim() : '';
 
                 if (codigo === '41523') {
-                    alert('✅ Código correcto. Accediendo a la Sala 3...');
-                    window.location.href = '/Home/Sala3';
+                    desbloquearSala(2)
+                        .then(() => {
+                            alert('✅ Código correcto. Accediendo a la Sala 3...');
+                            window.location.href = '/Home/Sala3';
+                        })
+                        .catch(() => alert('No se pudo registrar el avance. Recargá e intentá nuevamente.'));
                     return;
                 }
 
@@ -756,7 +803,7 @@
             });
         }
 
-        mostrarConsignaSala2(1);
+        mostrarListaSala2();
     }
 
     function inicializarFotosMejoradas() {
@@ -765,7 +812,7 @@
         });
     }
 
-    function inicializarConnections() {
+    function inicializarConnections(onComplete) {
         const palabras = [
             'RÍO', 'PUERTA', 'ROJO', 'EURO', 'FRONTERA', 'PISTA', 'AZUL', 'AMARILLO',
             'VUELO', 'NORTE', 'MONEDA', 'BANCO', 'CAPITAL', 'ESCALA', 'VERDE', 'PAÍS'
@@ -830,11 +877,11 @@
                     const boton = grid.querySelector(`[data-palabra="${CSS.escape(palabra)}"]`);
                     if (boton) {
                         boton.classList.remove('selected');
-                        boton.classList.add(grupo.color, 'resolved');
+                        boton.classList.add('resolved');
                     }
                 });
                 const categoria = document.createElement('div');
-                categoria.className = `connections-grupo ${grupo.color}`;
+                categoria.className = 'connections-grupo';
                 categoria.innerHTML = `<strong>${grupo.categoria}</strong><span>${grupo.palabras.join(' · ')}</span>`;
                 gruposCompletados.appendChild(categoria);
                 mensaje.textContent = `✅ Grupo correcto: ${grupo.categoria}.`;
@@ -858,7 +905,8 @@
 
         if (continuar) {
             continuar.addEventListener('click', () => {
-                mostrarConsignaSala2(3);
+                continuar.hidden = true;
+                if (typeof onComplete === 'function') onComplete();
             });
         }
     }
@@ -1023,6 +1071,7 @@
         document.querySelectorAll('.consigna-container').forEach((consigna) => {
             const isActive = Number(consigna.id.replace('consigna', '')) === numero;
             consigna.classList.toggle('active', isActive);
+            consigna.style.display = isActive ? 'block' : 'none';
         });
 
         document.querySelectorAll('.consigna-progress').forEach((item) => {
@@ -1034,6 +1083,26 @@
     function initSala3() {
         const markers = document.querySelectorAll('.object-marker');
     const listItems = document.querySelectorAll('#objetosRestantes li');
+        const nivelInicial = Number(document.body.dataset.nivelActual || 1);
+        const juegosSala3 = { 1: nivelInicial > 1, 2: nivelInicial > 2, 3: false };
+
+        function mostrarListaSala3() {
+            document.querySelectorAll('.sala3-stage > section').forEach((section) => { section.hidden = true; });
+            const lista = document.getElementById('sala3Juegos');
+            if (lista) lista.hidden = false;
+            document.querySelectorAll('#sala3Juegos [data-game-item]').forEach((item) => {
+                const numero = Number(item.dataset.gameItem);
+                const disponible = numero === 1 || juegosSala3[numero - 1];
+                const completo = juegosSala3[numero];
+                const boton = item.querySelector('.game-open');
+                item.classList.toggle('is-locked', !disponible);
+                item.classList.toggle('is-complete', completo);
+                if (boton) {
+                    boton.disabled = !disponible || completo;
+                    boton.textContent = completo ? 'Completado' : disponible ? 'Abrir juego' : 'Bloqueado';
+                }
+            });
+        }
 
     function mostrarEtapaSala3(etapa) {
         const etapas = [
@@ -1051,7 +1120,21 @@
         });
     }
 
-    mostrarEtapaSala3(0);
+    document.querySelectorAll('#sala3Juegos [data-open-game]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const numero = Number(button.dataset.openGame);
+            if (numero > 1 && !juegosSala3[numero - 1]) return;
+            document.getElementById('sala3Juegos').hidden = true;
+            if (numero === 1) mostrarEtapaSala3(0);
+            if (numero === 2) mostrarEtapaSala3(1);
+            if (numero === 3) {
+                mostrarEtapaSala3(2);
+                iniciarCintaSala3();
+            }
+        });
+    });
+
+    mostrarListaSala3();
 
     if (markers.length) {
         markers.forEach((marker) => {
@@ -1070,8 +1153,9 @@
 
                 const remaining = Array.from(listItems).filter((li) => !li.classList.contains('found')).length;
                 if (remaining === 0) {
-                    alert('✅ ¡Encontraste todos los objetos! Ahora arma el cartel del aeropuerto.');
-                    mostrarEtapaSala3(1);
+                    juegosSala3[1] = true;
+                    guardarNivel(2);
+                    mostrarListaSala3();
                 }
             });
         });
@@ -1370,9 +1454,9 @@ function verificarRompecabezas() {
 
     setTimeout(() => {
 
-        mostrarEtapaSala3(2);
-
-        iniciarCintaSala3();
+        juegosSala3[2] = true;
+        guardarNivel(3);
+        mostrarListaSala3();
 
     }, 1200);
 }
@@ -1425,8 +1509,8 @@ function iniciarCintaSala3() {
             'wrong',
             'cinta-reinicio'
         );
-        valija.style.setProperty('--valija-delay', `-${index * 1.55}s`);
-        valija.style.setProperty('--valija-lane', `${(index % 3 - 1) * 34}px`);
+        valija.style.setProperty('--valija-delay', `${index * 2.1}s`);
+        valija.style.setProperty('--valija-lane', `${18 + (index % 5) * 16}%`);
     });
 }
 
@@ -1575,11 +1659,16 @@ inicializarCintaSala3();
                 codigo.split('').sort().join('') === '1468';
 
             if (codigoValido) {
-                mensaje.textContent = '✅ Código 4816 correcto. Puedes pasar a la Sala 4.';
-                mensaje.className = 'respuesta-correcta';
-                setTimeout(() => {
-                    window.location.href = '/Home/Sala4';
-                }, 1200);
+                desbloquearSala(3)
+                    .then(() => {
+                        mensaje.textContent = '✅ Código 4816 correcto. Puedes pasar a la Sala 4.';
+                        mensaje.className = 'respuesta-correcta';
+                        setTimeout(() => { window.location.href = '/Home/Sala4'; }, 250);
+                    })
+                    .catch(() => {
+                        mensaje.textContent = 'No se pudo registrar el avance. Recargá e intentá nuevamente.';
+                        mensaje.className = 'respuesta-incorrecta';
+                    });
             } else {
                 mensaje.textContent = '❌ Código incompleto o incorrecto. Deben ser las valijas del vuelo de Luxemburgo.';
                 mensaje.className = 'respuesta-incorrecta';
@@ -1596,7 +1685,49 @@ function initSala4() {
     const result = document.getElementById('simonResult');
     const simonPanel = document.getElementById('simonPanel');
     const emergencyGame = document.getElementById('emergencyGame');
+    const simonGame = document.getElementById('simonGame');
+    const luxGame = document.getElementById('luxGame');
+    const nivelInicial = Number(document.body.dataset.nivelActual || 1);
+    const juegosSala4 = { 1: nivelInicial > 1, 2: nivelInicial > 2, 3: false };
     if (!buttons.length || !roundLabel || !statusLabel || !message || !result) return;
+
+    function mostrarListaSala4() {
+        if (simonGame) simonGame.hidden = true;
+        if (emergencyGame) emergencyGame.hidden = true;
+        if (luxGame) luxGame.hidden = true;
+        const lista = document.getElementById('sala4Juegos');
+        if (lista) lista.hidden = false;
+        document.querySelectorAll('#sala4Juegos [data-game-item]').forEach((item) => {
+            const numero = Number(item.dataset.gameItem);
+            const disponible = numero === 1 || juegosSala4[numero - 1];
+            const completo = juegosSala4[numero];
+            const boton = item.querySelector('.game-open');
+            item.classList.toggle('is-locked', !disponible);
+            item.classList.toggle('is-complete', completo);
+            if (boton) {
+                boton.disabled = !disponible || completo;
+                boton.textContent = completo ? 'Completado' : disponible ? 'Abrir juego' : 'Bloqueado';
+            }
+        });
+    }
+
+    document.querySelectorAll('#sala4Juegos [data-open-game]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const numero = Number(button.dataset.openGame);
+            if (numero > 1 && !juegosSala4[numero - 1]) return;
+            document.getElementById('sala4Juegos').hidden = true;
+            if (numero === 1) {
+                simonGame.hidden = false;
+                startRound();
+            } else if (numero === 2) {
+                emergencyGame.hidden = false;
+                iniciarJuegoEmergencia();
+            } else {
+                luxGame.hidden = false;
+                iniciarJuegoLux();
+            }
+        });
+    });
 
     const roundLengths = [3, 4, 5];
     let round = 0;
@@ -1682,10 +1813,9 @@ function initSala4() {
         message.className = 'sala4-message sala4-success';
         result.hidden = false;
         if (simonPanel) simonPanel.hidden = true;
-        if (emergencyGame) {
-            emergencyGame.hidden = false;
-            iniciarJuegoEmergencia();
-        }
+        juegosSala4[1] = true;
+        guardarNivel(2);
+        mostrarListaSala4();
     }
 
     function iniciarJuegoEmergencia() {
@@ -1747,7 +1877,62 @@ function initSala4() {
             clearInterval(timer);
             messageLabel.textContent = '🚨 ALARMA DESACTIVADA';
             finalEscape.hidden = false;
+            juegosSala4[2] = true;
+            guardarNivel(3);
+            mostrarListaSala4();
         }, 900);
+    }
+
+    function iniciarJuegoLux() {
+        const respuestas = ['ESTE', 'LUZ', 'CRUCE'];
+        const letras = ['L', 'U', 'X'];
+        const descubiertas = [];
+
+        document.querySelectorAll('.lux-search-button').forEach((button) => {
+            button.addEventListener('click', () => {
+                const index = Number(button.dataset.luxClue);
+                button.disabled = true;
+                document.getElementById(`luxClue${index}`).hidden = false;
+                document.getElementById(`luxAnswer${index}`).hidden = false;
+                document.getElementById(`luxLabel${index}`).hidden = false;
+                document.querySelector(`[data-lux-check="${index}"]`).hidden = false;
+            }, { once: true });
+        });
+
+        document.querySelectorAll('.lux-check').forEach((button) => {
+            button.addEventListener('click', () => {
+                const index = Number(button.dataset.luxCheck);
+                const answer = document.getElementById(`luxAnswer${index}`).value.trim().toUpperCase();
+                const found = document.getElementById(`luxFound${index}`);
+                if (answer !== respuestas[index]) {
+                    found.hidden = false;
+                    found.textContent = 'Todavía no coincide con la pista.';
+                    found.className = 'lux-found respuesta-incorrecta';
+                    return;
+                }
+
+                if (!descubiertas.includes(index)) descubiertas.push(index);
+                found.hidden = false;
+                found.textContent = `Pista confirmada. Letra descubierta: ${letras[index]}`;
+                found.className = 'lux-found respuesta-correcta';
+                button.disabled = true;
+                document.getElementById(`luxAnswer${index}`).disabled = true;
+                if (descubiertas.length === 3) document.getElementById('luxCodePanel').hidden = false;
+            });
+        });
+
+        document.getElementById('verifyLuxCode')?.addEventListener('click', () => {
+            const input = document.getElementById('luxCodeInput');
+            const message = document.getElementById('luxCodeMessage');
+            if (input.value.trim().toUpperCase() === 'LUX') {
+                message.textContent = 'CÓDIGO CORRECTO';
+                message.className = 'sala4-message sala4-success';
+                document.getElementById('luxFinalResult').hidden = false;
+            } else {
+                message.textContent = 'Las tres pistas todavía no forman el código correcto.';
+                message.className = 'sala4-message sala4-error';
+            }
+        });
     }
 
     buttons.forEach((button) => {
@@ -1782,7 +1967,7 @@ function initSala4() {
         });
     });
 
-    startRound();
+    mostrarListaSala4();
 }
 
 document.addEventListener('DOMContentLoaded', initSalaEscapePage);

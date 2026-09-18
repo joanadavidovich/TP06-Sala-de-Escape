@@ -5,8 +5,19 @@
 <div class="sala4-container">
     <div class="sala4-card simon-card">
         <p class="sala4-eyebrow">SALA 4 · PUERTA DE ESCAPE</p>
-        <h1>Panel de salida</h1>
-        <p>Observá la secuencia y repetila usando los botones en el mismo orden.</p>
+        <h1>Registro de salida</h1>
+        <p>El avión recuperó energía, pero la puerta final quedó dividida en tres sistemas. Investigalos en orden.</p>
+
+        <section class="room-game-list" id="sala4Juegos" aria-label="Juegos de Sala 4">
+            <article class="game-item is-available" data-game-item="1"><div><span class="game-item-number">01</span><h2>Panel de memoria</h2><p>La navegación volvió a emitir una secuencia de señales. Repetila para comprobar que el sistema responde.</p></div><button class="btn btn-primary game-open" type="button" data-open-game="1">Abrir juego</button></article>
+            <article class="game-item is-locked" data-game-item="2"><div><span class="game-item-number">02</span><h2>Puerta de emergencia</h2><p>El panel reconoce energía, pero no el orden de apertura. Revisá los objetos de la cabina y usá sus relaciones.</p></div><button class="btn btn-primary game-open" type="button" data-open-game="2" disabled>Bloqueado</button></article>
+            <article class="game-item is-locked" data-game-item="3"><div><span class="game-item-number">03</span><h2>Última pista de destino</h2><p>Con la alarma desactivada aparece un registro incompleto. Investigá sus tres objetos y reuní las letras ocultas.</p></div><button class="btn btn-primary game-open" type="button" data-open-game="3" disabled>Bloqueado</button></article>
+        </section>
+
+        <section id="simonGame" class="sala4-game simon-game" hidden>
+        <p class="sala4-eyebrow">JUEGO 1 · PANEL DE MEMORIA</p>
+        <h2>Panel de salida</h2>
+        <p>Observá la secuencia luminosa y repetila usando los botones en el mismo orden.</p>
 
         <div class="sala4-progress" aria-live="polite">
             <span id="simonRound">Ronda 1 de 3</span>
@@ -26,11 +37,12 @@
             <h2>SISTEMA DE NAVEGACIÓN RESTAURADO</h2>
             <p>La puerta habilitó la sala de control.</p>
         </div>
+        </section>
 
         <section id="emergencyGame" class="sala4-game emergency-game" hidden>
             <p class="sala4-eyebrow">JUEGO 2 · PUERTA DE EMERGENCIA</p>
             <h2>EMERGENCY EXIT</h2>
-            <p>El sistema no reconoce el orden de apertura. Activá los objetos de la sala para encontrar las pistas.</p>
+            <div class="game-instructions"><p><strong>Contexto:</strong> Simón devolvió energía al avión, pero la puerta de emergencia aún recibe órdenes contradictorias.</p><p><strong>Objetivo:</strong> reconstruir el orden de apertura usando las relaciones escondidas en los objetos de la cabina.</p><p><strong>Mecánica:</strong> hacé clic en cada objeto para revelar su pista y luego seleccioná los símbolos de emergencia en el orden que esas pistas permiten deducir.</p><p><strong>Resultado:</strong> una secuencia completa desactiva la alarma y libera el registro final.</p></div>
             <div class="emergency-clues" aria-label="Objetos que revelan pistas">
                 <button class="emergency-clue" type="button" data-clue="🔴 va antes que 🔵">🖥️ Pantalla</button>
                 <button class="emergency-clue" type="button" data-clue="🟢 no está al principio">💡 Luz</button>
@@ -58,6 +70,56 @@
             <div id="finalEscape" class="sala4-result" hidden>
                 <h2>🚨 ALARMA DESACTIVADA</h2>
                 <p>PUERTAS DESBLOQUEADAS. ESCAPARON.</p>
+            </div>
+        </section>
+
+        <section id="luxGame" class="sala4-game lux-game" hidden>
+            <p class="sala4-eyebrow">JUEGO 3 · REGISTRO DE DESTINO</p>
+            <h2>La última coordenada</h2>
+            <div class="game-instructions"><p><strong>Contexto:</strong> La alarma cedió, pero el registro de destino quedó incompleto entre los documentos de la cabina.</p><p><strong>Objetivo:</strong> recuperar por separado las tres marcas que faltan en el registro.</p><p><strong>Mecánica:</strong> abrí cada compartimento, leé la pista que aparece, resolvé su pequeña búsqueda y confirmá el hallazgo antes de pasar al siguiente objeto.</p><p><strong>Resultado:</strong> cuando las tres marcas estén confirmadas, el registro habilitará el campo <em>CÓDIGO DE AEROPUERTO</em> para combinar lo descubierto.</p></div>
+            <div class="lux-search-grid">
+                <article class="lux-search-card">
+                    <h3>Objeto 1 · Pasaporte</h3>
+                    <button class="emergency-clue lux-search-button" type="button" data-lux-clue="0">Abrir compartimento</button>
+                    <p class="lux-clue" id="luxClue0" hidden>La brújula del pasaporte señala el punto cardinal donde nace el sol.</p>
+                    <label for="luxAnswer0" hidden id="luxLabel0">¿Qué dirección indica?</label>
+                    <input class="lux-answer" id="luxAnswer0" type="text" autocomplete="off" placeholder="Escribí la dirección" hidden />
+                    <button class="btn btn-outline lux-check" type="button" data-lux-check="0" hidden>Comprobar hallazgo</button>
+                    <p class="lux-found" id="luxFound0" hidden></p>
+                </article>
+                <article class="lux-search-card">
+                    <h3>Objeto 2 · Panel</h3>
+                    <button class="emergency-clue lux-search-button" type="button" data-lux-clue="1">Revisar frecuencia</button>
+                    <p class="lux-clue" id="luxClue1" hidden>El panel repite una frecuencia de emergencia: la misma palabra que describe la iluminación.</p>
+                    <label for="luxAnswer1" hidden id="luxLabel1">¿Qué palabra describe esa señal?</label>
+                    <input class="lux-answer" id="luxAnswer1" type="text" autocomplete="off" placeholder="Escribí la palabra" hidden />
+                    <button class="btn btn-outline lux-check" type="button" data-lux-check="1" hidden>Comprobar hallazgo</button>
+                    <p class="lux-found" id="luxFound1" hidden></p>
+                </article>
+                <article class="lux-search-card">
+                    <h3>Objeto 3 · Etiqueta de equipaje</h3>
+                    <button class="emergency-clue lux-search-button" type="button" data-lux-clue="2">Desplegar etiqueta</button>
+                    <p class="lux-clue" id="luxClue2" hidden>El código de tres letras termina con la inicial de la palabra que nombra el cruce de pistas.</p>
+                    <label for="luxAnswer2" hidden id="luxLabel2">¿Qué palabra completa la pista?</label>
+                    <input class="lux-answer" id="luxAnswer2" type="text" autocomplete="off" placeholder="Escribí la palabra" hidden />
+                    <button class="btn btn-outline lux-check" type="button" data-lux-check="2" hidden>Comprobar hallazgo</button>
+                    <p class="lux-found" id="luxFound2" hidden></p>
+                </article>
+            </div>
+            <div class="lux-code-panel" id="luxCodePanel" hidden>
+                <h3>CÓDIGO DE AEROPUERTO</h3>
+                <p>Ingresá las tres letras que descubriste.</p>
+                <div class="code-input-row">
+                    <input id="luxCodeInput" type="text" maxlength="3" autocomplete="off" placeholder="_ _ _" />
+                    <button class="btn btn-primary" id="verifyLuxCode" type="button">Verificar código</button>
+                </div>
+                <p id="luxCodeMessage" class="sala4-message" role="status"></p>
+            </div>
+            <div id="luxFinalResult" class="sala4-result" hidden>
+                <h2>CÓDIGO CORRECTO</h2>
+                <p>UBICACIÓN CONFIRMADA</p>
+                <p>PUERTAS DESBLOQUEADAS</p>
+                <strong>¡ESCAPARON!</strong>
             </div>
         </section>
 

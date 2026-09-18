@@ -25,21 +25,15 @@ public class ImagenDescargador
             if (!Directory.Exists(sala1Path))
             {
                 Directory.CreateDirectory(sala1Path);
-                Console.WriteLine($"✅ Directorio creado: {sala1Path}");
             }
 
             if (!Directory.Exists(sala2Path))
             {
                 Directory.CreateDirectory(sala2Path);
-                Console.WriteLine($"✅ Directorio creado: {sala2Path}");
             }
-
-            // Aquí irían las lógicas de descarga de imágenes si es necesario
-            Console.WriteLine("✅ Estructura de directorios de imágenes lista");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Error al descargar imágenes: {ex.Message}");
             throw;
         }
     }

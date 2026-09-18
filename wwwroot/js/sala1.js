@@ -2,12 +2,21 @@
 
 // Variables globales
 let consignaActual = 1;
+const nivelSala1 = Number(document.body?.dataset.nivelActual || 1);
 let respuestasConsignas = {
-    1: false,
-    2: false,
+    1: nivelSala1 > 1,
+    2: nivelSala1 > 2,
     3: false
 };
 let codigoFinal = "M7E4"; // Código de ejemplo
+
+function guardarNivelSala1(nivel) {
+    return fetch('/Home/GuardarNivel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nivel })
+    });
+}
 
 // Objetos de consignas con imágenes reales
 let consigna1 = {
@@ -44,7 +53,42 @@ function inicializarSala1() {
     inicializarConsigna1();
     inicializarEventosBotones();
     inicializarNavigacionConsignas();
-    mostrarConsigna(1);
+    inicializarItemsSala1();
+    mostrarListaSala1();
+}
+
+function mostrarListaSala1() {
+    document.querySelectorAll('.consigna-container').forEach(el => { el.style.display = 'none'; });
+    const lista = document.getElementById('sala1Juegos');
+    if (lista) lista.hidden = false;
+}
+
+function actualizarItemsSala1() {
+    document.querySelectorAll('[data-game-item]').forEach(item => {
+        const numero = Number(item.dataset.gameItem);
+        const disponible = numero === 1 || respuestasConsignas[numero - 1];
+        const completado = respuestasConsignas[numero];
+        const boton = item.querySelector('.game-open');
+        item.classList.toggle('is-available', disponible && !completado);
+        item.classList.toggle('is-locked', !disponible);
+        item.classList.toggle('is-complete', completado);
+        if (boton) {
+            boton.disabled = !disponible || completado;
+            boton.textContent = completado ? 'Completado' : disponible ? 'Abrir juego' : 'Bloqueado';
+        }
+    });
+}
+
+function inicializarItemsSala1() {
+    document.querySelectorAll('[data-open-game]').forEach(button => {
+        button.addEventListener('click', () => {
+            const numero = Number(button.dataset.openGame);
+            if (numero > 1 && !respuestasConsignas[numero - 1]) return;
+            document.getElementById('sala1Juegos').hidden = true;
+            mostrarConsigna(numero);
+        });
+    });
+    actualizarItemsSala1();
 }
 
 // ===== CONSIGNA 1: LAS 9 IMÁGENES (SIN PISTAS) =====
@@ -187,6 +231,7 @@ function verificarConsigna1() {
     if (palabra === 'MAPAMUNDI') {
         alert('✅ ¡EXCELENTE! Descubriste la palabra: MAPAMUNDI\n\nAhora descubrirás en qué continente aterrizó el vuelo 742.');
         respuestasConsignas[1] = true;
+        guardarNivelSala1(2);
         avanzarConsigna();
     } else {
         alert('❌ Esa no es la palabra correcta. Intenta otra combinación.\n\nPista: Piensa en cómo podrías ordenar estos lugares del mundo...');
@@ -306,6 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (btnSiguiente) {
         btnSiguiente.addEventListener('click', function () {
             respuestasConsignas[2] = true; // <-- acá SÍ
+            guardarNivelSala1(3);
             mostrarConsigna(3);
         });
     }
@@ -422,6 +468,7 @@ function verificarConsigna3() {
     if (completadas === 6) {
         alert('✅ ¡PERFECTO! Ubicaste todos los continentes correctamente.\n\nHas descubierto que aterrizaron en: EUROPA\n\nAhora debes obtener el código de acceso para la Sala 2.');
         respuestasConsignas[3] = true;
+        guardarNivelSala1(4);
         mostrarCodigoFinal();
     } else {
         alert(`❌ Aún no está completo. Has ubicado ${completadas} de 6 monumentos.`);
@@ -430,21 +477,7 @@ function verificarConsigna3() {
 
 // ===== NAVEGACIÓN CONSIGNAS =====
 function inicializarNavigacionConsignas() {
-    const tracker = document.querySelectorAll('.consigna-progress');
-    tracker.forEach(el => {
-        el.addEventListener('click', function() {
-            const consigna = this.getAttribute('data-consigna');
-            const numConsigna = parseInt(consigna);
-            
-            // No permitir ir a consignas futuras no completadas
-            if (numConsigna > consignaActual && !respuestasConsignas[numConsigna - 1]) {
-                alert('Debes completar las consignas en orden.');
-                return;
-            }
-            
-            mostrarConsigna(numConsigna);
-        });
-    });
+    document.querySelectorAll('.consigna-progress').forEach(el => { el.setAttribute('aria-current', 'false'); });
 }
 
 function mostrarConsigna(num) {
@@ -464,7 +497,8 @@ function mostrarConsigna(num) {
 function avanzarConsigna() {
     if (consignaActual < 3) {
         setTimeout(() => {
-            mostrarConsigna(consignaActual + 1);
+            mostrarListaSala1();
+            actualizarItemsSala1();
         }, 1000);
     } else {
         // Ya completada, ir a código
@@ -489,19 +523,36 @@ function mostrarCodigoFinal() {
 function verificarCodigoFinal() {
     const input = document.getElementById('codigoInput').value.toUpperCase();
     const mensaje = document.getElementById('mensajeCodigo');
+    const boton = document.getElementById('enviarCodigo');
     
     if (input === codigoFinal) {
+        if (boton) boton.disabled = true;
         mensaje.textContent = '✅ ¡CORRECTO! El vuelo aterrizó en Europa. Acceso a Sala 2 disponible.';
         mensaje.style.color = '#27ae60';
-        setTimeout(() => {
-            window.location.href = '/Home/Sala2'; // Cambiar a la ruta de Sala 2 cuando exista
-        }, 2500);
+        fetch('/Home/DesbloquearSala', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sala: 1 })
+        }).then(response => {
+            if (!response.ok) throw new Error('No se pudo guardar el avance');
+            window.location.assign('/Home/Sala2');
+        }).catch(() => {
+            if (boton) boton.disabled = false;
+            mensaje.textContent = 'No se pudo registrar el avance. Recargá e intentá nuevamente.';
+            mensaje.style.color = '#e74c3c';
+        });
     } else {
         mensaje.textContent = '❌ Código incorrecto. Revisa las pistas de las consignas anteriores.';
         mensaje.style.color = '#e74c3c';
         document.getElementById('codigoInput').value = '';
     }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const pista = document.getElementById('pistaSala1');
+    const texto = document.getElementById('pistaSala1Texto');
+    if (pista && texto) pista.addEventListener('click', () => { texto.hidden = !texto.hidden; });
+});
 
 function inicializarEventosBotones() {
     const btnVerificar2 = document.getElementById('verificarConsigna2');

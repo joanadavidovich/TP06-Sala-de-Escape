@@ -2614,6 +2614,190 @@ width: fit-content;
     }
 }
 
+/* Acceso y registro */
+.auth-page {
+    min-height: calc(100vh - 7rem);
+    display: grid;
+    place-items: center;
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    width: min(100%, 30rem);
+    max-width: 30rem;
+    padding: 2.5rem;
+    border: 1px solid rgba(155, 231, 255, 0.25);
+    border-radius: 18px;
+    background: rgba(12, 25, 43, 0.9);
+    color: #f3f8ff;
+    box-shadow: 0 20px 55px rgba(0,0,0,0.28);
+}
+
+.auth-card-mark {
+    width: 3rem;
+    height: 3rem;
+    display: grid;
+    place-items: center;
+    margin-bottom: 1.25rem;
+    border: 1px solid rgba(255, 209, 102, 0.65);
+    border-radius: 10px;
+    color: #ffd166;
+    font-size: 1.45rem;
+}
+
+.auth-eyebrow {
+    margin: 0 0 0.6rem;
+    color: #9be7ff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+}
+
+.auth-card h1 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(1.8rem, 4vw, 2.45rem);
+}
+
+.auth-lead {
+    margin: 0 0 1.5rem;
+    color: #b9c9df;
+    line-height: 1.6;
+}
+
+.auth-form {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.auth-form label {
+    margin-top: 0.35rem;
+    color: #dfeafc;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 0.85rem 0.95rem;
+    border: 1px solid rgba(155, 231, 255, 0.25);
+    border-radius: 9px;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font: inherit;
+}
+
+.auth-form input:focus {
+    border-color: #9be7ff;
+    outline: 2px solid rgba(155, 231, 255, 0.2);
+}
+
+.auth-form input::placeholder {
+    color: #8495aa;
+}
+
+.btn-auth-submit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 0.9rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid #d4a574;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #d4a574, #c58f52);
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 800;
+}
+
+.btn-auth-submit:hover {
+    filter: brightness(1.08);
+}
+
+.btn-auth-submit span {
+    font-size: 1.25rem;
+}
+
+.auth-error,
+.auth-notice {
+    padding: 0.75rem 0.9rem;
+    border: 1px solid rgba(255, 154, 154, 0.5);
+    border-radius: 8px;
+    background: rgba(255, 110, 110, 0.12);
+    color: #ffb3b3;
+}
+
+.session-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 760px;
+    margin: 0 auto 1.25rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(142, 240, 166, 0.45);
+    border-radius: 9px;
+    background: rgba(142, 240, 166, 0.1);
+    color: #dfffea;
+}
+
+.session-logout {
+    border: 0;
+    background: transparent;
+    color: #ffd166;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+}
+
+@media (max-width: 520px) {
+    .session-bar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .session-logout {
+        padding: 0.35rem 0;
+        text-align: left;
+    }
+}
+
+.auth-error {
+    margin-bottom: 1rem;
+}
+
+.auth-notice {
+    max-width: 760px;
+    margin: 0 auto 1.25rem;
+    text-align: center;
+}
+
+.auth-switch {
+    margin: 1.25rem 0 0;
+    color: #b9c9df;
+    text-align: center;
+}
+
+.auth-switch a,
+.auth-back {
+    color: #9be7ff;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-back {
+    display: block;
+    margin-top: 1.4rem;
+    text-align: center;
+}
+
+@media (max-width: 520px) {
+    .auth-card {
+        padding: 1.5rem;
+    }
+}
+
 .connection-word {
     min-height: 75px;
     font-size: 0.85rem;
@@ -2803,6 +2987,138 @@ width: 18px;
     overflow: hidden;
 }
 
+/* Estados comunes y controles de avance */
+.room-card.room-locked {
+    filter: grayscale(0.65);
+    opacity: 0.72;
+}
+
+.room-locked-label {
+    display: inline-block;
+    color: #66727b;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.hint-button {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid rgba(255, 209, 102, 0.55);
+    border-radius: 50%;
+    background: rgba(255, 209, 102, 0.12);
+    cursor: pointer;
+    z-index: 50;
+}
+
+.room-hint {
+    padding: 0.6rem 0.8rem;
+    border-left: 3px solid #ffd166;
+    background: rgba(255, 209, 102, 0.08);
+    color: #f3f8ff;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+/* La selección correcta ocupa sólo el contorno de la valija. */
+.conveyor-track .valija {
+    width: 92px;
+    height: 100px;
+    padding: 6px;
+    z-index: 5;
+}
+
+.conveyor-track .valija img {
+    width: 68px;
+    height: 68px;
+}
+
+.conveyor-track .valija.selected {
+    background: rgba(142, 240, 166, 0.18);
+    box-shadow: 0 0 0 2px #8ef0a6;
+    z-index: 6;
+}
+
+.connections-grupo {
+    background: #d6d9dc;
+    color: #3e454b;
+    border: 1px solid #b8bec4;
+}
+
+.connection-word.resolved,
+.connection-word.connections-aeropuerto,
+.connection-word.connections-geografia,
+.connection-word.connections-dinero,
+.connection-word.connections-colores,
+.connection-word.connections-monumentos,
+.connection-word.connections-otros {
+    background: #d6d9dc;
+    color: #3e454b;
+    border-color: #b8bec4;
+    box-shadow: none;
+}
+
+.lux-search-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
+    margin: 1.2rem 0;
+}
+
+.lux-search-card {
+    padding: 1rem;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+}
+
+.lux-search-card h3 {
+    color: #ffd166;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+.lux-search-button,
+.lux-check {
+    width: 100%;
+}
+
+.lux-clue,
+.lux-found {
+    margin: 0.8rem 0;
+    font-size: 0.9rem;
+}
+
+.lux-answer,
+#luxCodeInput {
+    width: 100%;
+    padding: 0.65rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+.lux-code-panel {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(155, 231, 255, 0.3);
+    border-radius: 12px;
+    background: rgba(155, 231, 255, 0.08);
+}
+
+.lux-code-panel h3 {
+    color: #9be7ff;
+}
+
+@media (max-width: 700px) {
+    .lux-search-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Pieza */
 .puzzle-piece {
     width: 95px;
@@ -2887,3 +3203,125 @@ width: 18px;
         gap: 4px;
     }
 }
+
+    /* Selector de juegos: un panel abierto por vez. */
+    .room-game-list {
+        display: grid;
+        gap: 0.9rem;
+        margin: 1.5rem 0;
+    }
+
+    .game-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+        padding: 1.15rem 1.25rem;
+        border: 1px solid rgba(155, 231, 255, 0.25);
+        border-radius: 14px;
+        background: rgba(255,255,255,0.06);
+        text-align: left;
+    }
+
+    .game-item h2 {
+        margin: 0.15rem 0 0.35rem;
+        color: #f3f8ff;
+        font-size: 1.08rem;
+    }
+
+    .game-item p {
+        margin: 0;
+        color: #b9c9df;
+        font-size: 0.92rem;
+        line-height: 1.45;
+    }
+
+    .game-item-number {
+        color: #ffd166;
+        font-family: monospace;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+    }
+
+    .game-item.is-locked {
+        opacity: 0.48;
+        border-color: rgba(255,255,255,0.1);
+    }
+
+    .game-item.is-complete {
+        border-color: rgba(142, 240, 166, 0.5);
+        background: rgba(142, 240, 166, 0.08);
+    }
+
+    .game-item .game-open {
+        flex: 0 0 auto;
+        min-width: 8rem;
+    }
+
+    .sala2-container .game-item {
+        background: rgba(255,255,255,0.92);
+        border-color: #c7ced8;
+    }
+
+    .sala2-container .game-item h2 {
+        color: #263449;
+    }
+
+    .sala2-container .game-item p {
+        color: #4d5968;
+    }
+
+    .sala2-container .game-item-number {
+        color: #536dce;
+    }
+
+    .sala2-container .game-item.is-locked {
+        background: rgba(231,235,241,0.92);
+        opacity: 0.7;
+    }
+
+    .game-instructions {
+        display: grid;
+        gap: 0.35rem;
+        margin: 0.8rem 0 1.1rem;
+        padding: 0.85rem 1rem;
+        border-left: 3px solid #9be7ff;
+        background: rgba(155, 231, 255, 0.06);
+        color: #dfeafc;
+        text-align: left;
+    }
+
+    .game-instructions p {
+        margin: 0;
+        font-size: 0.92rem;
+        line-height: 1.45;
+    }
+
+    .conveyor-track .valija {
+        left: 110%;
+        top: var(--valija-lane, 50%);
+        transform: translate(-50%, -50%);
+        animation: valijaMovimiento 18s linear infinite;
+        animation-delay: var(--valija-delay, 0s);
+    }
+
+    .conveyor-track .valija:hover,
+    .conveyor-track .valija:focus-visible {
+        transform: translate(-50%, -50%) scale(1.06);
+    }
+
+    @keyframes valijaMovimiento {
+        from { left: 110%; }
+        to { left: -12%; }
+    }
+
+    @media (max-width: 700px) {
+        .game-item {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .game-item .game-open {
+            width: 100%;
+        }
+    }
