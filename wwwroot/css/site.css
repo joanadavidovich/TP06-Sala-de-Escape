@@ -1063,6 +1063,53 @@ body {
     padding: 20px;
 }
 
+.codigo-final-container {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(8, 30, 48, 0.55);
+}
+
+.codigo-modal {
+    width: min(100%, 520px);
+    padding: 2rem;
+    border: 1px solid #9be7ff;
+    border-radius: 14px;
+    background: #fff;
+    color: #264653;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.25);
+}
+
+.codigo-modal h2 {
+    color: #264653;
+    margin-bottom: 0.6rem;
+}
+
+.codigo-modal p {
+    color: #52616b;
+}
+
+.codigo-modal .hint-button {
+    position: static;
+    display: block;
+    margin: 0.8rem 0 0.4rem auto;
+}
+
+.codigo-input {
+    width: 100%;
+    margin: 0.8rem 0;
+    padding: 0.85rem;
+    border: 1px solid #b7dce9;
+    border-radius: 8px;
+    color: #264653;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
 @media (max-width: 1024px) {
     .sala1-header h1 {
         font-size: 2rem;
@@ -2186,6 +2233,72 @@ body {
 .sala4-result p { margin: 0 0 0.35rem; }
 .sala4-result strong { color: #ffd166; font-size: 2rem; letter-spacing: 0.18em; }
 
+#luxFinalResult {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    margin: 0;
+    padding: 2.5rem 1.5rem;
+    border: 2px solid #9be7ff;
+    border-radius: 0;
+    background: radial-gradient(circle at center, rgba(37, 132, 170, 0.98), rgba(5, 31, 55, 0.98) 72%);
+    box-shadow: 0 0 0 9999px rgba(3, 20, 35, 0.76), 0 0 70px rgba(155, 231, 255, 0.75);
+    text-align: center;
+    animation: escapeCelebration 0.65s ease-out both;
+}
+
+#luxFinalResult h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(2rem, 7vw, 4.5rem);
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 22px rgba(155, 231, 255, 0.9);
+}
+
+#luxFinalResult p {
+    margin: 0;
+    color: #dff8ff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+#luxFinalResult strong {
+    margin-top: 1rem;
+    color: #ffd166;
+    font-size: clamp(2.2rem, 8vw, 5rem);
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 25px rgba(255, 209, 102, 0.85);
+}
+
+.play-again-button {
+    margin-top: 1.4rem;
+    padding: 0.8rem 1.4rem;
+    border: 1px solid #ffd166;
+    border-radius: 9px;
+    background: #ffd166;
+    color: #17324a;
+    font-weight: 800;
+    text-decoration: none;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.play-again-button:hover {
+    background: #ffe39a;
+    color: #17324a;
+    transform: translateY(-2px);
+}
+
+@keyframes escapeCelebration {
+    from { opacity: 0; transform: scale(0.88); }
+    to { opacity: 1; transform: scale(1); }
+}
+
 .sala4-game {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
@@ -2612,6 +2725,93 @@ width: fit-content;
     .connections-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+
+/* Restitución de la estética celeste de las salas finales. */
+.sala3-container,
+.sala4-card {
+    background: linear-gradient(145deg, rgba(19, 58, 86, 0.96), rgba(31, 91, 125, 0.9));
+    border: 1px solid rgba(155, 231, 255, 0.42);
+    color: #f3fbff;
+    box-shadow: 0 18px 50px rgba(5, 28, 48, 0.28);
+}
+
+.sala3-header h1,
+.sala4-card h1,
+.sala4-card h2,
+.sala3-header p,
+.sala4-card p {
+    color: #e8f8ff;
+}
+
+.sala3-header p,
+.sala4-card p {
+    opacity: 0.92;
+}
+
+.objetos-section,
+.puzzle-section,
+.conveyor-section,
+.sala4-game {
+    background: rgba(155, 231, 255, 0.09);
+    border-color: rgba(155, 231, 255, 0.28);
+}
+
+.section-title-box h2,
+.sala4-eyebrow,
+.sala4-game h2 {
+    color: #9be7ff;
+}
+
+.object-list-panel,
+.sala4-result,
+.lux-search-card,
+.lux-code-panel {
+    background: rgba(8, 42, 66, 0.42);
+    border-color: rgba(155, 231, 255, 0.28);
+}
+
+.object-list li,
+.game-instructions {
+    background: rgba(155, 231, 255, 0.08);
+    border-color: rgba(155, 231, 255, 0.25);
+    color: #e8f8ff;
+}
+
+.conveyor-track {
+    border-color: rgba(155, 231, 255, 0.42);
+    background: repeating-linear-gradient(90deg, #3f7895 0 42px, #2e5f7b 42px 84px);
+}
+
+.sala4-card .game-item {
+    background: rgba(8, 42, 66, 0.5);
+    border-color: rgba(155, 231, 255, 0.32);
+}
+
+.sala4-card .game-item h2,
+.sala4-card .game-item p {
+    color: #e8f8ff;
+}
+
+.sala4-card .game-item.is-locked {
+    background: rgba(8, 34, 53, 0.42);
+}
+
+.sala4-card .btn-primary,
+.sala4-card .btn-outline,
+.sala3-container .btn-primary,
+.sala3-container .btn-outline {
+    border-color: #9be7ff;
+    color: #07324d;
+    background: #9be7ff;
+}
+
+.sala4-card .btn-primary:hover,
+.sala4-card .btn-outline:hover,
+.sala3-container .btn-primary:hover,
+.sala3-container .btn-outline:hover {
+    background: #c9f4ff;
+    border-color: #c9f4ff;
 }
 
 /* Acceso y registro */

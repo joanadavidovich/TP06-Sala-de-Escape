@@ -64,9 +64,13 @@
                     <p class="room-badge">NIVEL PRINCIPIANTE</p>
                     <p>Reconstituye el antiguo mapa del mundo resolviendo acertijos geográficos. Las piezas del puzzle te revelarán la ubicación.</p>
                     <div class="action-buttons">
-                        @if (salaActual <= 1)
+                        @if (salaActual >= 1)
                         {
-                            <a href="@(salaActual > 0 ? Url.Action("Sala1") : Url.Action("StartPartida"))" class="btn-start">@(salaActual > 0 ? "Continuar Sala 1" : "Comenzar Sala 1")</a>
+                            <a href="@Url.Action("Sala1")" class="btn-start">@(salaActual > 1 ? "Volver a Sala 1" : "Continuar Sala 1")</a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("StartPartida")" class="btn-start">Comenzar Sala 1</a>
                         }
                     </div>
                 </div>

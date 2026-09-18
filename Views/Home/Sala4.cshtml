@@ -44,11 +44,11 @@
             <h2>EMERGENCY EXIT</h2>
             <div class="game-instructions"><p><strong>Contexto:</strong> Simón devolvió energía al avión, pero la puerta de emergencia aún recibe órdenes contradictorias.</p><p><strong>Objetivo:</strong> reconstruir el orden de apertura usando las relaciones escondidas en los objetos de la cabina.</p><p><strong>Mecánica:</strong> hacé clic en cada objeto para revelar su pista y luego seleccioná los símbolos de emergencia en el orden que esas pistas permiten deducir.</p><p><strong>Resultado:</strong> una secuencia completa desactiva la alarma y libera el registro final.</p></div>
             <div class="emergency-clues" aria-label="Objetos que revelan pistas">
-                <button class="emergency-clue" type="button" data-clue="🔴 va antes que 🔵">🖥️ Pantalla</button>
-                <button class="emergency-clue" type="button" data-clue="🟢 no está al principio">💡 Luz</button>
-                <button class="emergency-clue" type="button" data-clue="⭐ está entre 🔴 y 🟡">⏰ Reloj</button>
-                <button class="emergency-clue" type="button" data-clue="✈️ está después de 🟢">📡 Señal</button>
-                <button class="emergency-clue" type="button" data-clue="🔵 ocupa la posición 2">🧳 Valija</button>
+                <button class="emergency-clue" type="button" data-clue="🔴 y 🟡 están en los extremos opuestos de la fila">🖥️ Pantalla</button>
+                <button class="emergency-clue" type="button" data-clue="🔴 va antes que 🟡">⏰ Reloj</button>
+                <button class="emergency-clue" type="button" data-clue="Hay exactamente 2 objetos entre 🔴 y 🟢">🧳 Valija</button>
+                <button class="emergency-clue" type="button" data-clue="🔵 va exactamente 2 lugares antes de ✈️">💡 Luz</button>
+                <button class="emergency-clue" type="button" data-clue="⭐ no es vecino de 🟢">📡 Señal</button>
             </div>
             <p id="emergencyClueMessage" class="sala4-message" role="status"></p>
             <div id="emergencyButtons" class="emergency-buttons" aria-label="Botones de emergencia">
@@ -81,8 +81,7 @@
                 <article class="lux-search-card">
                     <h3>Objeto 1 · Pasaporte</h3>
                     <button class="emergency-clue lux-search-button" type="button" data-lux-clue="0">Abrir compartimento</button>
-                    <p class="lux-clue" id="luxClue0" hidden>La brújula del pasaporte señala el punto cardinal donde nace el sol.</p>
-                    <label for="luxAnswer0" hidden id="luxLabel0">¿Qué dirección indica?</label>
+                    <p class="lux-clue" id="luxClue0" hidden>El sol siempre se oculta en el oeste. ¿En qué punto cardinal opuesto nace cada mañana?</p>                    <label for="luxAnswer0" hidden id="luxLabel0">¿Qué dirección indica?</label>
                     <input class="lux-answer" id="luxAnswer0" type="text" autocomplete="off" placeholder="Escribí la dirección" hidden />
                     <button class="btn btn-outline lux-check" type="button" data-lux-check="0" hidden>Comprobar hallazgo</button>
                     <p class="lux-found" id="luxFound0" hidden></p>
@@ -90,8 +89,7 @@
                 <article class="lux-search-card">
                     <h3>Objeto 2 · Panel</h3>
                     <button class="emergency-clue lux-search-button" type="button" data-lux-clue="1">Revisar frecuencia</button>
-                    <p class="lux-clue" id="luxClue1" hidden>El panel repite una frecuencia de emergencia: la misma palabra que describe la iluminación.</p>
-                    <label for="luxAnswer1" hidden id="luxLabel1">¿Qué palabra describe esa señal?</label>
+                    <p class="lux-clue" id="luxClue1" hidden>Sin mí no hay sombra, ni color, ni pantalla encendida. Viajo más rápido que cualquier avión. ¿Qué soy?</p>                    <label for="luxAnswer1" hidden id="luxLabel1">¿Qué palabra describe esa señal?</label>
                     <input class="lux-answer" id="luxAnswer1" type="text" autocomplete="off" placeholder="Escribí la palabra" hidden />
                     <button class="btn btn-outline lux-check" type="button" data-lux-check="1" hidden>Comprobar hallazgo</button>
                     <p class="lux-found" id="luxFound1" hidden></p>
@@ -99,8 +97,7 @@
                 <article class="lux-search-card">
                     <h3>Objeto 3 · Etiqueta de equipaje</h3>
                     <button class="emergency-clue lux-search-button" type="button" data-lux-clue="2">Desplegar etiqueta</button>
-                    <p class="lux-clue" id="luxClue2" hidden>El código de tres letras termina con la inicial de la palabra que nombra el cruce de pistas.</p>
-                    <label for="luxAnswer2" hidden id="luxLabel2">¿Qué palabra completa la pista?</label>
+                    <p class="lux-clue" id="luxClue2" hidden>Dos caminos se tocan en un único punto y forman, sin querer, la figura de una letra. ¿Cómo se llama ese punto de encuentro?</p>                    <label for="luxAnswer2" hidden id="luxLabel2">¿Qué palabra completa la pista?</label>
                     <input class="lux-answer" id="luxAnswer2" type="text" autocomplete="off" placeholder="Escribí la palabra" hidden />
                     <button class="btn btn-outline lux-check" type="button" data-lux-check="2" hidden>Comprobar hallazgo</button>
                     <p class="lux-found" id="luxFound2" hidden></p>
@@ -119,7 +116,8 @@
                 <h2>CÓDIGO CORRECTO</h2>
                 <p>UBICACIÓN CONFIRMADA</p>
                 <p>PUERTAS DESBLOQUEADAS</p>
-                <strong>¡ESCAPARON!</strong>
+                <strong>¡ESCAPASTE!</strong>
+                <a class="play-again-button" href="@Url.Action("Index")">Jugar de nuevo</a>
             </div>
         </section>
 

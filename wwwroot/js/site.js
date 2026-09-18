@@ -27,32 +27,62 @@
     }
 
     function initRoomTimer() {
-        const timerEl = document.getElementById('roomTimer');
-        if (!timerEl) return;
+    const timerEl = document.getElementById('roomTimer');
+    if (!timerEl) return;
 
-        const storedStart = document.body.dataset.partidaStartedAt;
-        const startedAt = storedStart ? Date.parse(storedStart) : Date.now();
-        const totalSeconds = 30 * 60;
-        const endTime = startedAt + (totalSeconds * 1000);
+    const remainingAtLoad = Number(document.body.dataset.tiempoRestante || 1800);
 
-        const updateTimer = () => {
-            const remainingMs = Math.max(0, endTime - Date.now());
-            const remainingSeconds = Math.ceil(remainingMs / 1000);
-            const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
-            const seconds = String(remainingSeconds % 60).padStart(2, '0');
-            timerEl.textContent = `${minutes}:${seconds}`;
+    const endTime = Date.now() + (remainingAtLoad * 1000);
 
-            if (remainingSeconds <= 0) {
-                timerEl.textContent = '00:00';
-                timerEl.classList.add('timer-finished');
-                alert('⏰ Se acabó el tiempo. ¡Perdiste!');
-                window.location.href = '/Home/Index';
-            }
-        };
+    let timerInterval = null;
+    let pauseEnviado = false;
 
-        updateTimer();
-        setInterval(updateTimer, 1000);
-    }
+    const updateTimer = () => {
+        const remainingMs = Math.max(0, endTime - Date.now());
+        const remainingSeconds = Math.ceil(remainingMs / 1000);
+
+        const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+        const seconds = String(remainingSeconds % 60).padStart(2, '0');
+
+        timerEl.textContent = `${minutes}:${seconds}`;
+
+        if (remainingSeconds <= 0) {
+            clearInterval(timerInterval);
+
+            timerEl.textContent = '00:00';
+            timerEl.classList.add('timer-finished');
+
+            alert('⏰ Se acabó el tiempo. ¡Perdiste!');
+            window.location.href = '/Home/Index';
+        }
+    };
+
+    const pausarPartida = () => {
+        if (pauseEnviado) return;
+
+        pauseEnviado = true;
+        fetch('/Home/PausePartida', {
+            method: 'POST',
+            keepalive: true
+        }).catch(() => {});
+    };
+
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+
+    // Cerrar pestaña, cerrar navegador o abandonar la página.
+    window.addEventListener('pagehide', pausarPartida);
+
+    // Botón "Cerrar sesión"
+    document.querySelectorAll('form[action*="Logout"]').forEach(form => {
+        form.addEventListener('submit', pausarPartida);
+    });
+
+    // Volver al inicio también pausa.
+    document.querySelectorAll('a[href="/"], a[href*="/Home/Index"]').forEach(link => {
+        link.addEventListener('click', pausarPartida);
+    });
+}
 
     function initSala1() {
         let consignaActual = 1;
@@ -1729,7 +1759,7 @@ function initSala4() {
         });
     });
 
-    const roundLengths = [3, 4, 5];
+    const roundLengths = [3, 4, 5, 6];
     let round = 0;
     let sequence = [];
     let playerIndex = 0;

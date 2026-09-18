@@ -57,10 +57,11 @@ namespace TP06_Sala_de_Escape.Models
         // Crear una partida y devolver el id que genera la BD (IDENTITY)
         public int CrearPartida(string nombreParticipante, int idSala, int? usuarioId = null)
         {
+            AsegurarColumnaTiempo();
             string sql = @"
-                INSERT INTO Partidas (nombreParticipante, idSala, UsuarioId, SalaActual, sessionId, estado, nivelActual, fechaInicio)
+                INSERT INTO Partidas (nombreParticipante, idSala, UsuarioId, SalaActual, sessionId, estado, nivelActual, fechaInicio, tiempoRestanteSegundos)
                 OUTPUT INSERTED.id
-                VALUES (@NombreParticipante, @IdSala, @UsuarioId, @SalaActual, @SessionId, @Estado, @NivelActual, @FechaInicio);
+                VALUES (@NombreParticipante, @IdSala, @UsuarioId, @SalaActual, @SessionId, @Estado, @NivelActual, @FechaInicio, @TiempoRestanteSegundos);
             ";
 
             var parametros = new {
@@ -71,7 +72,8 @@ namespace TP06_Sala_de_Escape.Models
                 SessionId = Guid.NewGuid().ToString(),
                 Estado = "in_progress",
                 NivelActual = 1,
-                FechaInicio = DateTime.Now
+                FechaInicio = DateTime.Now,
+                TiempoRestanteSegundos = 1800
             };
 
             using (var connection = new SqlConnection(_connectionString))
@@ -94,10 +96,11 @@ namespace TP06_Sala_de_Escape.Models
 
         public Partida? ObtenerPartidaEnCursoPorUsuario(int usuarioId)
         {
+            AsegurarColumnaTiempo();
             string sql = @"
                 SELECT TOP 1 *
                 FROM Partidas
-                WHERE UsuarioId = @UsuarioId AND estado = 'in_progress'
+                WHERE UsuarioId = @UsuarioId AND estado IN ('in_progress', 'paused')
                 ORDER BY fechaInicio DESC";
 
             using (var connection = new SqlConnection(_connectionString))
@@ -106,16 +109,69 @@ namespace TP06_Sala_de_Escape.Models
                 return connection.QueryFirstOrDefault<Partida>(sql, new { UsuarioId = usuarioId });
             }
         }
-
-        // Obtener partida por id
         public Partida? ObtenerPartidaPorId(int id)
         {
+            AsegurarColumnaTiempo();
             string sql = "SELECT * FROM Partidas WHERE id = @Id";
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
                 return connection.QueryFirstOrDefault<Partida>(sql, new { Id = id });
             }
+        }
+
+        public void PausarPartida(int partidaId)
+        {
+            AsegurarColumnaTiempo();
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+            var partida = connection.QuerySingleOrDefault<Partida>(
+                "SELECT * FROM Partidas WHERE id = @PartidaId", new { PartidaId = partidaId });
+            if (partida == null || partida.estado != "in_progress") return;
+
+            int restante = partida.tiempoRestanteSegundos ?? 1800;
+            if (partida.fechaInicio.HasValue)
+            {
+                restante -= Math.Max(0, (int)(DateTime.Now - partida.fechaInicio.Value).TotalSeconds);
+            }
+
+            connection.Execute(@"
+                UPDATE Partidas
+                SET estado = 'paused', tiempoRestanteSegundos = @TiempoRestanteSegundos
+                WHERE id = @PartidaId",
+                new { PartidaId = partidaId, TiempoRestanteSegundos = Math.Max(0, restante) });
+        }
+
+        public void ReanudarPartida(int partidaId)
+{
+    AsegurarColumnaTiempo();
+
+    using var connection = new SqlConnection(_connectionString);
+    connection.Open();
+
+    connection.Execute(@"
+        UPDATE Partidas
+        SET estado = 'in_progress',
+            fechaInicio = @FechaInicio
+        WHERE id = @PartidaId
+          AND estado = 'paused'",
+        new
+        {
+            PartidaId = partidaId,
+            FechaInicio = DateTime.Now
+        });
+}
+
+        private void AsegurarColumnaTiempo()
+        {
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+            connection.Execute(@"
+                IF COL_LENGTH('dbo.Partidas', 'tiempoRestanteSegundos') IS NULL
+                BEGIN
+                    ALTER TABLE dbo.Partidas ADD tiempoRestanteSegundos INT NULL;
+                END");
+            connection.Execute("UPDATE Partidas SET tiempoRestanteSegundos = 1800 WHERE tiempoRestanteSegundos IS NULL");
         }
 
         // Guardar progreso simple (actualiza columnas de Partidas)

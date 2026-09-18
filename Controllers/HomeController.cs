@@ -24,7 +24,7 @@ public class HomeController : Controller
         int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
         if (usuarioId.HasValue)
         {
-            RestaurarPartidaEnSesion(usuarioId.Value);
+            RestaurarPartidaEnSesion(usuarioId.Value, false);
         }
 
         ViewBag.SalaActual = usuarioId.HasValue ? HttpContext.Session.GetInt32("SalaActual") ?? 0 : 0;
@@ -36,6 +36,12 @@ public class HomeController : Controller
     {
         int? partidaId = HttpContext.Session.GetInt32("PartidaId");
         int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
+        if (!partidaId.HasValue && usuarioId.HasValue)
+        {
+            RestaurarPartidaEnSesion(usuarioId.Value, true);
+            partidaId = HttpContext.Session.GetInt32("PartidaId");
+        }
         
         if (!partidaId.HasValue)
         {
@@ -101,6 +107,12 @@ public class HomeController : Controller
     {
         int? partidaId = HttpContext.Session.GetInt32("PartidaId");
         int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
+        if (!partidaId.HasValue && usuarioId.HasValue)
+        {
+            RestaurarPartidaEnSesion(usuarioId.Value, true);
+            partidaId = HttpContext.Session.GetInt32("PartidaId");
+        }
         
         if (!partidaId.HasValue)
         {
@@ -140,6 +152,12 @@ public class HomeController : Controller
         int? partidaId = HttpContext.Session.GetInt32("PartidaId");
         int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
 
+        if (!partidaId.HasValue && usuarioId.HasValue)
+        {
+            RestaurarPartidaEnSesion(usuarioId.Value, true);
+            partidaId = HttpContext.Session.GetInt32("PartidaId");
+        }
+
         if (!partidaId.HasValue)
         {
             return RedirectToAction("StartPartida");
@@ -161,6 +179,12 @@ public class HomeController : Controller
     {
         int? partidaId = HttpContext.Session.GetInt32("PartidaId");
         int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
+        if (!partidaId.HasValue && usuarioId.HasValue)
+        {
+            RestaurarPartidaEnSesion(usuarioId.Value, true);
+            partidaId = HttpContext.Session.GetInt32("PartidaId");
+        }
 
         if (!partidaId.HasValue)
         {
@@ -216,7 +240,7 @@ public class HomeController : Controller
         return (HttpContext.Session.GetInt32("SalaActual") ?? 0) >= sala;
     }
 
-    private void RestaurarPartidaEnSesion(int usuarioId)
+    private void RestaurarPartidaEnSesion(int usuarioId, bool reanudar)
     {
         try
         {
@@ -224,6 +248,11 @@ public class HomeController : Controller
             if (partida == null)
             {
                 return;
+            }
+
+            if (reanudar && partida.estado == "paused")
+            {
+                new BD().ReanudarPartida(partida.id);
             }
 
             HttpContext.Session.SetInt32("PartidaId", partida.id);
@@ -239,7 +268,9 @@ public class HomeController : Controller
     private void PrepararReloj(int partidaId)
     {
         var partida = new BD().ObtenerPartidaPorId(partidaId);
-        ViewBag.PartidaFechaInicio = partida?.fechaInicio?.ToUniversalTime().ToString("O");
+
+        ViewBag.TiempoRestanteSegundos = partida?.tiempoRestanteSegundos ?? 1800;
+
         ViewBag.NivelActual = partida?.nivelActual ?? 1;
     }
 
@@ -325,7 +356,11 @@ public class HomeController : Controller
             {
                 HttpContext.Session.SetInt32("PartidaId", partidaAnterior.id);
                 HttpContext.Session.SetInt32("SalaActual", partidaAnterior.SalaActual ?? 1);
-                HttpContext.Session.SetString("Estado", partidaAnterior.estado ?? "in_progress");
+                if (partidaAnterior.estado == "paused")
+                {
+                    bd.ReanudarPartida(partidaAnterior.id);
+                }
+                HttpContext.Session.SetString("Estado", "in_progress");
                 return RedirectToAction("Sala" + (partidaAnterior.SalaActual ?? 1));
             }
             int partidaId = bd.CrearPartida(usuarioNombre, 1, usuarioId);
@@ -345,8 +380,33 @@ public class HomeController : Controller
     [HttpPost]
     public IActionResult Logout()
     {
+        int? partidaId = HttpContext.Session.GetInt32("PartidaId");
+        if (partidaId.HasValue)
+        {
+            try
+            {
+                new BD().PausarPartida(partidaId.Value);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "No se pudo pausar la partida {PartidaId}.", partidaId.Value);
+            }
+        }
+
         HttpContext.Session.Clear();
         return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    public IActionResult PausePartida()
+    {
+        int? partidaId = HttpContext.Session.GetInt32("PartidaId");
+        if (partidaId.HasValue)
+        {
+            new BD().PausarPartida(partidaId.Value);
+        }
+
+        return Ok();
     }
 
     public IActionResult Register()
@@ -410,7 +470,7 @@ public class HomeController : Controller
 
         HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
         HttpContext.Session.SetString("UsuarioNombre", usuario.Nombre);
-        RestaurarPartidaEnSesion(usuario.Id);
+        RestaurarPartidaEnSesion(usuario.Id, true);
 
         return Url.IsLocalUrl(returnUrl) ? Redirect(returnUrl) : RedirectToAction("Index");
     }

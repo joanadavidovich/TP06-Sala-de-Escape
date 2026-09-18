@@ -15,5 +15,6 @@ namespace TP06_Sala_de_Escape.Models
         public int? piezasCompletadas { get; set; } = 0;
         public DateTime? fechaInicio { get; set; }
         public DateTime? fechaFin { get; set; }
+        public int? tiempoRestanteSegundos { get; set; }
     }
 }
