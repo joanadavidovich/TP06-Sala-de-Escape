@@ -734,6 +734,12 @@
             pistaSala2.addEventListener('click', () => { pistaSala2Texto.hidden = !pistaSala2Texto.hidden; });
         }
 
+        const pistaSala2Orden = document.getElementById('pistaSala2Orden');
+        const pistaSala2OrdenTexto = document.getElementById('pistaSala2OrdenTexto');
+        if (pistaSala2Orden && pistaSala2OrdenTexto) {
+            pistaSala2Orden.addEventListener('click', () => { pistaSala2OrdenTexto.hidden = !pistaSala2OrdenTexto.hidden; });
+        }
+
         inicializarDragDropFotos();
         inicializarConnections(() => {
             respuestasSala2[2] = true;

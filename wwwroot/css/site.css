@@ -3525,3 +3525,7 @@ width: 18px;
             width: 100%;
         }
     }
+
+    .sala2-container .room-hint {
+    color: #264653;
+}
