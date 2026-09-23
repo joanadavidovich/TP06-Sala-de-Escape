@@ -8,7 +8,7 @@ namespace TP06_Sala_de_Escape.Models
 {
     public class BD
     {
-        private static string _connectionString = @"Server=localhost;Database=TP06;Integrated Security=True;TrustServerCertificate=True;";
+        private static string _connectionString = @"Server=localhost\SQLEXPRESS;Database=TP06;Integrated Security=True;TrustServerCertificate=True;";
 
         public int AgregarUsuario(Usuario usuario)
         {

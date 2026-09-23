@@ -2008,3 +2008,13 @@ function initSala4() {
 
 document.addEventListener('DOMContentLoaded', initSalaEscapePage);
 document.addEventListener('DOMContentLoaded', initRoomTimer);
+function alternarMusica() { 
+    const audio = document.getElementById("musicaEscape"); 
+    const boton = document.getElementById("botonMusica"); 
+    if (audio.muted) { 
+        audio.muted = false; boton.textContent = "🔊"; 
+    } 
+    else { 
+        audio.muted = true; boton.textContent = "🔇"; 
+    }
+}

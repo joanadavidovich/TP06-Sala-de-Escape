@@ -9,6 +9,27 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TP06_Sala_de_Escape.styles.css" asp-append-version="true" />
 </head>
+<audio id="musicaEscape" autoplay loop>
+    <source src="/audio/musica.mp3" type="audio/mpeg">
+</audio>
+
+<button id="botonMusica" onclick="alternarMusica()">🔊</button>
+
+<script>
+    const audio = document.getElementById("musicaEscape");
+
+    function alternarMusica() {
+        const boton = document.getElementById("botonMusica");
+
+        if (audio.paused) {
+            audio.play();
+            boton.textContent = "🔊";
+        } else {
+            audio.pause();
+            boton.textContent = "🔇";
+        }
+    }
+</script>
 <body data-partida-started-at="@ViewBag.PartidaFechaInicio" data-tiempo-restante="@ViewBag.TiempoRestanteSegundos" data-nivel-actual="@ViewBag.NivelActual">
     <header>
         <div class="room-timer-bar">

@@ -3529,3 +3529,18 @@ width: 18px;
     .sala2-container .room-hint {
     color: #264653;
 }
+
+#botonMusica { 
+    position: fixed; 
+    top: 20px; 
+    right: 20px; 
+    width: 45px; 
+    height: 45px; 
+    border: none; 
+    border-radius: 50%; 
+    background: rgba(0, 0, 0, 0.6); 
+    color: white; 
+    font-size: 22px; 
+    cursor: pointer; 
+    z-index: 9999; 
+}
