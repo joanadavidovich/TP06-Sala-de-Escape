@@ -19,18 +19,39 @@ public class HomeController : Controller
         _logger = logger;
     }
 
+    public IActionResult Integrantes(){
+        return View();
+    }
+
     public IActionResult Index()
     {
         int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
         if (usuarioId.HasValue)
         {
             RestaurarPartidaEnSesion(usuarioId.Value, false);
+
+            BD bd = new BD();
+
+            ViewBag.CantidadEscapes = bd.CantidadEscapes(usuarioId.Value);
+            ViewBag.PartidasEscapadas = bd.ObtenerPartidasEscapadas(usuarioId.Value);
+        }
+        else
+        {
+            ViewBag.CantidadEscapes = 0;
+            ViewBag.UltimaPartidaEscapada = null;
         }
 
-        ViewBag.SalaActual = usuarioId.HasValue ? HttpContext.Session.GetInt32("SalaActual") ?? 0 : 0;
-        ViewBag.UsuarioNombre = usuarioId.HasValue ? HttpContext.Session.GetString("UsuarioNombre") : null;
+        ViewBag.SalaActual = usuarioId.HasValue
+            ? HttpContext.Session.GetInt32("SalaActual") ?? 0
+            : 0;
+
+        ViewBag.UsuarioNombre = usuarioId.HasValue
+            ? HttpContext.Session.GetString("UsuarioNombre")
+            : null;
 
         int? partidaId = HttpContext.Session.GetInt32("PartidaId");
+
         if (partidaId.HasValue)
         {
             PrepararReloj(partidaId.Value);
@@ -533,28 +554,59 @@ public class HomeController : Controller
 
     // Recibe POST login
     [HttpPost]
-    public IActionResult Login(string nombre, string password, string? returnUrl = null)
+public IActionResult Login(string nombre, string password, string? returnUrl = null)
+{
+    if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(password))
     {
-        if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(password))
-        {
-            ViewBag.Error = "Ingresá tu nombre y contraseña para continuar.";
-            return View();
-        }
-
-        BD bd = new BD();
-        Usuario? usuario = bd.ObtenerUsuarioPorNombre(nombre);
-        if (usuario == null || !VerificarHash(password, usuario.PasswordHash))
-        {
-            ViewBag.Error = "El nombre o la contraseña no son correctos.";
-            return View();
-        }
-
-        HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
-        HttpContext.Session.SetString("UsuarioNombre", usuario.Nombre);
-        RestaurarPartidaEnSesion(usuario.Id, true);
-
-        return Url.IsLocalUrl(returnUrl) ? Redirect(returnUrl) : RedirectToAction("Index");
+        ViewBag.Error = "Ingresá tu nombre y contraseña para continuar.";
+        return View();
     }
+
+    BD bd = new BD();
+    Usuario? usuario = bd.ObtenerUsuarioPorNombre(nombre);
+
+    if (usuario == null || !VerificarHash(password, usuario.PasswordHash))
+    {
+        ViewBag.Error = "El nombre o la contraseña no son correctos.";
+        return View();
+    }
+
+    // Volvemos a crear la sesión del usuario
+    HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
+    HttpContext.Session.SetString("UsuarioNombre", usuario.Nombre);
+
+    // Buscamos una partida que haya quedado pausada o en curso
+    Partida? partidaActual = bd.ObtenerPartidaEnCursoPorUsuario(usuario.Id);
+
+    if (partidaActual != null)
+    {
+        // Recuperamos EXACTAMENTE la partida anterior
+        HttpContext.Session.SetInt32("PartidaId", partidaActual.id);
+        HttpContext.Session.SetInt32("SalaActual", partidaActual.SalaActual ?? 1);
+
+        // Si estaba pausada, la reanudamos sin reiniciar el tiempo
+        if (partidaActual.estado == "paused")
+        {
+            bd.ReanudarPartida(partidaActual.id);
+        }
+
+        HttpContext.Session.SetString("Estado", "in_progress");
+    }
+    else
+    {
+        // Solo se crea una partida nueva si realmente no existe
+        // ninguna partida en curso o pausada.
+        int nuevaPartida = bd.CrearPartida(usuario.Nombre, 1, usuario.Id);
+
+        HttpContext.Session.SetInt32("PartidaId", nuevaPartida);
+        HttpContext.Session.SetInt32("SalaActual", 1);
+        HttpContext.Session.SetString("Estado", "in_progress");
+    }
+
+    return Url.IsLocalUrl(returnUrl)
+        ? Redirect(returnUrl)
+        : RedirectToAction("Index");
+}
 
     private static string CrearHash(string password)
     {
@@ -578,15 +630,32 @@ public class HomeController : Controller
         catch (FormatException) { return false; }
     }
 
-    public IActionResult Privacy()
+    [HttpPost]
+    public IActionResult CompletarPartida()
     {
-        return View();
-    }
+        int? partidaId = HttpContext.Session.GetInt32("PartidaId");
+        int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        if (!partidaId.HasValue || !usuarioId.HasValue)
+        {
+            return BadRequest(new { success = false });
+        }
+
+        try
+        {
+            new BD().CompletarPartida(partidaId.Value);
+
+            HttpContext.Session.Remove("PartidaId");
+            HttpContext.Session.Remove("SalaActual");
+            HttpContext.Session.Remove("Estado");
+
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "No se pudo completar la partida {PartidaId}.", partidaId.Value);
+            return StatusCode(503, new { success = false });
+        }
     }
 }
 

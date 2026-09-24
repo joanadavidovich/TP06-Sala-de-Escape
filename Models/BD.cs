@@ -8,7 +8,7 @@ namespace TP06_Sala_de_Escape.Models
 {
     public class BD
     {
-        private static string _connectionString = @"Server=localhost\SQLEXPRESS;Database=TP06;Integrated Security=True;TrustServerCertificate=True;";
+        private static string _connectionString = @"Server=localhost;Database=TP06;Integrated Security=True;TrustServerCertificate=True;";
 
         public int AgregarUsuario(Usuario usuario)
         {
@@ -20,8 +20,6 @@ namespace TP06_Sala_de_Escape.Models
                 return connection.QuerySingle<int>(sql, new { Nombre = usuario.Nombre, Email = usuario.Email, PasswordHash = usuario.PasswordHash, FechaCreacion = usuario.FechaCreacion });
             }
         }
-
-        // Obtener usuario por nombre
         public Usuario? ObtenerUsuarioPorNombre(string nombre)
         {
             AsegurarColumnaPassword();
@@ -121,26 +119,42 @@ namespace TP06_Sala_de_Escape.Models
         }
 
         public void PausarPartida(int partidaId)
+{
+    AsegurarColumnaTiempo();
+
+    using var connection = new SqlConnection(_connectionString);
+    connection.Open();
+
+    var partida = connection.QuerySingleOrDefault<Partida>(
+        "SELECT * FROM Partidas WHERE id = @PartidaId",
+        new { PartidaId = partidaId });
+
+    if (partida == null || partida.estado != "in_progress")
+        return;
+
+    int restante = partida.tiempoRestanteSegundos ?? 1800;
+
+    if (partida.fechaInicio.HasValue)
+    {
+        restante -= Math.Max(
+            0,
+            (int)(DateTime.Now - partida.fechaInicio.Value).TotalSeconds
+        );
+    }
+
+    restante = Math.Max(0, restante);
+
+    connection.Execute(@"
+        UPDATE Partidas
+        SET estado = 'paused',
+            tiempoRestanteSegundos = @TiempoRestanteSegundos
+        WHERE id = @PartidaId",
+        new
         {
-            AsegurarColumnaTiempo();
-            using var connection = new SqlConnection(_connectionString);
-            connection.Open();
-            var partida = connection.QuerySingleOrDefault<Partida>(
-                "SELECT * FROM Partidas WHERE id = @PartidaId", new { PartidaId = partidaId });
-            if (partida == null || partida.estado != "in_progress") return;
-
-            int restante = partida.tiempoRestanteSegundos ?? 1800;
-            if (partida.fechaInicio.HasValue)
-            {
-                restante -= Math.Max(0, (int)(DateTime.Now - partida.fechaInicio.Value).TotalSeconds);
-            }
-
-            connection.Execute(@"
-                UPDATE Partidas
-                SET estado = 'paused', tiempoRestanteSegundos = @TiempoRestanteSegundos
-                WHERE id = @PartidaId",
-                new { PartidaId = partidaId, TiempoRestanteSegundos = Math.Max(0, restante) });
-        }
+            PartidaId = partidaId,
+            TiempoRestanteSegundos = restante
+        });
+}
 
         public void ReanudarPartida(int partidaId)
 {
@@ -297,6 +311,50 @@ namespace TP06_Sala_de_Escape.Models
                 var resultado = connection.QueryFirstOrDefault<dynamic>(sql, new { PartidaId = partidaId });
                 return (resultado?.completadas ?? 0, resultado?.total ?? 0);
             }
+        }
+
+        public void CompletarPartida(int partidaId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            connection.Execute(@"
+                UPDATE Partidas
+                SET estado = 'escaped',
+                    fechaFin = @FechaFin
+                WHERE id = @PartidaId",
+                new
+                {
+                    PartidaId = partidaId,
+                    FechaFin = DateTime.Now
+                });
+        }
+
+        public int CantidadEscapes(int usuarioId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            return connection.ExecuteScalar<int>(@"
+                SELECT COUNT(*)
+                FROM Partidas
+                WHERE UsuarioId = @UsuarioId
+                AND estado = 'escaped'",
+                new { UsuarioId = usuarioId });
+        }
+
+        public List<Partida> ObtenerPartidasEscapadas(int usuarioId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            return connection.Query<Partida>(@"
+                SELECT *
+                FROM Partidas
+                WHERE UsuarioId = @UsuarioId
+                AND estado = 'escaped'
+                ORDER BY fechaFin ASC",
+                new { UsuarioId = usuarioId }).ToList();
         }
     }
 }

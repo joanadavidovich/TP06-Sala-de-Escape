@@ -1960,10 +1960,31 @@ function initSala4() {
         document.getElementById('verifyLuxCode')?.addEventListener('click', () => {
             const input = document.getElementById('luxCodeInput');
             const message = document.getElementById('luxCodeMessage');
+
             if (input.value.trim().toUpperCase() === 'LUX') {
                 message.textContent = 'CÓDIGO CORRECTO';
                 message.className = 'sala4-message sala4-success';
+
                 document.getElementById('luxFinalResult').hidden = false;
+
+                // Guarda la partida como escapada
+                fetch('/Home/CompletarPartida', {
+                    method: 'POST'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No se pudo guardar la partida');
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Partida guardada como escapada');
+                })
+                .catch(error => {
+                    console.error('Error al guardar la partida:', error);
+                });
+
             } else {
                 message.textContent = 'Las tres pistas todavía no forman el código correcto.';
                 message.className = 'sala4-message sala4-error';

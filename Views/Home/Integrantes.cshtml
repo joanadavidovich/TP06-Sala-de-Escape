@@ -1,0 +1,39 @@
+```html
+@{
+    ViewData["Title"] = "Integrantes";
+}
+
+<div class="integrantes-page">
+
+    <div class="integrantes-container">
+
+        <div class="integrantes-header">
+            <h1>✈️ INTEGRANTES</h1>
+            <p>Los responsables de esta misión</p>
+        </div>
+
+        <div class="integrantes-grid">
+
+            <div class="integrante-card">
+                <div class="integrante-icon"><img src = "/images/integrantes/joy.jpg"></img></div>
+                <h2>Joana Davidovich</h2>
+            </div>
+
+            <div class="integrante-card">
+                <div class="integrante-icon"><img src = "/images/integrantes/sol.jpg"></img></div>
+                <h2>Sol Fuks</h2>
+            </div>
+
+            <div class="integrante-card">
+                <div class="integrante-icon"><img src = "/images/integrantes/juanma.jpg"></img></div>
+                <h2>Juanma Malagrino</h2>
+            </div>
+        </div>
+
+        <a asp-controller="Home" asp-action="Index" class="btn-volver">
+            ← VOLVER
+        </a>
+
+    </div>
+
+</div>

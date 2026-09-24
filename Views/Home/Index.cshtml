@@ -21,6 +21,7 @@
         <div class="header">
             <h1>⚓ DESTINO DESCONOCIDO ⚓</h1>
             <p class="subtitle">Una sala de escape geográfica</p>
+            <a asp-controller="Home" asp-action="Integrantes" class="btn-integrantes"> 👥 INTEGRANTES </a>
         </div>
 
         <div class="story-section">
@@ -52,6 +53,50 @@
                 <form method="post" asp-action="Logout" asp-controller="Home">
                     <button type="submit" class="session-logout">Cerrar sesión</button>
                 </form>
+
+                @if (ViewBag.CantidadEscapes == 0)
+                {
+                    <div class="user-info">
+    <p>
+                    🏃 Escapaste @ViewBag.CantidadEscapes
+                    @(ViewBag.CantidadEscapes == 1 ? "vez" : "veces")
+                </p>
+
+                @if (ViewBag.CantidadEscapes > 0)
+                {
+                    <p>⏱️ Tiempos de escape:</p>
+
+                    <ul>
+                        @foreach (var partida in ViewBag.PartidasEscapadas)
+                        {
+                            if (partida.fechaInicio.HasValue && partida.fechaFin.HasValue)
+                            {
+                                var tiempo = partida.fechaFin.Value - partida.fechaInicio.Value;
+
+                                <li>
+                                    @tiempo.Minutes.ToString("00"):@tiempo.Seconds.ToString("00")
+                                </li>
+                            }
+                        }
+                    </ul>
+                }
+            </div>
+                }
+                else
+                {
+                    var ultimaPartida = ViewBag.UltimaPartidaEscapada as TP06_Sala_de_Escape.Models.Partida;
+
+                    <div class="user-info">
+                       <p>🏃 Escapaste @ViewBag.CantidadEscapes @(ViewBag.CantidadEscapes == 1 ? "vez" : "veces")</p>
+
+                        @if (ultimaPartida != null && ultimaPartida.fechaInicio.HasValue && ultimaPartida.fechaFin.HasValue)
+                        {
+                            var tiempo = ultimaPartida.fechaFin.Value - ultimaPartida.fechaInicio.Value;
+
+                            <p>⏱️ Tiempo: @tiempo.Minutes.ToString("00"):@tiempo.Seconds.ToString("00")</p>
+                        }
+                    </div>
+                }
             </div>
         }
 

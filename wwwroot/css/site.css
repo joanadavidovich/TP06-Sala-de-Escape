@@ -1978,7 +1978,7 @@ body {
     border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.12);
     background: rgba(255,255,255,0.08);
-    color: #fff;
+    color: black;
 }
 
 .pais-respuesta {
@@ -3056,7 +3056,7 @@ width: 18px;
     background: transparent;
     border: 0;
     box-shadow: none;
-    animation: valijaMovimiento 15s linear infinite;
+    animation: valijaMovimiento 8s linear infinite;
 
     cursor: pointer;
     z-index: 5;
@@ -3543,4 +3543,120 @@ width: 18px;
     font-size: 22px; 
     cursor: pointer; 
     z-index: 9999; 
+}
+
+.btn-integrantes {
+    display: inline-block;
+    padding: 13px 28px;
+    background: #0d2945;
+    border: 1px solid #4da3ff;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-integrantes:hover {
+    background: #164a73;
+    box-shadow: 0 0 15px rgba(77, 163, 255, 0.35);
+}
+
+.integrantes-page {
+    min-height: 100vh;
+    background: #020b18;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    font-family: Arial, sans-serif;
+}
+
+.integrantes-container {
+    width: 100%;
+    max-width: 1000px;
+    text-align: center;
+}
+
+.integrantes-header {
+    margin-bottom: 40px;
+}
+
+.integrantes-header h1 {
+    font-size: 38px;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.integrantes-header p {
+    color: #9fb3c8;
+    font-size: 18px;
+}
+
+.integrantes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.integrante-card {
+    background: #07182d;
+    border: 1px solid #1e4d73;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 0 15px rgba(30, 100, 150, 0.15);
+    transition: 0.3s;
+}
+
+.integrante-card:hover {
+    transform: translateY(-5px);
+    border-color: #4da3ff;
+    box-shadow: 0 0 20px rgba(77, 163, 255, 0.25);
+}
+
+.integrante-icon {
+    font-size: 45px;
+    margin-bottom: 15px;
+}
+
+.integrante-card h2 {
+    margin: 0 0 10px;
+    font-size: 23px;
+}
+
+.integrante-card p {
+    margin: 0;
+    color: #a9bbcc;
+}
+
+.btn-volver {
+    display: inline-block;
+    padding: 13px 28px;
+    background: #0d2945;
+    border: 1px solid #4da3ff;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-volver:hover {
+    background: #164a73;
+    box-shadow: 0 0 15px rgba(77, 163, 255, 0.35);
+}
+
+@media (max-width: 700px) {
+    .integrantes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .integrantes-header h1 {
+        font-size: 30px;
+    }
+}
+.integrante-icon img{
+    width: 30%;
 }
